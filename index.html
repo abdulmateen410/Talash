@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TALASH — HR Recruitment System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>TALASH</h1>
+  </div>
+  <div class="nav">
+    <button class="nav-item active" onclick="showScreen('dashboard')">
+      <span class="icon">⊞</span><span class="nav-label">Dashboard</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('upload')">
+      <span class="icon">⇡</span><span class="nav-label">Upload CVs</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('candidates')">
+      <span class="icon">⊟</span><span class="nav-label">Candidates</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('emails')">
+      <span class="icon">✉</span><span class="nav-label">Draft Emails</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="main">
+  <div class="topbar" id="topbar">
+    <div style="display:flex;align-items:center;gap:14px">
+      <!-- Hamburger toggle -->
+      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <span></span><span></span><span></span>
+      </button>
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+        <div class="topbar-sub"   id="topbar-sub">CV Extraction &amp; Analysis System</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="user-badge" style="font-size:11px;color:var(--muted)"></span>
+      <button class="btn btn-outline" onclick="doLogout()">Logout</button>
+      <button class="btn btn-accent" onclick="showScreen('upload')">+ Upload</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="screen active" id="screen-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="label">Total Candidates</div>
+          <div class="value c-accent" id="stat-total"></div>
+          <div class="sub c-green" id="stat-total-sub">Upload CVs to begin</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">With Publications</div>
+          <div class="value c-blue" id="stat-pubs"></div>
+          <div class="sub" style="color:var(--muted)" id="stat-pubs-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Missing Info</div>
+          <div class="value c-yellow" id="stat-miss"></div>
+          <div class="sub" style="color:var(--muted)">Emails drafted</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">PhD Holders</div>
+          <div class="value c-purple" id="stat-phd"></div>
+          <div class="sub" style="color:var(--muted)" id="stat-phd-sub"></div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Publication Type Breakdown</h3>
+          <div class="chart-wrap"><canvas id="chartPubs"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Highest Qualification</h3>
+          <div class="chart-wrap"><canvas id="chartDegree"></canvas></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Recent Candidates</h3>
+          <input class="search-box" type="text" placeholder="Search name or post"
+                 oninput="filterTable(this.value)" id="dash-search">
+        </div>
+        <div id="dash-table-wrap">
+          <div class="empty">
+            <div class="icon">📋</div>
+            <h3>No candidates yet</h3>
+            <p>Upload a PDF or image to get started.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="screen" id="screen-upload">
+      <div class="upload-grid">
+        <div>
+          <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:var(--muted);">Extraction Mode:</span>
+            <span class="badge" id="extraction-mode-badge"
+                  style="background:rgba(59,130,246,.15);color:var(--blue);">Checking…</span>
+            <span class="badge" id="image-support-badge"
+                  style="background:rgba(167,139,250,.15);color:var(--purple);display:none;">📷 Image Support</span>
+          </div>
+
+          <div class="drop-zone" id="dropZone"
+               onclick="document.getElementById('fileInput').click()"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="handleDrop(event)">
+            <div class="icon">⇡</div>
+            <h3>Drop files here</h3>
+            <p>PDF, PNG, JPG, JPEG — batch upload supported</p>
+            <button class="btn btn-accent"
+                    onclick="event.stopPropagation();document.getElementById('fileInput').click()">
+              Browse Files
+            </button>
+          </div>
+          <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.gif,.bmp,.webp,.tiff"
+                 multiple onchange="handleFileSelect(this.files)" title="Select files to upload">
+
+          <div class="action-row">
+            <button class="btn btn-accent" onclick="startProcessing()" id="processBtn" disabled>
+              Process New Files
+            </button>
+            <button class="btn btn-outline" onclick="clearQueue()">Clear Queue</button>
+          </div>
+          <div class="log-box" id="logBox">Waiting for files…</div>
+        </div>
+
+        <div>
+          <div class="queue-card">
+            <div class="queue-header">
+              File Queue <span id="queue-count" style="color:var(--muted);font-weight:400"></span>
+            </div>
+            <div id="queueList">
+              <div class="empty" style="padding:30px">
+                <div class="icon" style="font-size:24px">📂</div>
+                <p>No files added</p>
+              </div>
+            </div>
+          </div>
+          <div id="downloadBox" style="display:none;margin-top:14px">
+            <div class="queue-card">
+              <div class="queue-header">Download Results</div>
+              <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
+                <button class="btn btn-green"   onclick="downloadFile('xlsx')" style="width:100%">⬇ Excel</button>
+                <button class="btn btn-blue"    onclick="downloadFile('json')" style="width:100%">⬇ JSON</button>
+                <button class="btn btn-outline" onclick="showScreen('candidates')" style="width:100%">View Candidates</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANDIDATES -->
+    <div class="screen" id="screen-candidates">
+      <div id="cand-list-view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <input class="search-box" style="width:280px" type="text"
+                 placeholder="Search name, post, degree" oninput="filterCandidates(this.value)">
+          <span id="cand-count" style="font-size:12px;color:var(--muted)"></span>
+        </div>
+        <div class="table-card">
+          <div id="cand-table-wrap">
+            <div class="empty">
+              <div class="icon">👤</div>
+              <h3>No candidates loaded</h3>
+              <p>Upload and process CVs first.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="cand-detail-view" style="display:none">
+        <button class="back-btn" onclick="closeDetail()">← Back to Candidates</button>
+        <div class="detail-grid" id="detail-content"></div>
+      </div>
+    </div>
+
+    <!-- EMAILS -->
+    <div class="screen" id="screen-emails">
+      <div id="emails-wrap">
+        <div class="empty">
+          <div class="icon">✉</div>
+          <h3>No draft emails</h3>
+          <p>Process CVs to generate missing-info emails.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

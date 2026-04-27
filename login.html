@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TALASH — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1a1d21; --surface: #22262c; --surface2: #2a2f37;
+  --border: #2e333b; --text: #e2e8f0; --muted: #6b7280;
+  --accent: #e85d3d; --blue: #3b82f6; --green: #22c55e; --red: #ef4444;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0f1014; color: var(--text);
+  min-height: 100vh; display: flex;
+  align-items: center; justify-content: center;
+}
+.auth-wrap {
+  width: 100%; max-width: 400px; padding: 24px;
+}
+.brand {
+  text-align: center; margin-bottom: 36px;
+}
+.brand h1 {
+  font-size: 32px; font-weight: 700; letter-spacing: 3px; color: var(--text);
+}
+.brand span {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  color: var(--accent); letter-spacing: 4px; display: block; margin-top: 4px;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 32px;
+}
+.tabs {
+  display: flex; gap: 4px; margin-bottom: 28px;
+  background: var(--surface2); border-radius: 8px; padding: 4px;
+}
+.tab {
+  flex: 1; padding: 8px; border-radius: 6px; font-size: 13px;
+  font-weight: 600; cursor: pointer; border: none;
+  background: none; color: var(--muted); transition: all .15s;
+  font-family: inherit;
+}
+.tab.active { background: var(--accent); color: white; }
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block; font-size: 11px; color: var(--muted);
+  margin-bottom: 6px; letter-spacing: .5px; text-transform: uppercase;
+}
+.form-input {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 14px; border-radius: 7px;
+  font-size: 13px; font-family: inherit; outline: none; transition: border-color .15s;
+}
+.form-input:focus { border-color: var(--accent); }
+.btn-submit {
+  width: 100%; background: var(--accent); color: white;
+  border: none; padding: 12px; border-radius: 7px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: opacity .15s; margin-top: 4px;
+}
+.btn-submit:hover { opacity: .85; }
+.btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+.error-msg {
+  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3);
+  color: var(--red); padding: 10px 14px; border-radius: 7px;
+  font-size: 12px; margin-bottom: 16px; display: none;
+}
+.success-msg {
+  background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3);
+  color: var(--green); padding: 10px 14px; border-radius: 7px;
+  font-size: 12px; margin-bottom: 16px; display: none;
+}
+.divider {
+  text-align: center; font-size: 11px; color: var(--muted);
+  margin: 20px 0; position: relative;
+}
+.divider::before, .divider::after {
+  content: ""; position: absolute; top: 50%;
+  width: 42%; height: 1px; background: var(--border);
+}
+.divider::before { left: 0; }
+.divider::after  { right: 0; }
+.hint {
+  font-size: 11px; color: var(--muted); margin-top: 6px;
+}
+</style>
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="brand">
+    <h1>TALASH</h1>
+    <span>HR RECRUITMENT SYSTEM</span>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+      <button class="tab"        id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div id="error-box"   class="error-msg"></div>
+    <div id="success-box" class="success-msg"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="form-login">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="l-user" type="text" placeholder="your_username" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-submit" id="btn-login" onclick="doLogin()">Sign In</button>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="form-signup" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input class="form-input" id="s-display" type="text" placeholder="Your Full Name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="s-user" type="text" placeholder="username (letters, digits, _)" autocomplete="username">
+        <div class="hint">3–32 characters, lowercase letters/digits/underscore only</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="s-pass" type="password" placeholder="Min. 6 characters" autocomplete="new-password">
+      </div>
+      <button class="btn-submit" id="btn-signup" onclick="doSignup()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(t) {
+  document.getElementById('form-login').style.display  = t==='login'  ? 'block' : 'none';
+  document.getElementById('form-signup').style.display = t==='signup' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active',  t==='login');
+  document.getElementById('tab-signup').classList.toggle('active', t==='signup');
+  hideMessages();
+}
+
+function showErr(msg) {
+  const b = document.getElementById('error-box');
+  b.textContent = msg; b.style.display = 'block';
+  document.getElementById('success-box').style.display = 'none';
+}
+function showOk(msg) {
+  const b = document.getElementById('success-box');
+  b.textContent = msg; b.style.display = 'block';
+  document.getElementById('error-box').style.display = 'none';
+}
+function hideMessages() {
+  document.getElementById('error-box').style.display   = 'none';
+  document.getElementById('success-box').style.display = 'none';
+}
+
+async function doLogin() {
+  const btn = document.getElementById('btn-login');
+  const user = document.getElementById('l-user').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  if (!user || !pass) { showErr('Please enter username and password.'); return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const res  = await fetch('/api/login', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username: user, password: pass})
+    });
+    const data = await res.json();
+    if (!res.ok) { showErr(data.error || 'Login failed'); return; }
+    showOk(`Welcome back, ${data.display}! Redirecting…`);
+    setTimeout(() => window.location.href = '/', 700);
+  } catch(e) {
+    showErr('Network error. Please try again.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function doSignup() {
+  const btn     = document.getElementById('btn-signup');
+  const display = document.getElementById('s-display').value.trim();
+  const user    = document.getElementById('s-user').value.trim();
+  const pass    = document.getElementById('s-pass').value;
+  if (!user || !pass) { showErr('Username and password are required.'); return; }
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  try {
+    const res  = await fetch('/api/signup', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username: user, password: pass, display: display || user})
+    });
+    const data = await res.json();
+    if (!res.ok) { showErr(data.error || 'Signup failed'); return; }
+    showOk('Account created! Redirecting…');
+    setTimeout(() => window.location.href = '/', 700);
+  } catch(e) {
+    showErr('Network error. Please try again.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+// Allow Enter key to submit
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const loginVisible = document.getElementById('form-login').style.display !== 'none';
+    if (loginVisible) doLogin(); else doSignup();
+  }
+});
+</script>
+</body>
+</html>
