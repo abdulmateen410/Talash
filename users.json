@@ -1,0 +1,12 @@
+{
+  "admin": {
+    "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+    "display": "Admin",
+    "created": "2026-01-01T00:00:00"
+  },
+  "admin123": {
+    "password": "41729d0401a5a6af924a981a8e5e3fa8b5be9905bcf8bada09a16e8c07867e44",
+    "display": "ADMIN",
+    "created": "2026-04-25T14:21:24.171945"
+  }
+}
