@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TALASH — HR Recruitment System</title>
+<title>TALASH — Smart HR Recruitment System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -15,20 +15,30 @@
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <h1>TALASH</h1>
+    <p class="sidebar-subtitle">Smart HR</p>
   </div>
   <div class="nav">
     <button class="nav-item active" onclick="showScreen('dashboard')">
-      <span class="icon">⊞</span><span class="nav-label">Dashboard</span>
+      <span class="icon">📊</span><span class="nav-label">Dashboard</span>
     </button>
     <button class="nav-item" onclick="showScreen('upload')">
-      <span class="icon">⇡</span><span class="nav-label">Upload CVs</span>
+      <span class="icon">⬆️</span><span class="nav-label">Upload CVs</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('rankings')">
+      <span class="icon">🏆</span><span class="nav-label">Rankings</span>
     </button>
     <button class="nav-item" onclick="showScreen('candidates')">
-      <span class="icon">⊟</span><span class="nav-label">Candidates</span>
+      <span class="icon">👥</span><span class="nav-label">Candidates</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('analytics')">
+      <span class="icon">📈</span><span class="nav-label">Analytics</span>
     </button>
     <button class="nav-item" onclick="showScreen('emails')">
-      <span class="icon">✉</span><span class="nav-label">Draft Emails</span>
+      <span class="icon">✉️</span><span class="nav-label">Emails</span>
     </button>
+  </div>
+  <div class="sidebar-footer">
+    <small>Milestone 3 Complete</small>
   </div>
 </nav>
 
@@ -36,13 +46,12 @@
 <main class="main" id="main">
   <div class="topbar" id="topbar">
     <div style="display:flex;align-items:center;gap:14px">
-      <!-- Hamburger toggle -->
       <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle Sidebar">
         <span></span><span></span><span></span>
       </button>
       <div>
         <div class="topbar-title" id="topbar-title">Dashboard</div>
-        <div class="topbar-sub"   id="topbar-sub">CV Extraction &amp; Analysis System</div>
+        <div class="topbar-sub" id="topbar-sub">CV Extraction & Comprehensive Analysis</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
@@ -59,48 +68,48 @@
       <div class="stat-grid">
         <div class="stat-card">
           <div class="label">Total Candidates</div>
-          <div class="value c-accent" id="stat-total"></div>
+          <div class="value c-accent" id="stat-total">0</div>
           <div class="sub c-green" id="stat-total-sub">Upload CVs to begin</div>
         </div>
         <div class="stat-card">
-          <div class="label">With Publications</div>
-          <div class="value c-blue" id="stat-pubs"></div>
-          <div class="sub" style="color:var(--muted)" id="stat-pubs-sub"></div>
+          <div class="label">Excellent Tier</div>
+          <div class="value c-green" id="stat-excellent">0</div>
+          <div class="sub" style="color:var(--muted)">Score ≥ 80</div>
         </div>
         <div class="stat-card">
-          <div class="label">Missing Info</div>
-          <div class="value c-yellow" id="stat-miss"></div>
-          <div class="sub" style="color:var(--muted)">Emails drafted</div>
+          <div class="label">Average Score</div>
+          <div class="value c-blue" id="stat-avg">0</div>
+          <div class="sub" style="color:var(--muted)" id="stat-avg-sub">Out of 100</div>
         </div>
         <div class="stat-card">
           <div class="label">PhD Holders</div>
-          <div class="value c-purple" id="stat-phd"></div>
-          <div class="sub" style="color:var(--muted)" id="stat-phd-sub"></div>
+          <div class="value c-purple" id="stat-phd">0</div>
+          <div class="sub" style="color:var(--muted)" id="stat-phd-sub">Advanced degrees</div>
         </div>
       </div>
 
       <div class="charts-row">
         <div class="chart-card">
-          <h3>Publication Type Breakdown</h3>
-          <div class="chart-wrap"><canvas id="chartPubs"></canvas></div>
+          <h3>Ranking Distribution</h3>
+          <div class="chart-wrap"><canvas id="chartRankings"></canvas></div>
         </div>
         <div class="chart-card">
-          <h3>Highest Qualification</h3>
-          <div class="chart-wrap"><canvas id="chartDegree"></canvas></div>
+          <h3>Score Components</h3>
+          <div class="chart-wrap"><canvas id="chartScores"></canvas></div>
         </div>
       </div>
 
       <div class="table-card">
         <div class="table-header">
-          <h3>Recent Candidates</h3>
-          <input class="search-box" type="text" placeholder="Search name or post"
+          <h3>Top Ranked Candidates</h3>
+          <input class="search-box" type="text" placeholder="Search name or position"
                  oninput="filterTable(this.value)" id="dash-search">
         </div>
         <div id="dash-table-wrap">
           <div class="empty">
             <div class="icon">📋</div>
             <h3>No candidates yet</h3>
-            <p>Upload a PDF or image to get started.</p>
+            <p>Upload CVs to see rankings and analysis.</p>
           </div>
         </div>
       </div>
@@ -110,12 +119,14 @@
     <div class="screen" id="screen-upload">
       <div class="upload-grid">
         <div>
-          <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-            <span style="font-size:12px;color:var(--muted);">Extraction Mode:</span>
+          <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:12px;color:var(--muted);">System Status:</span>
             <span class="badge" id="extraction-mode-badge"
                   style="background:rgba(59,130,246,.15);color:var(--blue);">Checking…</span>
             <span class="badge" id="image-support-badge"
-                  style="background:rgba(167,139,250,.15);color:var(--purple);display:none;">📷 Image Support</span>
+                  style="background:rgba(167,139,250,.15);color:var(--purple);display:none;">📷 Images</span>
+            <span class="badge" id="sklearn-support-badge"
+                  style="background:rgba(16,185,129,.15);color:var(--green);display:none;">📊 ML Analysis</span>
           </div>
 
           <div class="drop-zone" id="dropZone"
@@ -123,8 +134,8 @@
                ondragover="event.preventDefault();this.classList.add('drag-over')"
                ondragleave="this.classList.remove('drag-over')"
                ondrop="handleDrop(event)">
-            <div class="icon">⇡</div>
-            <h3>Drop files here</h3>
+            <div class="icon">⬆️</div>
+            <h3>Drop CVs here</h3>
             <p>PDF, PNG, JPG, JPEG — batch upload supported</p>
             <button class="btn btn-accent"
                     onclick="event.stopPropagation();document.getElementById('fileInput').click()">
@@ -136,7 +147,7 @@
 
           <div class="action-row">
             <button class="btn btn-accent" onclick="startProcessing()" id="processBtn" disabled>
-              Process New Files
+              Process & Analyze
             </button>
             <button class="btn btn-outline" onclick="clearQueue()">Clear Queue</button>
           </div>
@@ -159,9 +170,9 @@
             <div class="queue-card">
               <div class="queue-header">Download Results</div>
               <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
-                <button class="btn btn-green"   onclick="downloadFile('xlsx')" style="width:100%">⬇ Excel</button>
-                <button class="btn btn-blue"    onclick="downloadFile('json')" style="width:100%">⬇ JSON</button>
-                <button class="btn btn-outline" onclick="showScreen('candidates')" style="width:100%">View Candidates</button>
+                <button class="btn btn-green" onclick="downloadFile('xlsx')" style="width:100%">📥 Excel Report</button>
+                <button class="btn btn-blue" onclick="downloadFile('json')" style="width:100%">📥 JSON Data</button>
+                <button class="btn btn-outline" onclick="showScreen('rankings')" style="width:100%">View Rankings</button>
               </div>
             </div>
           </div>
@@ -169,12 +180,38 @@
       </div>
     </div>
 
+    <!-- RANKINGS -->
+    <div class="screen" id="screen-rankings">
+      <div class="ranking-controls">
+        <input class="search-box" style="width:280px" type="text"
+               placeholder="Search candidates" oninput="filterRankings(this.value)">
+        <div class="filter-group">
+          <label>Sort by:</label>
+          <select class="filter-select" onchange="sortRankings(this.value)">
+            <option value="score">Overall Score</option>
+            <option value="education">Education</option>
+            <option value="research">Research</option>
+            <option value="experience">Experience</option>
+          </select>
+        </div>
+        <span id="rank-count" style="font-size:12px;color:var(--muted);margin-left:auto;"></span>
+      </div>
+
+      <div id="rankings-list">
+        <div class="empty">
+          <div class="icon">🏆</div>
+          <h3>No rankings available</h3>
+          <p>Process CVs to generate rankings.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- CANDIDATES -->
     <div class="screen" id="screen-candidates">
       <div id="cand-list-view">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
           <input class="search-box" style="width:280px" type="text"
-                 placeholder="Search name, post, degree" oninput="filterCandidates(this.value)">
+                 placeholder="Search name, degree, skills" oninput="filterCandidates(this.value)">
           <span id="cand-count" style="font-size:12px;color:var(--muted)"></span>
         </div>
         <div class="table-card">
@@ -193,11 +230,66 @@
       </div>
     </div>
 
+    <!-- ANALYTICS -->
+    <div class="screen" id="screen-analytics">
+      <div class="analytics-header">
+        <h2>Research & Professional Analytics</h2>
+        <p>Comprehensive insights from candidate profiles</p>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Publication Quality Distribution</h3>
+          <div class="chart-wrap"><canvas id="chartPubQuality"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Collaboration Patterns</h3>
+          <div class="chart-wrap"><canvas id="chartCollaboration"></canvas></div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Topic Diversity Analysis</h3>
+          <div class="chart-wrap"><canvas id="chartTopicDiversity"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Experience Trends</h3>
+          <div class="chart-wrap"><canvas id="chartExperience"></canvas></div>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h4>🎓 Educational Insights</h4>
+          <div id="edu-insights" class="insights-content">
+            <p>Process candidates to see educational analytics</p>
+          </div>
+        </div>
+        <div class="analytics-card">
+          <h4>📚 Research Insights</h4>
+          <div id="research-insights" class="insights-content">
+            <p>Process candidates to see research analytics</p>
+          </div>
+        </div>
+        <div class="analytics-card">
+          <h4>💼 Experience Insights</h4>
+          <div id="exp-insights" class="insights-content">
+            <p>Process candidates to see experience analytics</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- EMAILS -->
     <div class="screen" id="screen-emails">
+      <div style="margin-bottom:20px;">
+        <h3>Draft Emails for Missing Information</h3>
+        <p style="color:var(--muted);font-size:13px;">Personalized emails requesting incomplete details</p>
+      </div>
       <div id="emails-wrap">
         <div class="empty">
-          <div class="icon">✉</div>
+          <div class="icon">✉️</div>
           <h3>No draft emails</h3>
           <p>Process CVs to generate missing-info emails.</p>
         </div>
