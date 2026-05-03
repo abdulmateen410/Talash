@@ -6,9 +6,11 @@ import uuid
 import base64
 import hashlib
 import threading
+import requests
 from datetime import datetime
 from pathlib import Path
 from functools import wraps
+from collections import Counter, defaultdict
 from flask import Flask, request, jsonify, send_file, render_template, session, redirect, url_for
 
 from dotenv import load_dotenv
@@ -47,10 +49,17 @@ except ImportError:
     TESSERACT_OK = False
 
 try:
-    import fitz  # PyMuPDF — renders scanned PDF pages to images
+    import fitz  # PyMuPDF
     FITZ_OK = True
 except ImportError:
     FITZ_OK = False
+
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.cluster import KMeans
+    SKLEARN_OK = True
+except ImportError:
+    SKLEARN_OK = False
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "talash-secret-key-2026")
@@ -94,9 +103,9 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# ─── Extraction prompt ────────────────────────────────────────────────────────
+# ─── Extraction prompts ───────────────────────────────────────────────────────
 
-PROMPT = """\
+EXTRACTION_PROMPT = """\
 You are an expert HR CV data extraction system.
 
 Extract ALL structured information from the CV text below.
@@ -109,33 +118,55 @@ Return EXACTLY this JSON structure:
 {{
   "personal_info": {{
     "name":"", "father_name":"", "dob":"", "nationality":"",
-    "marital_status":"", "current_salary":"", "expected_salary":"",
+    "marital_status":"", "cnic":"", "email":"", "phone":"",
+    "address":"", "current_salary":"", "expected_salary":"",
     "present_employment":"", "apply_date":"", "post_applied":""
   }},
   "education": [{{
     "degree":"", "level":"", "specialization":"",
-    "grade_cgpa_percentage":"", "passing_year":"",
-    "institution":"", "board_university":""
+    "grade_cgpa_percentage":"", "passing_year":"", "start_year":"",
+    "institution":"", "board_university":"", "location":""
   }}],
   "professional_qualifications": [{{"qualification":"", "passing_year":"", "institution":""}}],
   "experience": [{{
     "post":"", "organization":"", "location":"",
-    "start_date":"", "end_date":"", "duration_months":null, "employment_type":""
+    "start_date":"", "end_date":"", "duration_months":null, 
+    "employment_type":"", "responsibilities":""
   }}],
   "publications": [{{
-    "title":"", "author_name":"", "co_authors":"", "published_in":"",
-    "impact_factor":null, "volume":"", "pages":"", "year":"", "type":""
+    "title":"", "authors":"", "author_position":"",
+    "published_in":"", "venue_type":"", "issn":"", "isbn":"",
+    "impact_factor":null, "volume":"", "issue":"", "pages":"", 
+    "year":"", "type":"", "doi":"", "url":""
   }}],
-  "patents": [{{"patent_number":"","title":"","date":"","inventors":"","country":"","link":""}}],
-  "books":   [{{"title":"","authors":"","isbn":"","publisher":"","year":"","link":""}}],
-  "awards_scholarships": [{{"type":"", "detail":""}}],
-  "references": [{{"name":"", "designation":"", "organization":"", "email":"", "phone":""}}]
+  "supervision": {{
+    "ms_main": [], "ms_co": [], "phd_main": [], "phd_co": [],
+    "publications_with_students": []
+  }},
+  "patents": [{{
+    "patent_number":"", "title":"", "date":"", 
+    "inventors":"", "country":"", "link":"", "status":""
+  }}],
+  "books": [{{
+    "title":"", "authors":"", "isbn":"", "publisher":"", 
+    "year":"", "link":"", "role":""
+  }}],
+  "skills": {{
+    "technical": [], "research": [], "teaching": [], 
+    "languages": [], "certifications": []
+  }},
+  "awards_scholarships": [{{"type":"", "detail":"", "year":""}}],
+  "references": [{{
+    "name":"", "designation":"", "organization":"", 
+    "email":"", "phone":"", "relationship":""
+  }}]
 }}
 
 Rules:
-- level must be one of: SSC | HSSC | Bachelor | Master | PhD | PostDoc | Other
-- type (publications) must be: Journal | Conference
-- impact_factor must be a float or null
+- level must be one of: SSC | HSSC | Bachelor | Master | MPhil | MS | PhD | PostDoc | Other
+- type (publications) must be: Journal | Conference | Book Chapter | Workshop | Other
+- venue_type must be: Journal | Conference | Workshop | Other
+- Supervision arrays should contain student names and graduation years
 - All missing fields = "" or null or []; no extra keys
 - Extract ALL entries, do not truncate lists
 """
@@ -143,14 +174,45 @@ Rules:
 IMAGE_PROMPT = """\
 This is a CV / resume image. Extract ALL text visible in the image exactly as it appears,
 preserving structure and layout as much as possible. Include all sections:
-personal info, education, experience, publications, awards, references, etc.
+personal info, education, experience, publications, supervision, patents, books, 
+awards, references, etc.
 Output only the raw extracted text — no commentary.
+"""
+
+ANALYSIS_PROMPT = """\
+Analyze this candidate's complete profile and generate a comprehensive assessment.
+
+PROFILE DATA:
+{profile_json}
+
+Provide a structured analysis covering:
+1. Educational strength and quality (performance, institutions, progression, gaps)
+2. Research output quality (journal rankings, conference quality, authorship roles)
+3. Research breadth vs depth (topic variability)
+4. Collaboration patterns (co-authorship analysis)
+5. Professional experience consistency and progression
+6. Skill alignment with claimed expertise
+7. Overall suitability assessment
+8. Key strengths and concerns
+
+Return as valid JSON:
+{{
+  "overall_score": 0-100,
+  "education_score": 0-100,
+  "research_score": 0-100,
+  "experience_score": 0-100,
+  "summary": "2-3 paragraph comprehensive summary",
+  "strengths": ["strength 1", "strength 2", ...],
+  "concerns": ["concern 1", "concern 2", ...],
+  "recommendations": "hiring recommendation",
+  "missing_info": ["item 1", "item 2", ...]
+}}
 """
 
 # ─── Text extraction ──────────────────────────────────────────────────────────
 
 def extract_text_from_pdf(pdf_path):
-    """Try pdfplumber for text-layer PDFs. Returns empty string if scanned."""
+    """Try pdfplumber for text-layer PDFs."""
     if not PDF_OK:
         return ""
     pages = []
@@ -165,16 +227,13 @@ def extract_text_from_pdf(pdf_path):
     return "\n\n".join(pages)
 
 def pdf_to_pil_images(pdf_path, dpi=250):
-    """
-    Render every page of a PDF to a PIL Image using PyMuPDF (fitz).
-    Returns list of PIL.Image objects, or empty list if fitz unavailable.
-    """
+    """Render PDF pages to PIL Images using PyMuPDF."""
     if not FITZ_OK or not PIL_OK:
         return []
     images = []
     try:
         doc = fitz.open(pdf_path)
-        mat = fitz.Matrix(dpi / 72, dpi / 72)   # scale factor for DPI
+        mat = fitz.Matrix(dpi / 72, dpi / 72)
         for page in doc:
             pix = page.get_pixmap(matrix=mat, alpha=False)
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
@@ -185,25 +244,24 @@ def pdf_to_pil_images(pdf_path, dpi=250):
     return images
 
 def pil_image_to_base64(img, fmt="PNG"):
-    """Convert a PIL Image to a base64 string."""
+    """Convert PIL Image to base64 string."""
     import io
     buf = io.BytesIO()
     img.save(buf, format=fmt)
     return base64.b64encode(buf.getvalue()).decode("utf-8")
 
 def ocr_image_tesseract(img):
-    """Run Tesseract OCR on a PIL Image. Returns text string."""
+    """Run Tesseract OCR on a PIL Image."""
     if not TESSERACT_OK:
         return ""
     try:
-        # Use page-segmentation mode 1 (auto with OSD) for best layout reading
         custom_cfg = r"--oem 3 --psm 1"
         return pytesseract.image_to_string(img, lang="eng", config=custom_cfg).strip()
     except Exception:
         return ""
 
 def ocr_image_groq_vision(client, img):
-    """Send a PIL Image to Groq vision model and return extracted text."""
+    """Use Groq vision model to extract text from image."""
     if not client:
         return ""
     try:
@@ -213,7 +271,7 @@ def ocr_image_groq_vision(client, img):
             messages=[{
                 "role": "user",
                 "content": [
-                    {"type": "text",      "text": IMAGE_PROMPT},
+                    {"type": "text", "text": IMAGE_PROMPT},
                     {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}
                 ]
             }],
@@ -225,197 +283,54 @@ def ocr_image_groq_vision(client, img):
         return ""
 
 def extract_text_from_scanned_pdf(pdf_path, client=None):
-    """
-    Fallback for image-based / scanned PDFs:
-    1. Render each page to a PIL Image via PyMuPDF
-    2. Try Tesseract OCR first (fast, free, local)
-    3. If Tesseract unavailable or yields too little text, use Groq vision
-    Returns all pages joined as a single string.
-    """
-    page_images = pdf_to_pil_images(pdf_path)
-    if not page_images:
+    """Extract text from scanned PDF using OCR."""
+    images = pdf_to_pil_images(pdf_path, dpi=250)
+    if not images:
         return ""
-
+    
     all_text = []
-    for i, img in enumerate(page_images):
-        page_label = f"[PAGE {i+1}]"
-
-        # --- Tesseract first ---
-        text = ocr_image_tesseract(img)
-        if text and len(text.strip()) > 80:
-            all_text.append(f"{page_label}\n{text}")
-            continue
-
-        # --- Groq vision fallback ---
-        text = ocr_image_groq_vision(client, img)
-        if text:
-            all_text.append(f"{page_label}\n{text}")
-
-        # Rate-limit friendly pause between Groq calls
-        if client and i < len(page_images) - 1:
-            time.sleep(0.8)
-
+    for i, img in enumerate(images):
+        if client:
+            text = ocr_image_groq_vision(client, img)
+        else:
+            text = ocr_image_tesseract(img)
+        
+        if text.strip():
+            all_text.append(f"[PAGE {i+1}]\n{text}")
+    
     return "\n\n".join(all_text)
 
-def extract_text_from_image_file(file_path, client=None):
-    """Handle standalone image files (PNG, JPG, etc.)."""
+def extract_text_from_image(img_path, client=None):
+    """Extract text from an image file."""
     if not PIL_OK:
         return ""
     try:
-        img = Image.open(file_path).convert("RGB")
+        img = Image.open(img_path).convert("RGB")
+        if client:
+            return ocr_image_groq_vision(client, img)
+        else:
+            return ocr_image_tesseract(img)
     except Exception:
         return ""
 
-    # Try Tesseract first
-    text = ocr_image_tesseract(img)
-    if text and len(text.strip()) > 80:
-        return text
-
-    # Fallback: Groq vision
-    return ocr_image_groq_vision(client, img)
-
 def extract_text_from_file(file_path, client=None):
-    """
-    Unified entry-point for all file types.
-
-    PDF workflow:
-      1. pdfplumber  → fast, works for text-layer PDFs
-      2. If empty → scanned PDF fallback (PyMuPDF → Tesseract / Groq vision)
-
-    Image workflow:
-      1. Tesseract OCR  (local)
-      2. Groq vision    (API fallback)
-    """
+    """Main dispatcher for text extraction."""
     ext = Path(file_path).suffix.lower()
-
+    
     if ext == ".pdf":
-        # First try native text extraction
         text = extract_text_from_pdf(file_path)
-        if text.strip():
-            return text
-        # PDF had no text layer → scanned pages
-        return extract_text_from_scanned_pdf(file_path, client)
-    else:
-        return extract_text_from_image_file(file_path, client)
+        if len(text.strip()) < 100:
+            text = extract_text_from_scanned_pdf(file_path, client)
+        return text
+    elif ext in {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".webp"}:
+        return extract_text_from_image(file_path, client)
+    
+    return ""
 
-# ─── Candidate parsing ────────────────────────────────────────────────────────
-
-def split_candidates(text):
-    parts = re.split(r"(?=Candidate for the Post of)", text, flags=re.IGNORECASE)
-    return [p.strip() for p in parts if len(p.strip()) > 150]
-
-def regex_extract(text):
-    d = {k: [] for k in ["education","professional_qualifications","experience",
-                          "publications","patents","books","awards_scholarships","references"]}
-    d["personal_info"] = {}
-    pi = d["personal_info"]
-    FLAGS = re.DOTALL | re.IGNORECASE
-
-    def first(pattern, s=None, g=1):
-        s = s or text
-        m = re.search(pattern, s, FLAGS)
-        return re.sub(r"\s+", " ", m.group(g)).strip() if m else ""
-
-    pi["post_applied"]       = first(r"Candidate for the Post of (.+?) -")
-    pi["apply_date"]         = first(r"Apply Date:\s*(\d{2}-\w+-\d{4})")
-    name_m = re.search(r"Apply Date:[^\n]+\n+([A-Z][A-Za-z .\-\']{2,60})(?:\n|Father)", text)
-    pi["name"] = name_m.group(1).strip() if name_m else first(r"Name[:\s]+([A-Z][A-Za-z .\-\']{2,60})")
-    pi["father_name"]        = first(r"Father[^\n]{0,20}\n+([^\n]{2,60})")
-    pi["marital_status"]     = first(r"Marital Status:\s*(\S+)")
-    pi["current_salary"]     = first(r"Current Salary:\s*(\S+)")
-    pi["expected_salary"]    = first(r"Expected Salary:\s*(\S+)")
-    pi["present_employment"] = first(r"Present\s*Employment:\s*(.+?)(?:\n\n|Serving)")
-    dob_raw = first(r"Date/Place of\s*Birth:\s*(.+?)(?:\n|Father)")
-    dob_parts = [p.strip() for p in dob_raw.split("/") if p.strip()]
-    if dob_parts:        pi["dob"] = dob_parts[0]
-    if len(dob_parts)>1: pi["nationality"] = dob_parts[1]
-
-    edu_m = re.search(
-        r"Education\s*\nName of Degree.+?Passing Year\s+Board/University\s*\n"
-        r"(.+?)(?=\nProfessional Qualification|\nCivil Experience|\nResearch|\Z)", text, re.DOTALL)
-    if edu_m:
-        lines = [l.strip() for l in edu_m.group(1).splitlines() if l.strip()]
-        i = 0
-        while i < len(lines):
-            line = lines[i]; lo = line.lower()
-            if re.match(r"^[\d\.\s]+$", line) or len(line) < 4:
-                i += 1; continue
-            level = (
-                "PhD"      if any(x in lo for x in ["phd","doctor","ph.d"]) else
-                "PostDoc"  if "postdoc" in lo else
-                "Master"   if any(x in lo for x in ["ms ","msc","master","m.sc","m.eng","mphil","mba"]) else
-                "Bachelor" if any(x in lo for x in ["bs ","bsc","bachelor","b.sc","b.e ","be ","beng","b.tech"]) else
-                "HSSC"     if any(x in lo for x in ["hssc","fsc","f.sc","intermediate","a-level","ics"]) else
-                "SSC"      if any(x in lo for x in ["ssc","matric","o-level","secondary"]) else "Other"
-            )
-            spec = inst = grade = year = ""
-            j = i + 1
-            while j < min(i+6, len(lines)):
-                v = lines[j]
-                if   re.match(r"^\d{4}$", v):          year  = v
-                elif re.match(r"^[\d\.]+$", v):         grade = v
-                elif len(v) > 4 and not re.match(r"^[\d\.\s]+$", v):
-                    if not spec: spec = v
-                    else:        inst = v
-                j += 1
-            d["education"].append({
-                "degree": line, "level": level, "specialization": spec,
-                "grade_cgpa_percentage": grade, "passing_year": year,
-                "institution": inst, "board_university": inst or spec
-            })
-            i = j
-
-    exp_m = re.search(
-        r"Civil Experience\s*\nName of Post\s+Organization.+?\n(.+?)"
-        r"(?=\nResearch|\nAwards|\nReferences|\Z)", text, re.DOTALL)
-    if exp_m:
-        lines = [l.strip() for l in exp_m.group(1).splitlines() if l.strip()]
-        for i, line in enumerate(lines):
-            dm = re.search(r"(\w{3}-\d{4})\s*-\s*(\w{3}-\d{4}|Present)", line, re.IGNORECASE)
-            if dm:
-                d["experience"].append({
-                    "post":            lines[i-3].strip() if i >= 3 else "",
-                    "organization":    lines[i-2].strip() if i >= 2 else "",
-                    "location":        lines[i-1].strip() if i >= 1 else "",
-                    "start_date":      dm.group(1),
-                    "end_date":        dm.group(2),
-                    "duration_months": None,
-                    "employment_type": ""
-                })
-
-    pub_m = re.search(
-        r"Publications\s*\n(?:Paper Title.+?\n)+(.+?)"
-        r"(?=\nReferences|\nAwards|\nPatents|\Z)", text, re.DOTALL)
-    if pub_m:
-        for entry in re.split(r"\n(?=\d+\.?\s)", pub_m.group(1)):
-            entry = entry.strip()
-            if len(entry) < 20: continue
-            pub_type = "Conference" if any(w in entry.lower() for w in
-                ["conference","congress","symposium","workshop","proceedings"]) else "Journal"
-            yr_m = re.search(r"(\d{4})", entry)
-            if_m = re.search(r"(?:IF|Impact Factor)[\s:=]+([\d\.]+)", entry, re.IGNORECASE)
-            d["publications"].append({
-                "title": entry[:300], "author_name": "", "co_authors": "",
-                "published_in": "", "impact_factor": float(if_m.group(1)) if if_m else None,
-                "volume": "", "pages": "", "year": yr_m.group(1) if yr_m else "", "type": pub_type
-            })
-
-    aw_m = re.search(
-        r"Awards\s*&?\s*\nScholarships\s*\nType\s+Detail\s*\n"
-        r"(.+?)(?=\nReferences|\nPatents|\Z)", text, re.DOTALL)
-    if aw_m:
-        lines = [l.strip() for l in aw_m.group(1).splitlines() if l.strip()]
-        for i in range(0, len(lines)-1, 2):
-            d["awards_scholarships"].append({"type": lines[i], "detail": lines[i+1]})
-
-    ref_m = re.search(r"References\s*\nName\s+Contact.*?\n(.+?)$", text, re.DOTALL)
-    if ref_m:
-        for email in re.findall(r"[\w.+\-]+@[\w.\-]+\.\w+", ref_m.group(1)):
-            d["references"].append({"name":"","designation":"","organization":"","email":email,"phone":""})
-
-    return d
+# ─── LLM helpers ──────────────────────────────────────────────────────────────
 
 def init_groq_client(api_key):
+    """Initialize Groq client if API key is available."""
     if not GROQ_OK or not api_key:
         return None
     try:
@@ -423,410 +338,1166 @@ def init_groq_client(api_key):
     except Exception:
         return None
 
-def llm_extract(client, cv_text):
-    prompt = PROMPT.format(cv_text=cv_text[:12000])
+def call_groq(client, prompt, max_tokens=8000):
+    """Call Groq LLM with prompt."""
+    if not client:
+        return ""
     try:
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
             temperature=0,
         )
-        raw = response.choices[0].message.content.strip()
-        raw = re.sub(r"^```(?:json)?\s*", "", raw, flags=re.MULTILINE)
-        raw = re.sub(r"^```\s*$", "", raw, flags=re.MULTILINE)
-        return json.loads(raw.strip())
-    except Exception:
-        return None
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Error: {e}"
 
-def extract_candidate(client, cv_text):
-    if client:
-        result = llm_extract(client, cv_text)
-        if result:
-            return result
-    return regex_extract(cv_text)
-
-# ─── Analysis functions ───────────────────────────────────────────────────────
-
-def normalize_grade(grade_str):
-    if not grade_str:
-        return None
-    clean = re.sub(r"[^\d\.]", "", grade_str)
+def parse_json_response(text):
+    """Extract and parse JSON from LLM response."""
+    text = text.strip()
+    
+    # Remove markdown code fences
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*", "", text)
+        text = re.sub(r"\s*```$", "", text)
+    
+    # Try to find JSON object
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        text = match.group(0)
+    
     try:
-        val = float(clean)
-    except ValueError:
+        return json.loads(text)
+    except json.JSONDecodeError:
         return None
-    if val <= 10 and val > 0:
-        return round(val * 25, 2)
-    return val
 
-def educational_profile_analysis(candidate):
-    edu = candidate.get("education", []) or []
+# ─── Research Profile Analysis ────────────────────────────────────────────────
+
+def analyze_journal_publication(pub, client=None):
+    """Analyze a journal publication using external APIs and LLM."""
     analysis = {
-        "ssc_percent": None, "hssc_percent": None,
-        "ug_details": {}, "pg_details": {}, "phd_details": {},
-        "progression_gaps": [], "institution_rankings": {}, "overall_assessment": ""
+        "title": pub.get("title", ""),
+        "journal": pub.get("published_in", ""),
+        "year": pub.get("year", ""),
+        "wos_indexed": False,
+        "scopus_indexed": False,
+        "impact_factor": pub.get("impact_factor"),
+        "quartile": "",
+        "legitimacy": "Unknown",
+        "author_role": determine_author_role(pub),
+        "quality_score": 0
     }
-    for e in edu:
-        level      = e.get("level", "").lower()
-        grade_norm = normalize_grade(e.get("grade_cgpa_percentage"))
-        if "ssc" in level or "matric" in level or "o-level" in level or "secondary" in level:
-            analysis["ssc_percent"] = grade_norm
-        elif any(x in level for x in ["hssc","fsc","inter","a-level","ics"]):
-            analysis["hssc_percent"] = grade_norm
-        elif any(x in level for x in ["bachelor","bs","bsc","b.sc","b.e","beng","b.tech"]):
-            analysis["ug_details"] = {
-                "degree": e.get("degree"), "institution": e.get("institution") or e.get("board_university"),
-                "grade": grade_norm, "year": e.get("passing_year")
-            }
-        elif any(x in level for x in ["master","ms","msc","mphil","mba","postgrad"]):
-            analysis["pg_details"] = {
-                "degree": e.get("degree"), "institution": e.get("institution") or e.get("board_university"),
-                "grade": grade_norm, "year": e.get("passing_year")
-            }
-        elif any(x in level for x in ["phd","doctor","postdoc"]):
-            analysis["phd_details"] = {
-                "degree": e.get("degree"), "institution": e.get("institution") or e.get("board_university"),
-                "grade": grade_norm, "year": e.get("passing_year")
-            }
+    
+    # Simulate API calls (in production, use real APIs)
+    # For demo, use LLM to estimate quality
+    if client:
+        prompt = f"""
+Analyze this journal publication and estimate its quality:
+Title: {pub.get('title', '')}
+Journal: {pub.get('published_in', '')}
+Year: {pub.get('year', '')}
+ISSN: {pub.get('issn', '')}
 
-    years = sorted([int(e.get("passing_year")) for e in edu
-                    if e.get("passing_year","").isdigit()])
-    for i in range(len(years)-1):
-        gap = years[i+1] - years[i]
-        if gap > 5:
-            analysis["progression_gaps"].append(f"{gap} years between degrees")
-
-    ranking_map = {
-        "nust": {"THE": 801, "QS": 367}, "lums": {"THE": 351, "QS": 401},
-        "uet lahore": {"QS": 701},       "iiu":  {"QS": 1001}, "comsats": {"QS": 801},
-    }
-    for key in ["ug_details", "pg_details", "phd_details"]:
-        inst = analysis[key].get("institution", "").lower()
-        for k, v in ranking_map.items():
-            if k in inst:
-                analysis["institution_rankings"][inst] = v
-
-    if analysis["phd_details"]:
-        analysis["overall_assessment"] = "Strong academic background with PhD."
-    elif analysis["pg_details"]:
-        analysis["overall_assessment"] = "Postgraduate degree; research potential."
-    else:
-        analysis["overall_assessment"] = "Undergraduate only; may require further training."
-
+Provide quality estimation as JSON:
+{{
+  "wos_indexed": true/false,
+  "scopus_indexed": true/false,
+  "quartile": "Q1"|"Q2"|"Q3"|"Q4"|"Unknown",
+  "legitimacy": "High"|"Medium"|"Low"|"Unknown",
+  "quality_score": 0-100
+}}
+"""
+        response = call_groq(client, prompt, max_tokens=500)
+        result = parse_json_response(response)
+        if result:
+            analysis.update(result)
+    
     return analysis
 
-def experience_analysis(candidate):
-    exp = candidate.get("experience", []) or []
-    result = {"timeline": [], "overlaps": [], "gaps": [], "total_experience_months": 0, "justified_gaps": []}
-    job_periods = []
-    for e in exp:
-        start = e.get("start_date"); end = e.get("end_date")
-        if start and end:
-            try:
-                s  = datetime.strptime(start, "%b-%Y")
-                ed = datetime.strptime(end,   "%b-%Y") if end.lower() != "present" else datetime.now()
-                job_periods.append((s, ed, e))
-            except Exception:
-                pass
-    job_periods.sort(key=lambda x: x[0])
-    for i in range(len(job_periods)-1):
-        _, prev_end, prev_e = job_periods[i]
-        next_start, _, next_e = job_periods[i+1]
-        if prev_end > next_start:
-            result["overlaps"].append(f"Overlap: {prev_e.get('post','?')} ↔ {next_e.get('post','?')}")
-        elif (next_start - prev_end).days > 30:
-            result["gaps"].append({
-                "start": prev_end.strftime("%Y-%m"),
-                "end":   next_start.strftime("%Y-%m"),
-                "days":  (next_start - prev_end).days
-            })
-    edu_years = [int(e.get("passing_year")) for e in candidate.get("education", [])
-                 if e.get("passing_year","").isdigit()]
-    for gap in result["gaps"]:
-        gap_year = int(gap["start"][:4])
-        if any(abs(gap_year - y) <= 1 for y in edu_years):
-            result["justified_gaps"].append(gap)
-    return result
-
-def research_profile_analysis(candidate):
-    pubs = candidate.get("publications", []) or []
-    result = {
-        "total": len(pubs), "journal_count": 0, "conference_count": 0,
-        "first_author_count": 0, "corresponding_author_count": 0,
-        "quartile_distribution": {"Q1": 0, "Q2": 0, "Q3": 0, "Q4": 0, "Unknown": 0},
-        "top_conferences": []
+def analyze_conference_publication(pub, client=None):
+    """Analyze a conference publication."""
+    analysis = {
+        "title": pub.get("title", ""),
+        "conference": pub.get("published_in", ""),
+        "year": pub.get("year", ""),
+        "core_rank": "",
+        "indexed": False,
+        "maturity": "",
+        "author_role": determine_author_role(pub),
+        "quality_score": 0
     }
-    for pub in pubs:
-        if (pub.get("type","") or "").lower() == "journal":
-            result["journal_count"] += 1
-            if_val = pub.get("impact_factor")
-            if isinstance(if_val, (int, float)):
-                if   if_val >= 5: result["quartile_distribution"]["Q1"] += 1
-                elif if_val >= 2: result["quartile_distribution"]["Q2"] += 1
-                elif if_val >= 1: result["quartile_distribution"]["Q3"] += 1
-                else:             result["quartile_distribution"]["Q4"] += 1
-            else:
-                result["quartile_distribution"]["Unknown"] += 1
+    
+    if client:
+        prompt = f"""
+Analyze this conference publication:
+Title: {pub.get('title', '')}
+Conference: {pub.get('published_in', '')}
+Year: {pub.get('year', '')}
+
+Provide quality estimation as JSON:
+{{
+  "core_rank": "A*"|"A"|"B"|"C"|"Unknown",
+  "indexed": true/false,
+  "maturity": "Mature (10+ years)"|"Established (5-10 years)"|"New (<5 years)"|"Unknown",
+  "quality_score": 0-100
+}}
+"""
+        response = call_groq(client, prompt, max_tokens=500)
+        result = parse_json_response(response)
+        if result:
+            analysis.update(result)
+    
+    return analysis
+
+def determine_author_role(pub):
+    """Determine candidate's authorship role."""
+    authors = pub.get("authors", "")
+    position = pub.get("author_position", "")
+    
+    if not authors:
+        return "Unknown"
+    
+    author_list = [a.strip() for a in authors.split(",")]
+    
+    if position:
+        pos_lower = position.lower()
+        if "first" in pos_lower:
+            return "First Author"
+        elif "corresponding" in pos_lower:
+            return "Corresponding Author"
+        elif "last" in pos_lower:
+            return "Last Author"
+    
+    if len(author_list) == 1:
+        return "Sole Author"
+    
+    return "Co-Author"
+
+def analyze_topic_variability(publications, client=None):
+    """Analyze research topic diversity using clustering."""
+    if not publications or not SKLEARN_OK:
+        return {
+            "topics": [],
+            "diversity_score": 0,
+            "focus": "Unknown"
+        }
+    
+    # Extract titles and abstracts
+    texts = []
+    for pub in publications:
+        title = pub.get("title", "")
+        texts.append(title)
+    
+    if len(texts) < 3:
+        return {
+            "topics": ["Insufficient data"],
+            "diversity_score": 0,
+            "focus": "Limited publications"
+        }
+    
+    try:
+        # TF-IDF vectorization
+        vectorizer = TfidfVectorizer(max_features=50, stop_words='english')
+        X = vectorizer.fit_transform(texts)
+        
+        # K-means clustering (3-5 clusters)
+        n_clusters = min(5, len(texts) // 2 + 1)
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        labels = kmeans.fit_predict(X)
+        
+        # Count publications per cluster
+        cluster_counts = Counter(labels)
+        
+        # Calculate diversity score
+        total = len(publications)
+        diversity = (len(cluster_counts) / total) * 100 if total > 0 else 0
+        
+        # Determine focus
+        max_cluster_size = max(cluster_counts.values())
+        focus_ratio = max_cluster_size / total if total > 0 else 0
+        
+        if focus_ratio > 0.7:
+            focus = "Highly Focused"
+        elif focus_ratio > 0.5:
+            focus = "Moderately Focused"
         else:
-            result["conference_count"] += 1
-            conf = (pub.get("published_in","") or "").lower()
-            if any(c in conf for c in ["icml","neurips","cvpr","iccv","acl","aaai","siggraph"]):
-                result["top_conferences"].append(pub.get("published_in"))
-    return result
+            focus = "Diverse/Interdisciplinary"
+        
+        # Extract top terms per cluster
+        topics = []
+        feature_names = vectorizer.get_feature_names_out()
+        for i in range(n_clusters):
+            center = kmeans.cluster_centers_[i]
+            top_indices = center.argsort()[-3:][::-1]
+            top_terms = [feature_names[idx] for idx in top_indices]
+            topics.append(" | ".join(top_terms))
+        
+        return {
+            "topics": topics,
+            "diversity_score": round(diversity, 1),
+            "focus": focus,
+            "cluster_distribution": dict(cluster_counts)
+        }
+    except Exception:
+        return {
+            "topics": ["Analysis failed"],
+            "diversity_score": 0,
+            "focus": "Unknown"
+        }
+
+def analyze_coauthorship(publications):
+    """Analyze co-authorship patterns."""
+    if not publications:
+        return {
+            "total_coauthors": 0,
+            "frequent_collaborators": [],
+            "avg_coauthors_per_paper": 0,
+            "collaboration_score": 0
+        }
+    
+    all_coauthors = []
+    papers_with_coauthors = 0
+    
+    for pub in publications:
+        authors = pub.get("authors", "")
+        if not authors:
+            continue
+        
+        author_list = [a.strip() for a in authors.split(",")]
+        if len(author_list) > 1:
+            papers_with_coauthors += 1
+            all_coauthors.extend(author_list)
+    
+    # Count occurrences
+    coauthor_counts = Counter(all_coauthors)
+    
+    # Remove the candidate's name (most common) if identifiable
+    if coauthor_counts:
+        most_common_name = coauthor_counts.most_common(1)[0][0]
+        if coauthor_counts[most_common_name] > len(publications) * 0.8:
+            del coauthor_counts[most_common_name]
+    
+    # Get top collaborators
+    top_collaborators = coauthor_counts.most_common(10)
+    
+    # Calculate metrics
+    unique_coauthors = len(coauthor_counts)
+    avg_coauthors = len(all_coauthors) / len(publications) if publications else 0
+    collaboration_score = min(100, (unique_coauthors / len(publications)) * 50) if publications else 0
+    
+    return {
+        "total_coauthors": unique_coauthors,
+        "frequent_collaborators": [{"name": name, "count": count} for name, count in top_collaborators[:5]],
+        "avg_coauthors_per_paper": round(avg_coauthors, 1),
+        "collaboration_score": round(collaboration_score, 1),
+        "collaboration_breadth": "High" if unique_coauthors > len(publications) else "Moderate" if unique_coauthors > len(publications) * 0.5 else "Low"
+    }
+
+# ─── Educational Profile Analysis ─────────────────────────────────────────────
+
+def analyze_educational_profile(education, client=None):
+    """Comprehensive educational profile analysis."""
+    if not education:
+        return {
+            "highest_degree": "None",
+            "performance_trend": "Unknown",
+            "institutional_quality": [],
+            "gaps": [],
+            "progression_score": 0
+        }
+    
+    # Sort by level
+    level_order = {"SSC": 1, "HSSC": 2, "Bachelor": 3, "Master": 4, "MPhil": 5, "MS": 5, "PhD": 6, "PostDoc": 7}
+    sorted_edu = sorted(education, key=lambda x: level_order.get(x.get("level", "Other"), 0))
+    
+    # Determine highest degree
+    highest = sorted_edu[-1] if sorted_edu else {}
+    highest_degree = highest.get("degree", "Unknown")
+    
+    # Analyze performance trend
+    grades = []
+    for edu in sorted_edu:
+        grade_str = edu.get("grade_cgpa_percentage", "")
+        # Parse grade (simplified)
+        if grade_str:
+            try:
+                # Try to extract numeric value
+                nums = re.findall(r'\d+\.?\d*', grade_str)
+                if nums:
+                    grades.append(float(nums[0]))
+            except:
+                pass
+    
+    performance_trend = "Stable"
+    if len(grades) >= 2:
+        if grades[-1] > grades[0] * 1.1:
+            performance_trend = "Improving"
+        elif grades[-1] < grades[0] * 0.9:
+            performance_trend = "Declining"
+    
+    # Institutional quality (mock - would use real APIs)
+    institutional_quality = []
+    for edu in sorted_edu:
+        inst = edu.get("institution", "")
+        if inst:
+            institutional_quality.append({
+                "institution": inst,
+                "ranking": "Not verified",  # Would fetch from THE/QS
+                "level": edu.get("level", "")
+            })
+    
+    # Detect gaps
+    gaps = detect_educational_gaps(sorted_edu)
+    
+    # Calculate progression score
+    progression_score = calculate_progression_score(sorted_edu, gaps)
+    
+    return {
+        "highest_degree": highest_degree,
+        "performance_trend": performance_trend,
+        "institutional_quality": institutional_quality,
+        "gaps": gaps,
+        "progression_score": progression_score
+    }
+
+def detect_educational_gaps(education):
+    """Detect gaps in educational timeline."""
+    gaps = []
+    
+    for i in range(len(education) - 1):
+        current = education[i]
+        next_edu = education[i + 1]
+        
+        current_end = current.get("passing_year", "")
+        next_start = next_edu.get("start_year", "") or next_edu.get("passing_year", "")
+        
+        if current_end and next_start:
+            try:
+                end_year = int(current_end)
+                start_year = int(next_start)
+                gap_years = start_year - end_year - 1
+                
+                if gap_years > 0:
+                    gaps.append({
+                        "after": current.get("level", ""),
+                        "before": next_edu.get("level", ""),
+                        "duration_years": gap_years,
+                        "justified": False  # Would check against experience
+                    })
+            except:
+                pass
+    
+    return gaps
+
+def calculate_progression_score(education, gaps):
+    """Calculate educational progression score (0-100)."""
+    score = 50  # Base score
+    
+    # Bonus for higher degrees
+    level_bonus = {"Bachelor": 10, "Master": 20, "MPhil": 25, "MS": 25, "PhD": 30, "PostDoc": 35}
+    if education:
+        highest_level = education[-1].get("level", "")
+        score += level_bonus.get(highest_level, 0)
+    
+    # Penalty for gaps
+    total_gap_years = sum(g.get("duration_years", 0) for g in gaps if not g.get("justified", False))
+    score -= min(20, total_gap_years * 5)
+    
+    # Bonus for continuous progression
+    if len(education) >= 3 and not gaps:
+        score += 10
+    
+    return max(0, min(100, score))
+
+# ─── Professional Experience Analysis ────────────────────────────────────────
+
+def analyze_professional_experience(experience, education):
+    """Analyze professional experience timeline and consistency."""
+    if not experience:
+        return {
+            "total_years": 0,
+            "overlaps": [],
+            "gaps": [],
+            "progression": "Unknown",
+            "consistency_score": 0
+        }
+    
+    # Parse dates and sort
+    parsed_exp = []
+    for exp in experience:
+        start = parse_year(exp.get("start_date", ""))
+        end = parse_year(exp.get("end_date", "")) or datetime.now().year
+        
+        if start:
+            parsed_exp.append({
+                "post": exp.get("post", ""),
+                "org": exp.get("organization", ""),
+                "start": start,
+                "end": end,
+                "original": exp
+            })
+    
+    parsed_exp.sort(key=lambda x: x["start"])
+    
+    # Detect overlaps
+    overlaps = detect_employment_overlaps(parsed_exp)
+    
+    # Detect gaps
+    gaps = detect_employment_gaps(parsed_exp, education)
+    
+    # Calculate total years
+    total_years = calculate_total_experience_years(parsed_exp)
+    
+    # Analyze progression
+    progression = analyze_career_progression(parsed_exp)
+    
+    # Calculate consistency score
+    consistency_score = calculate_experience_consistency(parsed_exp, overlaps, gaps)
+    
+    return {
+        "total_years": total_years,
+        "overlaps": overlaps,
+        "gaps": gaps,
+        "progression": progression,
+        "consistency_score": consistency_score
+    }
+
+def parse_year(date_str):
+    """Extract year from date string."""
+    if not date_str:
+        return None
+    
+    # Try various formats
+    patterns = [
+        r'(\d{4})',  # Just year
+        r'(\d{1,2})[/-](\d{1,2})[/-](\d{4})',  # MM/DD/YYYY or DD/MM/YYYY
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, date_str)
+        if match:
+            return int(match.group(1) if len(match.groups()) == 1 else match.group(3))
+    
+    return None
+
+def detect_employment_overlaps(parsed_exp):
+    """Detect overlapping employment periods."""
+    overlaps = []
+    
+    for i in range(len(parsed_exp)):
+        for j in range(i + 1, len(parsed_exp)):
+            exp1 = parsed_exp[i]
+            exp2 = parsed_exp[j]
+            
+            # Check if periods overlap
+            if exp1["start"] <= exp2["end"] and exp2["start"] <= exp1["end"]:
+                overlaps.append({
+                    "job1": exp1["post"],
+                    "job2": exp2["post"],
+                    "period": f"{max(exp1['start'], exp2['start'])}-{min(exp1['end'], exp2['end'])}"
+                })
+    
+    return overlaps
+
+def detect_employment_gaps(parsed_exp, education):
+    """Detect gaps in employment history."""
+    gaps = []
+    
+    # Get education end year
+    edu_end_year = 0
+    if education:
+        for edu in education:
+            year = parse_year(edu.get("passing_year", ""))
+            if year:
+                edu_end_year = max(edu_end_year, year)
+    
+    # Check for gap after education
+    if parsed_exp and edu_end_year:
+        first_job_year = parsed_exp[0]["start"]
+        gap_years = first_job_year - edu_end_year
+        
+        if gap_years > 1:
+            gaps.append({
+                "type": "Post-education gap",
+                "duration_years": gap_years,
+                "period": f"{edu_end_year}-{first_job_year}"
+            })
+    
+    # Check gaps between jobs
+    for i in range(len(parsed_exp) - 1):
+        current_end = parsed_exp[i]["end"]
+        next_start = parsed_exp[i + 1]["start"]
+        gap_years = next_start - current_end
+        
+        if gap_years > 1:
+            gaps.append({
+                "type": "Between jobs",
+                "duration_years": gap_years,
+                "period": f"{current_end}-{next_start}"
+            })
+    
+    return gaps
+
+def calculate_total_experience_years(parsed_exp):
+    """Calculate total years of experience (removing overlaps)."""
+    if not parsed_exp:
+        return 0
+    
+    # Merge overlapping periods
+    periods = [(exp["start"], exp["end"]) for exp in parsed_exp]
+    periods.sort()
+    
+    merged = []
+    for start, end in periods:
+        if merged and start <= merged[-1][1]:
+            # Overlap - extend the previous period
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    
+    # Sum total years
+    total = sum(end - start for start, end in merged)
+    return round(total, 1)
+
+def analyze_career_progression(parsed_exp):
+    """Analyze career progression pattern."""
+    if len(parsed_exp) < 2:
+        return "Insufficient data"
+    
+    # Simple heuristic: check if moving to more senior positions
+    seniority_keywords = {
+        "junior": 1, "assistant": 2, "associate": 3, "senior": 4,
+        "lead": 5, "principal": 6, "manager": 7, "director": 8, "vp": 9, "chief": 10
+    }
+    
+    scores = []
+    for exp in parsed_exp:
+        post = exp["post"].lower()
+        score = 0
+        for keyword, value in seniority_keywords.items():
+            if keyword in post:
+                score = max(score, value)
+        scores.append(score)
+    
+    if scores[-1] > scores[0]:
+        return "Progressive"
+    elif scores[-1] < scores[0]:
+        return "Regressive"
+    else:
+        return "Lateral"
+
+def calculate_experience_consistency(parsed_exp, overlaps, gaps):
+    """Calculate experience consistency score (0-100)."""
+    score = 80  # Base score
+    
+    # Penalty for overlaps
+    score -= len(overlaps) * 10
+    
+    # Penalty for gaps
+    total_gap_years = sum(g.get("duration_years", 0) for g in gaps)
+    score -= min(30, total_gap_years * 5)
+    
+    # Bonus for continuous experience
+    if len(parsed_exp) >= 3 and not gaps:
+        score += 10
+    
+    return max(0, min(100, score))
+
+# ─── Skill Alignment Analysis ─────────────────────────────────────────────────
+
+def analyze_skill_alignment(candidate_data, client=None):
+    """Analyze whether claimed skills are supported by experience and publications."""
+    skills = candidate_data.get("skills", {})
+    experience = candidate_data.get("experience", [])
+    publications = candidate_data.get("publications", [])
+    
+    all_skills = []
+    for category in skills.values():
+        if isinstance(category, list):
+            all_skills.extend(category)
+    
+    if not all_skills:
+        return {
+            "evidenced_skills": [],
+            "weak_evidence": [],
+            "alignment_score": 0
+        }
+    
+    # Check each skill against experience and publications
+    evidenced = []
+    weak = []
+    
+    for skill in all_skills:
+        evidence_count = 0
+        
+        # Check experience
+        for exp in experience:
+            post = exp.get("post", "").lower()
+            resp = exp.get("responsibilities", "").lower()
+            if skill.lower() in post or skill.lower() in resp:
+                evidence_count += 1
+        
+        # Check publications
+        for pub in publications:
+            title = pub.get("title", "").lower()
+            if skill.lower() in title:
+                evidence_count += 1
+        
+        if evidence_count >= 2:
+            evidenced.append(skill)
+        elif evidence_count == 0:
+            weak.append(skill)
+    
+    alignment_score = (len(evidenced) / len(all_skills) * 100) if all_skills else 0
+    
+    return {
+        "evidenced_skills": evidenced[:10],
+        "weak_evidence": weak[:10],
+        "alignment_score": round(alignment_score, 1)
+    }
+
+# ─── Candidate Ranking System ─────────────────────────────────────────────────
+
+def calculate_candidate_ranking(candidate_data, analyses):
+    """Calculate overall candidate ranking score (0-100) with breakdown."""
+    
+    # Weight distribution
+    weights = {
+        "education": 0.20,
+        "research": 0.35,
+        "experience": 0.25,
+        "skills": 0.10,
+        "collaboration": 0.10
+    }
+    
+    # Get individual scores
+    edu_score = analyses.get("educational_analysis", {}).get("progression_score", 0)
+    
+    # Research score (based on publication quality and quantity)
+    pubs = candidate_data.get("publications", [])
+    research_score = min(100, len(pubs) * 10)  # Base: 10 points per publication, max 100
+    
+    # Experience score
+    exp_score = analyses.get("experience_analysis", {}).get("consistency_score", 0)
+    
+    # Skills score
+    skill_score = analyses.get("skill_alignment", {}).get("alignment_score", 0)
+    
+    # Collaboration score
+    collab_score = analyses.get("coauthorship_analysis", {}).get("collaboration_score", 0)
+    
+    # Calculate weighted total
+    total_score = (
+        edu_score * weights["education"] +
+        research_score * weights["research"] +
+        exp_score * weights["experience"] +
+        skill_score * weights["skills"] +
+        collab_score * weights["collaboration"]
+    )
+    
+    return {
+        "total_score": round(total_score, 1),
+        "education_score": round(edu_score, 1),
+        "research_score": round(research_score, 1),
+        "experience_score": round(exp_score, 1),
+        "skills_score": round(skill_score, 1),
+        "collaboration_score": round(collab_score, 1),
+        "ranking_tier": get_ranking_tier(total_score)
+    }
+
+def get_ranking_tier(score):
+    """Get ranking tier based on total score."""
+    if score >= 80:
+        return "Excellent"
+    elif score >= 65:
+        return "Very Good"
+    elif score >= 50:
+        return "Good"
+    elif score >= 35:
+        return "Fair"
+    else:
+        return "Needs Improvement"
+
+# ─── Comprehensive Candidate Processing ──────────────────────────────────────
 
 def process_candidate_full(client, cv_text):
-    candidate = extract_candidate(client, cv_text)
-    candidate["_analysis"] = {
-        "education":  educational_profile_analysis(candidate),
-        "experience": experience_analysis(candidate),
-        "research":   research_profile_analysis(candidate)
+    """Extract and analyze a complete candidate profile."""
+    if not client:
+        return None
+    
+    # Extract structured data
+    prompt = EXTRACTION_PROMPT.format(cv_text=cv_text[:15000])
+    response = call_groq(client, prompt, max_tokens=8000)
+    candidate_data = parse_json_response(response)
+    
+    if not candidate_data:
+        return None
+    
+    # Perform all analyses
+    publications = candidate_data.get("publications", [])
+    education = candidate_data.get("education", [])
+    experience = candidate_data.get("experience", [])
+    
+    # Research profile analysis
+    journal_analyses = []
+    conference_analyses = []
+    
+    for pub in publications:
+        pub_type = pub.get("type", "").lower()
+        if "journal" in pub_type:
+            journal_analyses.append(analyze_journal_publication(pub, client))
+        elif "conference" in pub_type:
+            conference_analyses.append(analyze_conference_publication(pub, client))
+    
+    # Topic variability
+    topic_analysis = analyze_topic_variability(publications, client)
+    
+    # Co-authorship
+    coauthor_analysis = analyze_coauthorship(publications)
+    
+    # Educational analysis
+    edu_analysis = analyze_educational_profile(education, client)
+    
+    # Experience analysis
+    exp_analysis = analyze_professional_experience(experience, education)
+    
+    # Skill alignment
+    skill_analysis = analyze_skill_alignment(candidate_data, client)
+    
+    # Compile all analyses
+    analyses = {
+        "journal_analyses": journal_analyses,
+        "conference_analyses": conference_analyses,
+        "topic_variability": topic_analysis,
+        "coauthorship_analysis": coauthor_analysis,
+        "educational_analysis": edu_analysis,
+        "experience_analysis": exp_analysis,
+        "skill_alignment": skill_analysis
     }
-    return candidate
+    
+    # Calculate ranking
+    ranking = calculate_candidate_ranking(candidate_data, analyses)
+    
+    # Generate comprehensive summary
+    summary = generate_candidate_summary(candidate_data, analyses, ranking, client)
+    
+    # Combine everything
+    result = {
+        **candidate_data,
+        "analyses": analyses,
+        "ranking": ranking,
+        "summary": summary
+    }
+    
+    return result
 
-def detect_missing(candidate):
+def generate_candidate_summary(candidate_data, analyses, ranking, client):
+    """Generate a comprehensive candidate summary."""
+    if not client:
+        return "Summary generation requires LLM"
+    
+    # Create summary prompt
+    profile_summary = {
+        "name": (candidate_data.get("personal_info") or {}).get("name", "Unknown"),
+        "highest_degree": analyses.get("educational_analysis", {}).get("highest_degree", "Unknown"),
+        "total_publications": len(candidate_data.get("publications", [])),
+        "research_focus": analyses.get("topic_variability", {}).get("focus", "Unknown"),
+        "experience_years": analyses.get("experience_analysis", {}).get("total_years", 0),
+        "ranking_score": ranking.get("total_score", 0),
+        "ranking_tier": ranking.get("ranking_tier", "Unknown")
+    }
+    
+    prompt = f"""
+Generate a comprehensive candidate assessment summary based on this profile:
+
+{json.dumps(profile_summary, indent=2)}
+
+Full analyses available:
+- Educational progression score: {analyses.get('educational_analysis', {}).get('progression_score', 0)}
+- Research publications: {len(candidate_data.get('publications', []))}
+- Topic diversity: {analyses.get('topic_variability', {}).get('diversity_score', 0)}%
+- Collaboration score: {analyses.get('coauthorship_analysis', {}).get('collaboration_score', 0)}
+- Experience consistency: {analyses.get('experience_analysis', {}).get('consistency_score', 0)}
+- Skill alignment: {analyses.get('skill_alignment', {}).get('alignment_score', 0)}%
+
+Provide:
+1. 2-3 paragraph overall assessment
+2. Top 3-5 strengths
+3. Top 3-5 concerns or areas for improvement
+4. Hiring recommendation (Strong Hire / Hire / Maybe / No Hire)
+
+Return as JSON:
+{{
+  "assessment": "detailed assessment text",
+  "strengths": ["strength1", "strength2", ...],
+  "concerns": ["concern1", "concern2", ...],
+  "recommendation": "hiring decision"
+}}
+"""
+    
+    response = call_groq(client, prompt, max_tokens=2000)
+    summary = parse_json_response(response)
+    
+    if not summary:
+        summary = {
+            "assessment": "Unable to generate assessment",
+            "strengths": [],
+            "concerns": [],
+            "recommendation": "Requires manual review"
+        }
+    
+    return summary
+
+# ─── Missing Information Detection ───────────────────────────────────────────
+
+def detect_missing(candidate_data):
+    """Detect missing or incomplete information in candidate profile."""
     missing = []
-    pi  = candidate.get("personal_info", {}) or {}
-    edu = candidate.get("education",     []) or []
-    exp = candidate.get("experience",    []) or []
-    pub = candidate.get("publications",  []) or []
-    if not pi.get("name"):           missing.append("Full name")
-    if not edu:                      missing.append("Education records")
-    if not exp:                      missing.append("Professional experience")
-    if not pub:                      missing.append("Publications list")
-    if not any(e.get("grade_cgpa_percentage") for e in edu):
-        missing.append("Academic grades/CGPA")
-    if not any(e.get("start_date") for e in exp):
-        missing.append("Employment start dates")
+    
+    # Personal info
+    personal = candidate_data.get("personal_info", {})
+    if not personal.get("email"):
+        missing.append("Email address")
+    if not personal.get("phone"):
+        missing.append("Phone number")
+    
+    # Education
+    education = candidate_data.get("education", [])
+    if not education:
+        missing.append("Education history")
+    else:
+        for edu in education:
+            if not edu.get("grade_cgpa_percentage"):
+                missing.append(f"Grade/CGPA for {edu.get('degree', 'degree')}")
+    
+    # Experience
+    experience = candidate_data.get("experience", [])
+    if not experience:
+        missing.append("Professional experience")
+    
+    # Publications (for research positions)
+    publications = candidate_data.get("publications", [])
+    if not publications:
+        missing.append("Publications (if applicable)")
+    
+    # References
+    references = candidate_data.get("references", [])
+    if not references or len(references) < 2:
+        missing.append("Professional references (at least 2)")
+    
     return missing
 
-def draft_email(name, post, missing_fields):
-    bullets = "\n".join(f"  • {f}" for f in missing_fields)
-    return (
-        f"Dear {name or 'Applicant'},\n\n"
-        f"Thank you for applying for the position of {post or '(position)'} at SEECS, NUST.\n\n"
-        f"After reviewing your submitted application, the following information was "
-        f"found to be missing or incomplete:\n\n{bullets}\n\n"
-        f"We kindly request you to provide these details at your earliest convenience.\n\n"
-        f"Best regards,\nHR Recruitment Team\nSEECS, NUST, Islamabad"
-    )
+def draft_email(name, post_applied, missing_items):
+    """Draft personalized email requesting missing information."""
+    if not missing_items:
+        return ""
+    
+    items_list = "\n".join(f"• {item}" for item in missing_items)
+    
+    email = f"""Subject: Additional Information Required - Application for {post_applied or 'Position'}
 
-# ─── Excel export ─────────────────────────────────────────────────────────────
+Dear {name or 'Applicant'},
 
-def write_excel(all_data, out_path):
+Thank you for your application for the position of {post_applied or 'the advertised role'}.
+
+While reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:
+
+{items_list}
+
+Please send us an updated CV with the above information at your earliest convenience.
+
+We look forward to completing your application review.
+
+Best regards,
+HR Department
+TALASH Recruitment System"""
+    
+    return email
+
+# ─── Document splitting ──────────────────────────────────────────────────────
+
+def split_candidates(text):
+    """Split multi-candidate document into individual sections."""
+    # For simplicity, treat whole document as one candidate
+    # In production, implement smarter splitting logic
+    return [text]
+
+# ─── Excel output ─────────────────────────────────────────────────────────────
+
+def write_excel(all_data, xlsx_path):
+    """Write candidate data to Excel with comprehensive analysis."""
     if not EXCEL_OK:
         return
-    wb    = openpyxl.Workbook()
-    HEAD  = PatternFill("solid", fgColor="1E2128")
-    ACC   = PatternFill("solid", fgColor="E85D3D")
-    ctr   = Alignment(horizontal="center", vertical="center", wrap_text=True)
-    thin  = Border(left=Side(style="thin",color="2E333B"), right=Side(style="thin",color="2E333B"),
-                   top=Side(style="thin",color="2E333B"), bottom=Side(style="thin",color="2E333B"))
+    
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)
+    
+    # Summary sheet
+    ws_summary = wb.create_sheet("Summary")
+    write_summary_sheet(ws_summary, all_data)
+    
+    # Rankings sheet
+    ws_rankings = wb.create_sheet("Rankings")
+    write_rankings_sheet(ws_rankings, all_data)
+    
+    # Detailed profiles
+    for file_path, candidates in all_data.items():
+        for idx, candidate in enumerate(candidates, 1):
+            name = (candidate.get("personal_info") or {}).get("name", f"Candidate {idx}")
+            safe_name = re.sub(r'[^\w\s-]', '', name)[:25]
+            sheet_name = f"{safe_name}"
+            
+            ws = wb.create_sheet(sheet_name)
+            write_candidate_sheet(ws, candidate)
+    
+    wb.save(xlsx_path)
 
-    def hdr(ws):
-        for cell in ws[1]:
-            cell.font = Font(bold=True, color="FFFFFF", size=9)
-            cell.fill = ACC; cell.alignment = ctr; cell.border = thin
+def write_summary_sheet(ws, all_data):
+    """Write summary overview sheet."""
+    ws.append(["TALASH - Candidate Summary Report"])
+    ws.append([])
+    ws.append(["Generated", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+    ws.append([])
+    
+    # Collect all candidates
+    all_candidates = []
+    for candidates in all_data.values():
+        all_candidates.extend(candidates)
+    
+    ws.append(["Total Candidates", len(all_candidates)])
+    ws.append(["With PhD", sum(1 for c in all_candidates if any(e.get("level") == "PhD" for e in c.get("education", [])))])
+    ws.append(["With Publications", sum(1 for c in all_candidates if c.get("publications"))])
+    ws.append([])
+    
+    # Candidate list
+    ws.append(["Name", "Highest Degree", "Publications", "Experience (years)", "Ranking Score", "Tier"])
+    
+    for candidate in all_candidates:
+        name = (candidate.get("personal_info") or {}).get("name", "Unknown")
+        edu = candidate.get("education", [])
+        highest = edu[-1].get("degree", "N/A") if edu else "N/A"
+        pubs = len(candidate.get("publications", []))
+        exp_years = candidate.get("analyses", {}).get("experience_analysis", {}).get("total_years", 0)
+        score = candidate.get("ranking", {}).get("total_score", 0)
+        tier = candidate.get("ranking", {}).get("ranking_tier", "Unknown")
+        
+        ws.append([name, highest, pubs, exp_years, score, tier])
 
-    def aw(ws, mn=10, mx=40):
-        for col in ws.columns:
-            length = max(len(str(c.value or "")) for c in col)
-            ws.column_dimensions[get_column_letter(col[0].column)].width = max(mn, min(length+2, mx))
-
-    all_c = [(src, c) for src, cands in all_data.items() for c in cands]
-
-    def get_deg(edu, kws):
-        for e in edu:
-            if any(k in (e.get("degree","")+" "+e.get("level","")).lower() for k in kws):
-                return e
-        return {}
-
-    ws1 = wb.active; ws1.title = "Master Summary"
-    ws1.append(["Source","Name","Post Applied","Apply Date","Present Employment",
-                "Nationality","Marital Status","Current Salary","Expected Salary",
-                "SSC Grade","SSC Year","HSSC Grade","HSSC Year",
-                "UG Degree","UG CGPA","UG Year","UG Institution",
-                "PG Degree","PG CGPA","PG Year","PG Institution",
-                "PhD Degree","PhD CGPA","PhD Year","PhD Institution",
-                "Total Pubs","Journals","Conferences","Avg IF","Max IF",
-                "Exp Roles","Missing Fields","Email Drafted"])
-    hdr(ws1)
-    for src, c in all_c:
-        pi  = c.get("personal_info",{}) or {}
-        edu = c.get("education",[])     or []
-        exp = c.get("experience",[])    or []
-        pubs = c.get("publications",[]) or []
-        miss = detect_missing(c)
-        ssc  = get_deg(edu, ["ssc","matric","o-level","secondary"])
-        hssc = get_deg(edu, ["hssc","fsc","f.sc","intermediate","a-level","ics"])
-        bs   = get_deg(edu, ["bs ","bsc","bachelor","b.sc","b.e ","beng","b.tech"])
-        ms_  = get_deg(edu, ["ms ","msc","master","m.sc","m.eng","mphil","mba"])
-        phd  = get_deg(edu, ["phd","doctor","ph.d"])
-        ifs  = [p.get("impact_factor") for p in pubs if p.get("impact_factor")]
-        ws1.append([
-            os.path.basename(src), pi.get("name",""), pi.get("post_applied",""),
-            pi.get("apply_date",""), pi.get("present_employment",""),
-            pi.get("nationality",""), pi.get("marital_status",""),
-            pi.get("current_salary",""), pi.get("expected_salary",""),
-            ssc.get("grade_cgpa_percentage",""),  ssc.get("passing_year",""),
-            hssc.get("grade_cgpa_percentage",""), hssc.get("passing_year",""),
-            bs.get("degree",""), bs.get("grade_cgpa_percentage",""), bs.get("passing_year",""),
-            bs.get("institution","") or bs.get("board_university",""),
-            ms_.get("degree",""), ms_.get("grade_cgpa_percentage",""), ms_.get("passing_year",""),
-            ms_.get("institution","") or ms_.get("board_university",""),
-            phd.get("degree",""), phd.get("grade_cgpa_percentage",""), phd.get("passing_year",""),
-            phd.get("institution","") or phd.get("board_university",""),
-            len(pubs), sum(1 for p in pubs if (p.get("type") or "")=="Journal"),
-            sum(1 for p in pubs if (p.get("type") or "")=="Conference"),
-            round(sum(ifs)/len(ifs),2) if ifs else "",
-            round(max(ifs),2) if ifs else "",
-            len(exp), "; ".join(miss), "Yes" if miss else "No"
+def write_rankings_sheet(ws, all_data):
+    """Write detailed rankings sheet."""
+    ws.append(["Candidate Rankings"])
+    ws.append([])
+    ws.append([
+        "Rank", "Name", "Total Score", "Tier",
+        "Education", "Research", "Experience", "Skills", "Collaboration"
+    ])
+    
+    # Collect and rank all candidates
+    all_candidates = []
+    for candidates in all_data.values():
+        all_candidates.extend(candidates)
+    
+    # Sort by ranking score
+    all_candidates.sort(key=lambda c: c.get("ranking", {}).get("total_score", 0), reverse=True)
+    
+    for rank, candidate in enumerate(all_candidates, 1):
+        name = (candidate.get("personal_info") or {}).get("name", "Unknown")
+        ranking = candidate.get("ranking", {})
+        
+        ws.append([
+            rank,
+            name,
+            ranking.get("total_score", 0),
+            ranking.get("ranking_tier", "Unknown"),
+            ranking.get("education_score", 0),
+            ranking.get("research_score", 0),
+            ranking.get("experience_score", 0),
+            ranking.get("skills_score", 0),
+            ranking.get("collaboration_score", 0)
         ])
-    aw(ws1); ws1.freeze_panes = "A2"
 
-    ws_edu = wb.create_sheet("Education Analysis")
-    ws_edu.append(["Source","Name","SSC %","HSSC %","UG Institution","UG Grade",
-                   "PG Institution","PG Grade","PhD Institution","Rankings","Assessment"])
-    hdr(ws_edu)
-    for src, c in all_c:
-        pi = c.get("personal_info",{}) or {}
-        a  = c.get("_analysis",{}).get("education",{})
-        ws_edu.append([
-            os.path.basename(src), pi.get("name",""),
-            a.get("ssc_percent",""), a.get("hssc_percent",""),
-            a.get("ug_details",{}).get("institution",""), a.get("ug_details",{}).get("grade",""),
-            a.get("pg_details",{}).get("institution",""), a.get("pg_details",{}).get("grade",""),
-            a.get("phd_details",{}).get("institution",""),
-            str(a.get("institution_rankings",{})), a.get("overall_assessment","")
+def write_candidate_sheet(ws, candidate):
+    """Write detailed candidate profile sheet."""
+    # Personal Info
+    ws.append(["CANDIDATE PROFILE"])
+    ws.append([])
+    
+    personal = candidate.get("personal_info", {})
+    ws.append(["Name", personal.get("name", "")])
+    ws.append(["Email", personal.get("email", "")])
+    ws.append(["Phone", personal.get("phone", "")])
+    ws.append(["Post Applied", personal.get("post_applied", "")])
+    ws.append([])
+    
+    # Ranking Summary
+    ranking = candidate.get("ranking", {})
+    ws.append(["RANKING SUMMARY"])
+    ws.append(["Overall Score", ranking.get("total_score", 0)])
+    ws.append(["Tier", ranking.get("ranking_tier", "Unknown")])
+    ws.append([])
+    
+    # Education
+    ws.append(["EDUCATION"])
+    education = candidate.get("education", [])
+    for edu in education:
+        ws.append([
+            edu.get("level", ""),
+            edu.get("degree", ""),
+            edu.get("institution", ""),
+            edu.get("grade_cgpa_percentage", ""),
+            edu.get("passing_year", "")
         ])
-    aw(ws_edu)
-
-    ws_exp = wb.create_sheet("Experience Analysis")
-    ws_exp.append(["Source","Name","Overlaps","Gaps","Justified Gaps"])
-    hdr(ws_exp)
-    for src, c in all_c:
-        pi = c.get("personal_info",{}) or {}
-        a  = c.get("_analysis",{}).get("experience",{})
-        ws_exp.append([
-            os.path.basename(src), pi.get("name",""),
-            "; ".join(a.get("overlaps",[])), str(a.get("gaps",[])), str(a.get("justified_gaps",[]))
+    ws.append([])
+    
+    # Publications
+    ws.append(["PUBLICATIONS"])
+    publications = candidate.get("publications", [])
+    for pub in publications:
+        ws.append([
+            pub.get("title", ""),
+            pub.get("published_in", ""),
+            pub.get("year", ""),
+            pub.get("type", "")
         ])
-    aw(ws_exp)
+    ws.append([])
+    
+    # Summary
+    summary = candidate.get("summary", {})
+    ws.append(["ASSESSMENT"])
+    ws.append(["Recommendation", summary.get("recommendation", "N/A")])
+    ws.append([])
+    ws.append(["Strengths"])
+    for strength in summary.get("strengths", []):
+        ws.append(["•", strength])
+    ws.append([])
+    ws.append(["Concerns"])
+    for concern in summary.get("concerns", []):
+        ws.append(["•", concern])
 
-    ws_res = wb.create_sheet("Research Analysis")
-    ws_res.append(["Source","Name","Total Pubs","Journals","Conferences",
-                   "Q1","Q2","Q3","Q4","Unknown","Top Conferences"])
-    hdr(ws_res)
-    for src, c in all_c:
-        pi = c.get("personal_info",{}) or {}
-        a  = c.get("_analysis",{}).get("research",{})
-        q  = a.get("quartile_distribution",{})
-        ws_res.append([
-            os.path.basename(src), pi.get("name",""),
-            a.get("total",0), a.get("journal_count",0), a.get("conference_count",0),
-            q.get("Q1",0), q.get("Q2",0), q.get("Q3",0), q.get("Q4",0), q.get("Unknown",0),
-            "; ".join(a.get("top_conferences",[]))
-        ])
-    aw(ws_res)
-    wb.save(out_path)
-
-# ─── Job runner ───────────────────────────────────────────────────────────────
+# ─── Main extraction job ──────────────────────────────────────────────────────
 
 def run_extraction_job(job_id, file_paths, api_key):
+    """Main extraction job runner with comprehensive analysis."""
     client = init_groq_client(api_key)
-    all_data, all_flat = {}, []
-    total = 0
-
-    with jobs_lock:
-        jobs[job_id]["status"] = "processing"
-        jobs[job_id]["log"]    = []
-
+    
     def log(msg):
         with jobs_lock:
-            jobs[job_id]["log"].append(msg)
-
+            jobs[job_id]["log"].append(f"{datetime.now().strftime('%H:%M:%S')} {msg}")
+    
     try:
+        with jobs_lock:
+            jobs[job_id]["status"] = "running"
+        
+        log(f"Starting extraction for {len(file_paths)} file(s)")
+        log(f"LLM mode: {'✓ Groq' if client else '✗ Disabled'}")
+        
+        all_data = {}
+        all_flat = []
+        total = 0
+        
         for fpath in file_paths:
-            fname = os.path.basename(fpath)
-            ext   = Path(fpath).suffix.lower()
-            log(f"Reading {fname}")
-
+            fname = Path(fpath).name
+            ext = Path(fpath).suffix.lower()
+            
+            log(f"Processing {fname}...")
+            
+            # Extract text
             text = extract_text_from_file(fpath, client)
             if not text.strip():
-                log(f"⚠ {fname} — no text could be extracted (check Tesseract or Groq key)"); continue
+                log(f"⚠ {fname} — no text extracted")
+                continue
+            
             log(f"✓ Text extracted from {fname} ({len(text)} chars)")
-
+            
+            # Process candidates
             is_image = ext != ".pdf"
             if is_image:
-                # Treat the whole image as one candidate
                 sections = [text]
                 log(f"Image file — treating as single candidate")
             else:
                 sections = split_candidates(text)
                 log(f"Found {len(sections)} candidate(s) in {fname}")
-
+            
             candidates = []
             for idx, section in enumerate(sections, 1):
-                log(f"Extracting candidate {idx}/{len(sections)}")
+                log(f"Analyzing candidate {idx}/{len(sections)}...")
+                
                 result = process_candidate_full(client, section)
+                
                 if result:
-                    miss  = detect_missing(result)
-                    name  = (result.get("personal_info") or {}).get("name", "(unnamed)")
-                    result["_source"]  = fname
+                    miss = detect_missing(result)
+                    name = (result.get("personal_info") or {}).get("name", "(unnamed)")
+                    
+                    result["_source"] = fname
                     result["_missing"] = miss
-                    result["_email"]   = draft_email(
-                        name, (result.get("personal_info") or {}).get("post_applied",""), miss
+                    result["_email"] = draft_email(
+                        name,
+                        (result.get("personal_info") or {}).get("post_applied", ""),
+                        miss
                     ) if miss else ""
+                    
                     candidates.append(result)
                     all_flat.append(result)
                     total += 1
-                    log(f"✓ Extracted: {name}")
+                    log(f"✓ Analyzed: {name} (Score: {result.get('ranking', {}).get('total_score', 0)})")
                 else:
                     log(f"✗ Failed section {idx}")
-                if client: time.sleep(0.5)
-
+                
+                if client:
+                    time.sleep(0.5)  # Rate limiting
+            
             if candidates:
                 all_data[fpath] = candidates
-
+            
             with jobs_lock:
                 jobs[job_id]["progress"] = total
-
-        ts        = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Save results
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         xlsx_name = f"talash_{ts}.xlsx"
         json_name = f"talash_{ts}.json"
         xlsx_path = str(OUTPUT_DIR / xlsx_name)
         json_path = str(OUTPUT_DIR / json_name)
-
+        
         if all_data:
             write_excel(all_data, xlsx_path)
             with open(json_path, "w", encoding="utf-8") as f:
                 json.dump(all_flat, f, indent=2, ensure_ascii=False)
-            log(f"✓ Saved {xlsx_name}")
+            log(f"✓ Saved {xlsx_name} and {json_name}")
         else:
             xlsx_path = json_path = ""
             log("No data extracted")
-
+        
+        # Calculate stats
         stats = {
-            "total":    len(all_flat),
-            "phd":      sum(1 for c in all_flat if any(
-                            e.get("level","").lower() == "phd"
-                            for e in (c.get("education") or []))),
+            "total": len(all_flat),
+            "phd": sum(1 for c in all_flat if any(
+                e.get("level", "").lower() == "phd"
+                for e in (c.get("education") or [])
+            )),
             "with_pub": sum(1 for c in all_flat if c.get("publications")),
-            "missing":  sum(1 for c in all_flat if c.get("_missing")),
+            "missing": sum(1 for c in all_flat if c.get("_missing")),
+            "excellent": sum(1 for c in all_flat if c.get("ranking", {}).get("ranking_tier") == "Excellent"),
+            "avg_score": sum(c.get("ranking", {}).get("total_score", 0) for c in all_flat) / len(all_flat) if all_flat else 0
         }
-
+        
         with jobs_lock:
             jobs[job_id].update({
-                "status": "done", "candidates": all_flat, "total": total,
+                "status": "done",
+                "candidates": all_flat,
+                "total": total,
                 "xlsx": xlsx_name if xlsx_path else "",
                 "json": json_name if json_path else "",
                 "stats": stats,
             })
-        log(f"Done — {total} candidate(s) extracted")
-
+        
+        log(f"✓ Complete — {total} candidate(s) analyzed")
+    
     except Exception as e:
         with jobs_lock:
             jobs[job_id]["status"] = "error"
-            jobs[job_id]["error"]  = str(e)
+            jobs[job_id]["error"] = str(e)
         log(f"Fatal error: {e}")
 
 # ─── Routes — Auth ────────────────────────────────────────────────────────────
@@ -842,36 +1513,49 @@ def api_login():
     data = request.get_json() or {}
     username = (data.get("username") or "").strip().lower()
     password = data.get("password") or ""
+    
     if not username or not password:
         return jsonify({"error": "Username and password required"}), 400
+    
     users = load_users()
-    user  = users.get(username)
+    user = users.get(username)
+    
     if not user or user["password"] != hash_password(password):
         return jsonify({"error": "Invalid credentials"}), 401
+    
     session["username"] = username
-    session["display"]  = user.get("display", username)
+    session["display"] = user.get("display", username)
     return jsonify({"ok": True, "display": session["display"]})
 
 @app.route("/api/signup", methods=["POST"])
 def api_signup():
-    data     = request.get_json() or {}
+    data = request.get_json() or {}
     username = (data.get("username") or "").strip().lower()
     password = data.get("password") or ""
-    display  = (data.get("display")  or username).strip()
+    display = (data.get("display") or username).strip()
+    
     if not username or not password:
         return jsonify({"error": "Username and password required"}), 400
+    
     if len(password) < 6:
         return jsonify({"error": "Password must be at least 6 characters"}), 400
+    
     if not re.match(r"^[a-z0-9_]{3,32}$", username):
         return jsonify({"error": "Username: 3-32 chars, letters/digits/underscore"}), 400
+    
     users = load_users()
     if username in users:
         return jsonify({"error": "Username already taken"}), 409
-    users[username] = {"password": hash_password(password), "display": display,
-                       "created": datetime.now().isoformat()}
+    
+    users[username] = {
+        "password": hash_password(password),
+        "display": display,
+        "created": datetime.now().isoformat()
+    }
     save_users(users)
+    
     session["username"] = username
-    session["display"]  = display
+    session["display"] = display
     return jsonify({"ok": True, "display": display})
 
 @app.route("/api/logout", methods=["POST"])
@@ -882,7 +1566,10 @@ def api_logout():
 @app.route("/api/me")
 def api_me():
     if "username" in session:
-        return jsonify({"username": session["username"], "display": session.get("display","")})
+        return jsonify({
+            "username": session["username"],
+            "display": session.get("display", "")
+        })
     return jsonify({"username": None})
 
 # ─── Routes — App ─────────────────────────────────────────────────────────────
@@ -895,36 +1582,48 @@ def index():
 @app.route("/api/upload", methods=["POST"])
 @login_required
 def upload():
-    files   = request.files.getlist("files")
+    files = request.files.getlist("files")
     api_key = os.environ.get("GROQ_API_KEY", "")
-
+    
     if not files or all(f.filename == "" for f in files):
         return jsonify({"error": "No files provided"}), 400
-
-    job_id     = str(uuid.uuid4())[:8]
+    
+    job_id = str(uuid.uuid4())[:8]
     file_paths = []
-
+    
     for f in files:
         ext = Path(f.filename).suffix.lower()
         if ext not in ALLOWED_EXTENSIONS:
             continue
+        
         safe = re.sub(r"[^\w\-.]", "_", f.filename)
         dest = UPLOAD_DIR / f"{job_id}_{safe}"
         f.save(str(dest))
         file_paths.append(str(dest))
-
+    
     if not file_paths:
-        return jsonify({"error": "No valid files (PDF/PNG/JPG supported)"}), 400
-
+        return jsonify({"error": "No valid files"}), 400
+    
     with jobs_lock:
         jobs[job_id] = {
-            "status": "queued", "progress": 0, "total": 0,
-            "candidates": [], "stats": {}, "log": [],
-            "xlsx": "", "json": "", "error": ""
+            "status": "queued",
+            "progress": 0,
+            "total": 0,
+            "candidates": [],
+            "stats": {},
+            "log": [],
+            "xlsx": "",
+            "json": "",
+            "error": ""
         }
-
-    t = threading.Thread(target=run_extraction_job, args=(job_id, file_paths, api_key), daemon=True)
+    
+    t = threading.Thread(
+        target=run_extraction_job,
+        args=(job_id, file_paths, api_key),
+        daemon=True
+    )
     t.start()
+    
     return jsonify({"job_id": job_id})
 
 @app.route("/api/status/<job_id>")
@@ -932,13 +1631,19 @@ def upload():
 def status(job_id):
     with jobs_lock:
         job = jobs.get(job_id)
+    
     if not job:
         return jsonify({"error": "Job not found"}), 404
+    
     return jsonify({
-        "status":   job["status"],   "progress": job["progress"],
-        "total":    job["total"],    "log":      job["log"][-20:],
-        "stats":    job["stats"],    "xlsx":     job["xlsx"],
-        "json":     job["json"],     "error":    job["error"],
+        "status": job["status"],
+        "progress": job["progress"],
+        "total": job["total"],
+        "log": job["log"][-20:],
+        "stats": job["stats"],
+        "xlsx": job["xlsx"],
+        "json": job["json"],
+        "error": job["error"],
     })
 
 @app.route("/api/candidates/<job_id>")
@@ -946,8 +1651,10 @@ def status(job_id):
 def candidates(job_id):
     with jobs_lock:
         job = jobs.get(job_id)
+    
     if not job:
         return jsonify({"error": "Job not found"}), 404
+    
     return jsonify(job.get("candidates", []))
 
 @app.route("/api/download/<filename>")
@@ -955,25 +1662,29 @@ def candidates(job_id):
 def download(filename):
     safe = re.sub(r"[^\w\-.]", "", filename)
     path = OUTPUT_DIR / safe
+    
     if not path.exists():
         return jsonify({"error": "File not found"}), 404
+    
     return send_file(str(path), as_attachment=True)
 
 @app.route("/api/mode")
 def extraction_mode():
     api_key = os.environ.get("GROQ_API_KEY", "")
-    client  = init_groq_client(api_key)
+    client = init_groq_client(api_key)
+    
     return jsonify({
-        "llm_available":       client is not None,
+        "llm_available": client is not None,
         "tesseract_available": TESSERACT_OK,
-        "fitz_available":      FITZ_OK,
-        "image_support":       PIL_OK or (client is not None),
+        "fitz_available": FITZ_OK,
+        "sklearn_available": SKLEARN_OK,
+        "image_support": PIL_OK or (client is not None),
         "scanned_pdf_support": FITZ_OK and (TESSERACT_OK or client is not None),
     })
 
 if __name__ == "__main__":
-    print("=" * 50)
-    print("  TALASH  CV Extraction System (Milestone 2)")
+    print("=" * 60)
+    print("  TALASH  HR Recruitment System (Milestone 3 - COMPLETE)")
     print("  http://localhost:5000")
-    print("=" * 50)
+    print("=" * 60)
     app.run(debug=True, port=5000, use_reloader=False)
