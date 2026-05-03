@@ -3,219 +3,460 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TALASH — Login</title>
+<title>Login — TALASH</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #1a1d21; --surface: #22262c; --surface2: #2a2f37;
-  --border: #2e333b; --text: #e2e8f0; --muted: #6b7280;
-  --accent: #e85d3d; --blue: #3b82f6; --green: #22c55e; --red: #ef4444;
+  --bg-primary: #0a0e27;
+  --bg-secondary: #151932;
+  --accent-1: #667eea;
+  --accent-2: #764ba2;
+  --accent-3: #f093fb;
+  --accent-4: #4facfe;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255,255,255,0.7);
+  --text-muted: rgba(255,255,255,0.5);
+  --error: #ef4444;
+  --success: #10b981;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family: 'DM Sans', sans-serif;
-  background: #0f1014; color: var(--text);
-  min-height: 100vh; display: flex;
-  align-items: center; justify-content: center;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
-.auth-wrap {
-  width: 100%; max-width: 400px; padding: 24px;
+
+/* Animated gradient background */
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(79, 172, 254, 0.1) 0%, transparent 70%);
+  z-index: 0;
 }
-.brand {
-  text-align: center; margin-bottom: 36px;
+
+/* Floating orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  z-index: 0;
 }
-.brand h1 {
-  font-size: 32px; font-weight: 700; letter-spacing: 3px; color: var(--text);
+
+.orb1 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  top: -10%;
+  left: -10%;
 }
-.brand span {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  color: var(--accent); letter-spacing: 4px; display: block; margin-top: 4px;
+
+.orb2 {
+  width: 350px;
+  height: 350px;
+  background: linear-gradient(135deg, var(--accent-3), var(--accent-4));
+  bottom: -10%;
+  right: -10%;
 }
-.card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 32px;
+
+.orb3 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, var(--accent-4), var(--accent-1));
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
+
+.login-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  padding: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 48px 40px;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.logo {
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.logo-subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
 .tabs {
-  display: flex; gap: 4px; margin-bottom: 28px;
-  background: var(--surface2); border-radius: 8px; padding: 4px;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px;
+  border-radius: 12px;
 }
+
 .tab {
-  flex: 1; padding: 8px; border-radius: 6px; font-size: 13px;
-  font-weight: 600; cursor: pointer; border: none;
-  background: none; color: var(--muted); transition: all .15s;
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: var(--text-secondary);
+}
+
+.tab.active {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.form-section {
+  display: none;
+}
+
+.form-section.active {
+  display: block;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 15px;
   font-family: inherit;
+  transition: all 0.3s ease;
+  outline: none;
 }
-.tab.active { background: var(--accent); color: white; }
-.form-group { margin-bottom: 18px; }
-.form-label {
-  display: block; font-size: 11px; color: var(--muted);
-  margin-bottom: 6px; letter-spacing: .5px; text-transform: uppercase;
+
+.input-field:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
-.form-input {
-  width: 100%; background: var(--bg); border: 1px solid var(--border);
-  color: var(--text); padding: 10px 14px; border-radius: 7px;
-  font-size: 13px; font-family: inherit; outline: none; transition: border-color .15s;
+
+.input-field::placeholder {
+  color: var(--text-muted);
 }
-.form-input:focus { border-color: var(--accent); }
+
 .btn-submit {
-  width: 100%; background: var(--accent); color: white;
-  border: none; padding: 12px; border-radius: 7px;
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  font-family: inherit; transition: opacity .15s; margin-top: 4px;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 8px;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
 }
-.btn-submit:hover { opacity: .85; }
-.btn-submit:disabled { opacity: .5; cursor: not-allowed; }
-.error-msg {
-  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3);
-  color: var(--red); padding: 10px 14px; border-radius: 7px;
-  font-size: 12px; margin-bottom: 16px; display: none;
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
 }
-.success-msg {
-  background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3);
-  color: var(--green); padding: 10px 14px; border-radius: 7px;
-  font-size: 12px; margin-bottom: 16px; display: none;
+
+.btn-submit:active {
+  transform: translateY(0);
 }
-.divider {
-  text-align: center; font-size: 11px; color: var(--muted);
-  margin: 20px 0; position: relative;
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
-.divider::before, .divider::after {
-  content: ""; position: absolute; top: 50%;
-  width: 42%; height: 1px; background: var(--border);
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 20px;
+  border: 1px solid;
+  display: none;
 }
-.divider::before { left: 0; }
-.divider::after  { right: 0; }
-.hint {
-  font-size: 11px; color: var(--muted); margin-top: 6px;
+
+.alert.error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.alert.success {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+.footer-text {
+  text-align: center;
+  margin-top: 32px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* Loading state */
+.loading {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
 </head>
 <body>
-<div class="auth-wrap">
-  <div class="brand">
-    <h1>TALASH</h1>
-    <span>HR RECRUITMENT SYSTEM</span>
-  </div>
 
-  <div class="card">
-    <div class="tabs">
-      <button class="tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
-      <button class="tab"        id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="login-container">
+  <div class="glass-card">
+    <div class="logo-section">
+      <div class="logo">TALASH</div>
+      <div class="logo-subtitle">Smart HR System</div>
     </div>
 
-    <div id="error-box"   class="error-msg"></div>
-    <div id="success-box" class="success-msg"></div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div id="alertBox" class="alert"></div>
 
     <!-- LOGIN FORM -->
-    <div id="form-login">
-      <div class="form-group">
-        <label class="form-label">Username</label>
-        <input class="form-input" id="l-user" type="text" placeholder="your_username" autocomplete="username">
+    <div id="loginForm" class="form-section active">
+      <div class="input-group">
+        <label class="input-label">Username</label>
+        <input type="text" class="input-field" id="loginUsername" 
+               placeholder="Enter your username" autocomplete="username">
       </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <input type="password" class="input-field" id="loginPassword" 
+               placeholder="Enter your password" autocomplete="current-password">
       </div>
-      <button class="btn-submit" id="btn-login" onclick="doLogin()">Sign In</button>
+      <button class="btn-submit" onclick="handleLogin()" id="loginBtn">
+        Sign In
+      </button>
     </div>
 
     <!-- SIGNUP FORM -->
-    <div id="form-signup" style="display:none">
-      <div class="form-group">
-        <label class="form-label">Display Name</label>
-        <input class="form-input" id="s-display" type="text" placeholder="Your Full Name">
+    <div id="signupForm" class="form-section">
+      <div class="input-group">
+        <label class="input-label">Username</label>
+        <input type="text" class="input-field" id="signupUsername" 
+               placeholder="Choose a username" autocomplete="username">
       </div>
-      <div class="form-group">
-        <label class="form-label">Username</label>
-        <input class="form-input" id="s-user" type="text" placeholder="username (letters, digits, _)" autocomplete="username">
-        <div class="hint">3–32 characters, lowercase letters/digits/underscore only</div>
+      <div class="input-group">
+        <label class="input-label">Display Name</label>
+        <input type="text" class="input-field" id="signupDisplay" 
+               placeholder="Your full name">
       </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" id="s-pass" type="password" placeholder="Min. 6 characters" autocomplete="new-password">
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <input type="password" class="input-field" id="signupPassword" 
+               placeholder="Create a password (min 6 chars)" autocomplete="new-password">
       </div>
-      <button class="btn-submit" id="btn-signup" onclick="doSignup()">Create Account</button>
+      <button class="btn-submit" onclick="handleSignup()" id="signupBtn">
+        Create Account
+      </button>
+    </div>
+
+    <div class="footer-text">
+      CS 417: Large Language Models &mdash; Spring 2026
     </div>
   </div>
 </div>
 
 <script>
-function switchTab(t) {
-  document.getElementById('form-login').style.display  = t==='login'  ? 'block' : 'none';
-  document.getElementById('form-signup').style.display = t==='signup' ? 'block' : 'none';
-  document.getElementById('tab-login').classList.toggle('active',  t==='login');
-  document.getElementById('tab-signup').classList.toggle('active', t==='signup');
-  hideMessages();
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+  
+  if (tab === 'login') {
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('loginForm').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('signupForm').classList.add('active');
+  }
+  
+  hideAlert();
 }
 
-function showErr(msg) {
-  const b = document.getElementById('error-box');
-  b.textContent = msg; b.style.display = 'block';
-  document.getElementById('success-box').style.display = 'none';
-}
-function showOk(msg) {
-  const b = document.getElementById('success-box');
-  b.textContent = msg; b.style.display = 'block';
-  document.getElementById('error-box').style.display = 'none';
-}
-function hideMessages() {
-  document.getElementById('error-box').style.display   = 'none';
-  document.getElementById('success-box').style.display = 'none';
+function showAlert(msg, type = 'error') {
+  const box = document.getElementById('alertBox');
+  box.textContent = msg;
+  box.className = `alert ${type}`;
+  box.style.display = 'block';
 }
 
-async function doLogin() {
-  const btn = document.getElementById('btn-login');
-  const user = document.getElementById('l-user').value.trim();
-  const pass = document.getElementById('l-pass').value;
-  if (!user || !pass) { showErr('Please enter username and password.'); return; }
-  btn.disabled = true; btn.textContent = 'Signing in…';
+function hideAlert() {
+  document.getElementById('alertBox').style.display = 'none';
+}
+
+async function handleLogin() {
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  
+  if (!username || !password) {
+    showAlert('Please enter username and password');
+    return;
+  }
+  
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span>';
+  
   try {
-    const res  = await fetch('/api/login', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({username: user, password: pass})
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
     });
+    
     const data = await res.json();
-    if (!res.ok) { showErr(data.error || 'Login failed'); return; }
-    showOk(`Welcome back, ${data.display}! Redirecting…`);
-    setTimeout(() => window.location.href = '/', 700);
-  } catch(e) {
-    showErr('Network error. Please try again.');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Sign In';
+    
+    if (res.ok) {
+      showAlert('Login successful! Redirecting...', 'success');
+      setTimeout(() => window.location.href = '/', 1000);
+    } else {
+      showAlert(data.error || 'Login failed');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  } catch (err) {
+    showAlert('Connection error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
   }
 }
 
-async function doSignup() {
-  const btn     = document.getElementById('btn-signup');
-  const display = document.getElementById('s-display').value.trim();
-  const user    = document.getElementById('s-user').value.trim();
-  const pass    = document.getElementById('s-pass').value;
-  if (!user || !pass) { showErr('Username and password are required.'); return; }
-  btn.disabled = true; btn.textContent = 'Creating account…';
+async function handleSignup() {
+  const username = document.getElementById('signupUsername').value.trim();
+  const display = document.getElementById('signupDisplay').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  
+  if (!username || !password) {
+    showAlert('Please fill in all fields');
+    return;
+  }
+  
+  const btn = document.getElementById('signupBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span>';
+  
   try {
-    const res  = await fetch('/api/signup', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({username: user, password: pass, display: display || user})
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, display })
     });
+    
     const data = await res.json();
-    if (!res.ok) { showErr(data.error || 'Signup failed'); return; }
-    showOk('Account created! Redirecting…');
-    setTimeout(() => window.location.href = '/', 700);
-  } catch(e) {
-    showErr('Network error. Please try again.');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Create Account';
+    
+    if (res.ok) {
+      showAlert('Account created! Redirecting...', 'success');
+      setTimeout(() => window.location.href = '/', 1000);
+    } else {
+      showAlert(data.error || 'Signup failed');
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    }
+  } catch (err) {
+    showAlert('Connection error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
   }
 }
 
-// Allow Enter key to submit
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const loginVisible = document.getElementById('form-login').style.display !== 'none';
-    if (loginVisible) doLogin(); else doSignup();
-  }
+// Enter key handlers
+document.getElementById('loginPassword').addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') handleLogin();
+});
+
+document.getElementById('signupPassword').addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') handleSignup();
 });
 </script>
+
 </body>
 </html>
