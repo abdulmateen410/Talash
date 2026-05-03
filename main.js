@@ -1,653 +1,1087 @@
-// ─── State ───────────────────────────────────────────────────────────────────
-let allCandidates  = [];
-let currentJobId   = null;
-let currentFiles   = [];        // ALL files in queue (including processed)
-let processedFiles = new Set(); // names of already-processed files
-let pollInterval   = null;
-let currentXlsx    = "";
-let currentJson    = "";
-let charts         = {};
-let sidebarOpen    = true;
+/* ══════════════════════════════════════════════════════════════════════════
+   TALASH - Main JavaScript
+   Enhanced Interactivity + Charts + Real-time Updates
+   ══════════════════════════════════════════════════════════════════════════ */
 
-const TITLES = {
-  dashboard:  ["Dashboard",    "CV Extraction & Analysis System"],
-  upload:     ["Upload CVs",   "Process PDF and image files — extract structured data"],
-  candidates: ["Candidates",   "Browse and inspect extracted profiles"],
-  emails:     ["Draft Emails", "Auto-generated missing-info emails"],
-};
+let currentJobId = null;
+let currentCandidates = [];
+let uploadedFiles = [];
+let charts = {};
 
-const IMAGE_EXTS = new Set([".png",".jpg",".jpeg",".gif",".bmp",".webp",".tiff"]);
+// ══════════════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ══════════════════════════════════════════════════════════════════════════
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
-window.addEventListener("load", async () => {
-  await loadUser();
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuth();
   checkExtractionMode();
+  initializeCharts();
 });
 
-async function loadUser() {
+async function checkAuth() {
   try {
-    const res  = await fetch("/api/me");
+    const res = await fetch('/api/me');
     const data = await res.json();
-    if (data.username) {
-      document.getElementById("user-badge").textContent = "👤 " + (data.display || data.username);
-    } else {
-      window.location.href = "/login";
+    
+    if (!data.username) {
+      window.location.href = '/login';
+      return;
     }
-  } catch (e) {
-    window.location.href = "/login";
+    
+    const badge = document.getElementById('user-badge');
+    if (badge) {
+      badge.textContent = data.display || data.username;
+    }
+  } catch (err) {
+    console.error('Auth check failed:', err);
   }
 }
 
 async function doLogout() {
-  await fetch("/api/logout", { method: "POST" });
-  window.location.href = "/login";
+  try {
+    await fetch('/api/logout', { method: 'POST' });
+    window.location.href = '/login';
+  } catch (err) {
+    console.error('Logout failed:', err);
+  }
 }
 
-// ─── Sidebar toggle ───────────────────────────────────────────────────────────
-function toggleSidebar() {
-  sidebarOpen = !sidebarOpen;
-  const sidebar = document.getElementById("sidebar");
-  const main    = document.getElementById("main");
-  sidebar.classList.toggle("collapsed",  !sidebarOpen);
-  main.classList.toggle("sidebar-collapsed", !sidebarOpen);
+async function checkExtractionMode() {
+  try {
+    const res = await fetch('/api/mode');
+    const data = await res.json();
+    
+    const badge = document.getElementById('extraction-mode-badge');
+    if (badge) {
+      if (data.llm_available) {
+        badge.textContent = 'AI Powered';
+        badge.style.background = 'rgba(52, 211, 153, 0.15)';
+        badge.style.color = '#34d399';
+      } else {
+        badge.textContent = 'Basic Mode';
+        badge.style.background = 'rgba(251, 191, 36, 0.15)';
+        badge.style.color = '#fbbf24';
+      }
+    }
+    
+    const imgBadge = document.getElementById('image-support-badge');
+    if (imgBadge && data.image_support) {
+      imgBadge.style.display = 'inline-flex';
+    }
+    
+    const mlBadge = document.getElementById('sklearn-support-badge');
+    if (mlBadge && data.sklearn_available) {
+      mlBadge.style.display = 'inline-flex';
+    }
+  } catch (err) {
+    console.error('Mode check failed:', err);
+  }
 }
 
-// ─── Navigation ───────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════════════════
+
 function showScreen(name) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-  document.getElementById("screen-" + name).classList.add("active");
-  document.querySelectorAll(".nav-item").forEach(n => {
-    const label = n.querySelector(".nav-label")?.textContent?.toLowerCase() || "";
-    if (label.includes(name === "candidates" ? "cand" : name.slice(0, 4)))
-      n.classList.add("active");
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
   });
-  const [t, s] = TITLES[name] || ["TALASH", ""];
-  document.getElementById("topbar-title").textContent = t;
-  document.getElementById("topbar-sub").textContent   = s;
-  if (name === "candidates") renderCandidateTable(allCandidates);
-  if (name === "emails")     renderEmails();
-  if (name === "dashboard")  updateDashboard();
-}
-
-// ─── File handling ────────────────────────────────────────────────────────────
-function isImage(filename) {
-  const ext = filename.slice(filename.lastIndexOf(".")).toLowerCase();
-  return IMAGE_EXTS.has(ext);
-}
-
-function handleDrop(ev) {
-  ev.preventDefault();
-  document.getElementById("dropZone").classList.remove("drag-over");
-  const files = [...ev.dataTransfer.files].filter(f => isAccepted(f.name));
-  addFiles(files);
-}
-
-function handleFileSelect(fileList) { addFiles([...fileList]); }
-
-function isAccepted(name) {
-  const ext = name.slice(name.lastIndexOf(".")).toLowerCase();
-  return [".pdf",".png",".jpg",".jpeg",".gif",".bmp",".webp",".tiff"].includes(ext);
-}
-
-function addFiles(files) {
-  files.forEach(f => {
-    if (!currentFiles.find(x => x.name === f.name)) currentFiles.push(f);
+  event.target.closest('.nav-item')?.classList.add('active');
+  
+  // Update screens
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
   });
-  renderQueue();
-  updateProcessBtn();
-  const newCount = currentFiles.filter(f => !processedFiles.has(f.name)).length;
-  document.getElementById("logBox").textContent =
-    `${currentFiles.length} file(s) in queue. ${newCount} new — click "Process New Files" to begin.`;
+  document.getElementById(`screen-${name}`)?.classList.add('active');
+  
+  // Update topbar
+  const titles = {
+    dashboard: ['Dashboard', 'CV Extraction & Comprehensive Analysis'],
+    upload: ['Upload CVs', 'Process and analyze candidate documents'],
+    rankings: ['Candidate Rankings', 'Comprehensive scoring and evaluation'],
+    candidates: ['Candidate Profiles', 'Detailed candidate information'],
+    analytics: ['Analytics', 'Research & professional insights'],
+    emails: ['Draft Emails', 'Missing information requests']
+  };
+  
+  const [title, sub] = titles[name] || ['', ''];
+  document.getElementById('topbar-title').textContent = title;
+  document.getElementById('topbar-sub').textContent = sub;
+  
+  // Load data if needed
+  if (name === 'analytics' && currentCandidates.length > 0) {
+    updateAnalytics();
+  }
 }
 
-function updateProcessBtn() {
-  const hasNew = currentFiles.some(f => !processedFiles.has(f.name));
-  document.getElementById("processBtn").disabled = !hasNew;
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('collapsed');
 }
 
-function renderQueue() {
-  const wrap = document.getElementById("queueList");
-  document.getElementById("queue-count").textContent =
-    currentFiles.length ? `(${currentFiles.length})` : "";
+// ══════════════════════════════════════════════════════════════════════════
+// FILE UPLOAD
+// ══════════════════════════════════════════════════════════════════════════
 
-  if (!currentFiles.length) {
-    wrap.innerHTML = `<div class="empty" style="padding:30px">
-      <div class="icon" style="font-size:24px">📂</div><p>No files added</p></div>`;
+function handleFileSelect(files) {
+  if (!files || files.length === 0) return;
+  
+  uploadedFiles = [...files];
+  updateQueueUI();
+  
+  const processBtn = document.getElementById('processBtn');
+  processBtn.disabled = false;
+  
+  addLog(`Added ${files.length} file(s) to queue`);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const dropZone = document.getElementById('dropZone');
+  dropZone.classList.remove('drag-over');
+  
+  const files = e.dataTransfer?.files;
+  if (files) {
+    handleFileSelect(files);
+  }
+}
+
+function updateQueueUI() {
+  const list = document.getElementById('queueList');
+  const count = document.getElementById('queue-count');
+  
+  if (uploadedFiles.length === 0) {
+    list.innerHTML = `
+      <div class="empty" style="padding:30px">
+        <div class="icon" style="font-size:24px">📂</div>
+        <p>No files added</p>
+      </div>`;
+    count.textContent = '';
     return;
   }
-  wrap.innerHTML = currentFiles.map((f, i) => {
-    const done = processedFiles.has(f.name);
-    const icon = isImage(f.name) ? "🖼" : "📄";
-    return `
-    <div class="queue-item ${done ? 'processed' : ''}" id="qi-${i}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div class="fname">${icon} ${f.name}</div>
-        <span style="font-size:10px;color:var(--muted)">${(f.size/1024/1024).toFixed(1)} MB</span>
-      </div>
-      <div class="finfo" id="qi-info-${i}">${done ? "✓ Already processed" : "Waiting"}</div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="qi-prog-${i}"
-             style="width:${done?'100':'0'}%;background:${done?'var(--green)':'var(--blue)'}"></div>
-      </div>
-    </div>`;
-  }).join("");
+  
+  count.textContent = `(${uploadedFiles.length})`;
+  
+  list.innerHTML = uploadedFiles.map((f, i) => `
+    <div class="queue-item">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
+      <span style="color:var(--text-muted);font-size:11px">${formatFileSize(f.size)}</span>
+      <button onclick="removeFile(${i})" 
+              style="background:transparent;border:none;color:var(--red);cursor:pointer;padding:4px">
+        ×
+      </button>
+    </div>
+  `).join('');
+}
+
+function removeFile(index) {
+  uploadedFiles.splice(index, 1);
+  updateQueueUI();
+  
+  if (uploadedFiles.length === 0) {
+    document.getElementById('processBtn').disabled = true;
+  }
 }
 
 function clearQueue() {
-  currentFiles   = [];
-  processedFiles = new Set();
-  currentJobId   = null;
-  if (pollInterval) clearInterval(pollInterval);
-  renderQueue();
-  updateProcessBtn();
-  document.getElementById("downloadBox").style.display = "none";
-  document.getElementById("logBox").textContent = "Queue cleared.";
+  uploadedFiles = [];
+  updateQueueUI();
+  document.getElementById('processBtn').disabled = true;
+  addLog('Queue cleared');
 }
 
-// ─── Processing — only new files ──────────────────────────────────────────────
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function addLog(msg) {
+  const box = document.getElementById('logBox');
+  const time = new Date().toLocaleTimeString();
+  box.textContent = `[${time}] ${msg}`;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PROCESSING
+// ══════════════════════════════════════════════════════════════════════════
+
 async function startProcessing() {
-  const newFiles = currentFiles.filter(f => !processedFiles.has(f.name));
-  if (!newFiles.length) return;
-
-  const fd = new FormData();
-  newFiles.forEach(f => fd.append("files", f));
-
-  document.getElementById("processBtn").disabled = true;
-  document.getElementById("logBox").textContent = `Uploading ${newFiles.length} new file(s)…`;
-  document.getElementById("downloadBox").style.display = "none";
-
+  if (uploadedFiles.length === 0) return;
+  
+  const formData = new FormData();
+  uploadedFiles.forEach(f => formData.append('files', f));
+  
+  const processBtn = document.getElementById('processBtn');
+  processBtn.disabled = true;
+  processBtn.textContent = 'Processing...';
+  
+  addLog('Uploading files...');
+  
   try {
-    const res  = await fetch("/api/upload", { method: "POST", body: fd });
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+    
     const data = await res.json();
-    if (data.error) { log("❌ " + data.error); updateProcessBtn(); return; }
-    currentJobId = data.job_id;
-    log(`Job started (ID: ${currentJobId}) — ${newFiles.length} file(s)`);
-    pollInterval = setInterval(() => pollStatus(newFiles), 1500);
-  } catch (e) {
-    log("Upload error: " + e);
-    updateProcessBtn();
+    
+    if (res.ok) {
+      currentJobId = data.job_id;
+      addLog(`Job started: ${currentJobId}`);
+      pollJobStatus();
+    } else {
+      addLog(`Error: ${data.error}`);
+      processBtn.disabled = false;
+      processBtn.textContent = 'Process & Analyze';
+    }
+  } catch (err) {
+    addLog(`Upload failed: ${err.message}`);
+    processBtn.disabled = false;
+    processBtn.textContent = 'Process & Analyze';
   }
 }
 
-async function pollStatus(newFiles) {
+async function pollJobStatus() {
   if (!currentJobId) return;
+  
   try {
-    const res  = await fetch("/api/status/" + currentJobId);
+    const res = await fetch(`/api/status/${currentJobId}`);
     const data = await res.json();
-
-    if (data.log && data.log.length) {
-      document.getElementById("logBox").textContent = data.log.join("\n");
-      document.getElementById("logBox").scrollTop =
-        document.getElementById("logBox").scrollHeight;
+    
+    if (!res.ok) {
+      addLog(`Error: ${data.error}`);
+      return;
     }
-
-    if (data.total > 0) {
-      const pct = Math.round((data.progress / Math.max(data.total, 1)) * 100);
-      // Only update progress bars for NEW files (by index in currentFiles)
-      newFiles.forEach(f => {
-        const i = currentFiles.findIndex(x => x.name === f.name);
-        if (i < 0) return;
-        const prog = document.getElementById(`qi-prog-${i}`);
-        const info = document.getElementById(`qi-info-${i}`);
-        if (prog) { prog.style.width = pct + "%"; prog.style.background = "var(--green)"; }
-        if (info)   info.textContent = `${data.progress} / ${data.total} extracted`;
-      });
+    
+    // Update log
+    if (data.log && data.log.length > 0) {
+      const latest = data.log[data.log.length - 1];
+      addLog(latest);
     }
-
-    if (data.status === "done") {
-      clearInterval(pollInterval);
-      currentXlsx = data.xlsx; currentJson = data.json;
-
-      const cr = await fetch("/api/candidates/" + currentJobId);
-      const newCandidates = await cr.json();
-      // Merge: append new candidates to existing list (avoid duplicates by name+source)
-      newCandidates.forEach(nc => {
-        const key = `${nc._source}__${(nc.personal_info||{}).name}`;
-        const exists = allCandidates.some(
-          ec => `${ec._source}__${(ec.personal_info||{}).name}` === key
-        );
-        if (!exists) allCandidates.push(nc);
-      });
-
-      // Mark these files as processed
-      newFiles.forEach(f => processedFiles.add(f.name));
-
-      if (data.xlsx || data.json)
-        document.getElementById("downloadBox").style.display = "block";
-
-      // Update queue display
-      newFiles.forEach(f => {
-        const i = currentFiles.findIndex(x => x.name === f.name);
-        if (i < 0) return;
-        const qi   = document.getElementById(`qi-${i}`);
-        const prog = document.getElementById(`qi-prog-${i}`);
-        const info = document.getElementById(`qi-info-${i}`);
-        if (qi)   qi.classList.add("processed");
-        if (prog) { prog.style.width = "100%"; prog.style.background = "var(--green)"; }
-        if (info)  info.textContent = "✓ Done";
-      });
-
-      updateDashboard();
-      updateProcessBtn();
-      log(`✓ Done — ${newCandidates.length} new candidate(s) extracted (total: ${allCandidates.length})`);
-    } else if (data.status === "error") {
-      clearInterval(pollInterval);
-      log("❌ Error: " + data.error);
-      updateProcessBtn();
+    
+    if (data.status === 'done') {
+      addLog(`✓ Complete — ${data.total} candidate(s) analyzed`);
+      
+      document.getElementById('processBtn').textContent = 'Process & Analyze';
+      document.getElementById('processBtn').disabled = false;
+      
+      // Show download box
+      const downloadBox = document.getElementById('downloadBox');
+      downloadBox.style.display = 'block';
+      
+      // Load candidates
+      loadCandidates();
+      
+    } else if (data.status === 'error') {
+      addLog(`✗ Error: ${data.error}`);
+      document.getElementById('processBtn').disabled = false;
+      document.getElementById('processBtn').textContent = 'Process & Analyze';
+      
+    } else {
+      // Still running
+      setTimeout(pollJobStatus, 2000);
     }
-  } catch (e) { console.error(e); }
+  } catch (err) {
+    addLog(`Status check failed: ${err.message}`);
+  }
 }
 
-function log(msg) {
-  const lb = document.getElementById("logBox");
-  lb.textContent += "\n" + msg;
-  lb.scrollTop = lb.scrollHeight;
+async function loadCandidates() {
+  if (!currentJobId) return;
+  
+  try {
+    const res = await fetch(`/api/candidates/${currentJobId}`);
+    const data = await res.json();
+    
+    if (res.ok) {
+      currentCandidates = data;
+      updateDashboard();
+      updateRankings();
+      updateCandidatesList();
+      updateEmails();
+    }
+  } catch (err) {
+    console.error('Failed to load candidates:', err);
+  }
 }
 
 function downloadFile(type) {
-  const fname = type === "xlsx" ? currentXlsx : currentJson;
-  if (!fname) return;
-  window.location.href = "/api/download/" + fname;
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', `/api/status/${currentJobId}`, false);
+  xhr.send();
+  
+  const data = JSON.parse(xhr.responseText);
+  const filename = type === 'xlsx' ? data.xlsx : data.json;
+  
+  if (filename) {
+    window.location.href = `/api/download/${filename}`;
+  }
 }
 
-// ─── Dashboard ────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════════════════════
+
 function updateDashboard() {
-  const n = allCandidates.length;
-  document.getElementById("stat-total").textContent     = n || "—";
-  document.getElementById("stat-total-sub").textContent = n ? `${n} processed` : "Upload CVs to begin";
-
-  const withPub = allCandidates.filter(c => (c.publications||[]).length > 0).length;
-  document.getElementById("stat-pubs").textContent     = withPub || "—";
-  document.getElementById("stat-pubs-sub").textContent = withPub ? `of ${n} candidates` : "";
-
-  const miss = allCandidates.filter(c => (c._missing||[]).length > 0).length;
-  document.getElementById("stat-miss").textContent = miss || "—";
-
-  const phd = allCandidates.filter(c => (c.education||[]).some(e => e.level === "PhD")).length;
-  document.getElementById("stat-phd").textContent     = phd || "—";
-  document.getElementById("stat-phd-sub").textContent = phd ? `of ${n} candidates` : "";
-
-  buildCharts();
-  buildDashTable(allCandidates);
+  if (currentCandidates.length === 0) return;
+  
+  // Calculate stats
+  const total = currentCandidates.length;
+  const phd = currentCandidates.filter(c => 
+    (c.education || []).some(e => (e.level || '').toLowerCase() === 'phd')
+  ).length;
+  const withPub = currentCandidates.filter(c => 
+    (c.publications || []).length > 0
+  ).length;
+  const excellent = currentCandidates.filter(c => 
+    (c.ranking?.ranking_tier || '') === 'Excellent'
+  ).length;
+  
+  const avgScore = currentCandidates.reduce((sum, c) => 
+    sum + (c.ranking?.total_score || 0), 0
+  ) / total;
+  
+  // Update stat cards
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-total-sub').textContent = 'Candidates analyzed';
+  document.getElementById('stat-excellent').textContent = excellent;
+  document.getElementById('stat-avg').textContent = avgScore.toFixed(1);
+  document.getElementById('stat-phd').textContent = phd;
+  document.getElementById('stat-phd-sub').textContent = `${withPub} with publications`;
+  
+  // Update charts
+  updateDashboardCharts();
+  
+  // Update top candidates table
+  updateDashboardTable();
 }
 
-function buildCharts() {
-  if (!allCandidates.length) return;
-
-  // Publication type breakdown
-  const pubCtx = document.getElementById("chartPubs").getContext("2d");
-  const journals = allCandidates.reduce((s,c) =>
-    s + (c.publications||[]).filter(p => p.type==="Journal").length, 0);
-  const confs = allCandidates.reduce((s,c) =>
-    s + (c.publications||[]).filter(p => p.type==="Conference").length, 0);
-  if (charts.pubs) charts.pubs.destroy();
-  charts.pubs = new Chart(pubCtx, {
-    type: "doughnut",
-    data: {
-      labels: ["Journals", "Conferences"],
-      datasets: [{ data: [journals, confs],
-        backgroundColor: ["rgba(59,130,246,.8)","rgba(167,139,250,.8)"],
-        borderColor: "#22262c", borderWidth: 2 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: "#e2e8f0", font: {size:11} } } } }
-  });
-
-  // Degree breakdown
-  const degCtx = document.getElementById("chartDegree").getContext("2d");
-  const counts = { SSC:0, HSSC:0, Bachelor:0, Master:0, PhD:0, PostDoc:0, Other:0 };
-  allCandidates.forEach(c => {
-    const levels = (c.education||[]).map(e => e.level);
-    const priority = ["PostDoc","PhD","Master","Bachelor","HSSC","SSC","Other"];
-    for (const p of priority) {
-      if (levels.includes(p)) { counts[p]++; break; }
-    }
-  });
-  const labels = Object.keys(counts).filter(k => counts[k] > 0);
-  const colors = {
-    PhD:"rgba(167,139,250,.8)", PostDoc:"rgba(232,93,61,.8)",
-    Master:"rgba(59,130,246,.8)", Bachelor:"rgba(34,197,94,.8)",
-    HSSC:"rgba(234,179,8,.8)", SSC:"rgba(239,68,68,.8)", Other:"rgba(107,114,128,.8)"
+function updateDashboardCharts() {
+  // Ranking distribution
+  const tierCounts = {
+    'Excellent': 0,
+    'Very Good': 0,
+    'Good': 0,
+    'Fair': 0,
+    'Needs Improvement': 0
   };
-  if (charts.deg) charts.deg.destroy();
-  charts.deg = new Chart(degCtx, {
-    type: "bar",
+  
+  currentCandidates.forEach(c => {
+    const tier = c.ranking?.ranking_tier || 'Needs Improvement';
+    tierCounts[tier] = (tierCounts[tier] || 0) + 1;
+  });
+  
+  updateChart('chartRankings', {
+    type: 'doughnut',
     data: {
-      labels,
-      datasets: [{ data: labels.map(l => counts[l]),
-        backgroundColor: labels.map(l => colors[l] || "rgba(107,114,128,.8)"),
-        borderRadius: 4 }]
+      labels: Object.keys(tierCounts),
+      datasets: [{
+        data: Object.values(tierCounts),
+        backgroundColor: [
+          'rgba(52, 211, 153, 0.8)',
+          'rgba(96, 165, 250, 0.8)',
+          'rgba(167, 139, 250, 0.8)',
+          'rgba(251, 191, 36, 0.8)',
+          'rgba(248, 113, 113, 0.8)'
+        ],
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1
+      }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: 'rgba(255, 255, 255, 0.8)', padding: 15 }
+        }
+      }
+    }
+  });
+  
+  // Score components (average across all candidates)
+  const avgScores = {
+    education: 0,
+    research: 0,
+    experience: 0,
+    skills: 0,
+    collaboration: 0
+  };
+  
+  currentCandidates.forEach(c => {
+    const r = c.ranking || {};
+    avgScores.education += r.education_score || 0;
+    avgScores.research += r.research_score || 0;
+    avgScores.experience += r.experience_score || 0;
+    avgScores.skills += r.skills_score || 0;
+    avgScores.collaboration += r.collaboration_score || 0;
+  });
+  
+  const count = currentCandidates.length || 1;
+  Object.keys(avgScores).forEach(k => avgScores[k] /= count);
+  
+  updateChart('chartScores', {
+    type: 'radar',
+    data: {
+      labels: ['Education', 'Research', 'Experience', 'Skills', 'Collaboration'],
+      datasets: [{
+        label: 'Average Scores',
+        data: Object.values(avgScores),
+        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+        borderColor: 'rgba(102, 126, 234, 1)',
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
       scales: {
-        x: { ticks: { color: "#6b7280", font:{size:10} }, grid: { color:"#2e333b" } },
-        y: { ticks: { color: "#6b7280", font:{size:10} }, grid: { color:"#2e333b" } }
+        r: {
+          beginAtZero: true,
+          max: 100,
+          ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' },
+          pointLabels: { color: 'rgba(255, 255, 255, 0.8)' }
+        }
+      },
+      plugins: {
+        legend: { display: false }
       }
     }
   });
 }
 
-let _tableData = [];
-function buildDashTable(candidates) {
-  _tableData = candidates;
-  renderDashTableRows(candidates);
+function updateDashboardTable() {
+  const wrap = document.getElementById('dash-table-wrap');
+  
+  const sorted = [...currentCandidates].sort((a, b) => 
+    (b.ranking?.total_score || 0) - (a.ranking?.total_score || 0)
+  );
+  
+  const top = sorted.slice(0, 10);
+  
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Score</th>
+          <th>Tier</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${top.map((c, i) => {
+          const name = c.personal_info?.name || 'Unknown';
+          const post = c.personal_info?.post_applied || 'N/A';
+          const score = c.ranking?.total_score || 0;
+          const tier = c.ranking?.ranking_tier || 'Unknown';
+          const tierClass = tier.toLowerCase().replace(/\s+/g, '-');
+          
+          return `
+            <tr>
+              <td><strong>${i + 1}</strong></td>
+              <td>${name}</td>
+              <td style="color:var(--text-muted)">${post}</td>
+              <td><strong style="color:var(--accent)">${score.toFixed(1)}</strong></td>
+              <td><span class="score-tier tier-${tierClass}">${tier}</span></td>
+              <td><button class="btn btn-outline" style="padding:6px 14px;font-size:12px" 
+                          onclick="showCandidateDetail(${i})">View</button></td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  
+  wrap.innerHTML = html;
 }
 
-function renderDashTableRows(list) {
-  const wrap = document.getElementById("dash-table-wrap");
-  if (!list.length) {
-    wrap.innerHTML = `<div class="empty"><div class="icon">📋</div>
-      <h3>No candidates yet</h3><p>Upload a file to get started.</p></div>`;
+function filterTable(query) {
+  const rows = document.querySelectorAll('#dash-table-wrap tbody tr');
+  const q = query.toLowerCase();
+  
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// RANKINGS
+// ══════════════════════════════════════════════════════════════════════════
+
+function updateRankings() {
+  const wrap = document.getElementById('rankings-list');
+  const count = document.getElementById('rank-count');
+  
+  if (currentCandidates.length === 0) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <div class="icon">🏆</div>
+        <h3>No rankings available</h3>
+        <p>Process CVs to generate rankings.</p>
+      </div>`;
+    count.textContent = '';
     return;
   }
-  wrap.innerHTML = `<table><thead><tr>
-    <th>#</th><th>Name</th><th>Post</th><th>Qualification</th>
-    <th>Pubs</th><th>Status</th></tr></thead><tbody>
-    ${list.map((c, i) => {
-      const pi   = c.personal_info || {};
-      const edu  = c.education     || [];
-      const pubs = c.publications  || [];
-      const miss = c._missing      || [];
-      const hi   = edu.reduce((best, e) => {
-        const rank = ["PostDoc","PhD","Master","Bachelor","HSSC","SSC","Other"];
-        return rank.indexOf(e.level) < rank.indexOf(best) ? e.level : best;
-      }, "Other");
-      const badge = miss.length
-        ? `<span class="badge badge-yellow">⚠ Missing</span>`
-        : `<span class="badge badge-green">✓ Complete</span>`;
-      return `<tr style="cursor:pointer" onclick="showScreen('candidates');setTimeout(()=>openDetail(${allCandidates.indexOf(c)}),50)">
-        <td style="color:var(--muted)">${i+1}</td>
-        <td><strong>${pi.name||"—"}</strong></td>
-        <td style="color:var(--muted);font-size:11px">${pi.post_applied||"—"}</td>
-        <td><span class="badge badge-purple">${hi}</span></td>
-        <td style="color:var(--blue)">${pubs.length}</td>
-        <td>${badge}</td></tr>`;
-    }).join("")}
-  </tbody></table>`;
+  
+  const sorted = [...currentCandidates].sort((a, b) => 
+    (b.ranking?.total_score || 0) - (a.ranking?.total_score || 0)
+  );
+  
+  count.textContent = `${sorted.length} candidate${sorted.length !== 1 ? 's' : ''}`;
+  
+  wrap.innerHTML = sorted.map((c, i) => {
+    const name = c.personal_info?.name || 'Unknown';
+    const post = c.personal_info?.post_applied || 'Position not specified';
+    const r = c.ranking || {};
+    const tier = r.ranking_tier || 'Unknown';
+    const tierClass = tier.toLowerCase().replace(/\s+/g, '-');
+    
+    return `
+      <div class="rank-card">
+        <div class="rank-header">
+          <div style="display:flex;gap:16px;align-items:start">
+            <div class="rank-number">${i + 1}</div>
+            <div class="rank-info">
+              <h4>${name}</h4>
+              <p>${post}</p>
+            </div>
+          </div>
+          <div class="rank-score">
+            <div class="score-value" style="color:var(--accent)">${(r.total_score || 0).toFixed(1)}</div>
+            <span class="score-tier tier-${tierClass}">${tier}</span>
+          </div>
+        </div>
+        <div class="score-breakdown">
+          <div class="score-item">
+            <div class="score-item-label">Education</div>
+            <div class="score-item-value" style="color:var(--green)">${(r.education_score || 0).toFixed(0)}</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-label">Research</div>
+            <div class="score-item-value" style="color:var(--blue)">${(r.research_score || 0).toFixed(0)}</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-label">Experience</div>
+            <div class="score-item-value" style="color:var(--purple)">${(r.experience_score || 0).toFixed(0)}</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-label">Skills</div>
+            <div class="score-item-value" style="color:var(--yellow)">${(r.skills_score || 0).toFixed(0)}</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-label">Collab</div>
+            <div class="score-item-value" style="color:var(--pink)">${(r.collaboration_score || 0).toFixed(0)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
-function filterTable(q) {
-  const lo = q.toLowerCase();
-  renderDashTableRows(_tableData.filter(c => {
-    const pi = c.personal_info || {};
-    return (pi.name||"").toLowerCase().includes(lo) ||
-           (pi.post_applied||"").toLowerCase().includes(lo);
-  }));
+function filterRankings(query) {
+  const cards = document.querySelectorAll('.rank-card');
+  const q = query.toLowerCase();
+  
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = text.includes(q) ? '' : 'none';
+  });
 }
 
-// ─── Candidates screen ────────────────────────────────────────────────────────
-let _filteredCands = [];
-function renderCandidateTable(candidates) {
-  _filteredCands = candidates;
-  const wrap  = document.getElementById("cand-table-wrap");
-  const count = document.getElementById("cand-count");
-  count.textContent = candidates.length ? `${candidates.length} candidate(s)` : "";
+function sortRankings(by) {
+  let sorted = [...currentCandidates];
+  
+  switch (by) {
+    case 'education':
+      sorted.sort((a, b) => (b.ranking?.education_score || 0) - (a.ranking?.education_score || 0));
+      break;
+    case 'research':
+      sorted.sort((a, b) => (b.ranking?.research_score || 0) - (a.ranking?.research_score || 0));
+      break;
+    case 'experience':
+      sorted.sort((a, b) => (b.ranking?.experience_score || 0) - (a.ranking?.experience_score || 0));
+      break;
+    default:
+      sorted.sort((a, b) => (b.ranking?.total_score || 0) - (a.ranking?.total_score || 0));
+  }
+  
+  currentCandidates = sorted;
+  updateRankings();
+}
 
-  if (!candidates.length) {
-    wrap.innerHTML = `<div class="empty"><div class="icon">👤</div>
-      <h3>No candidates loaded</h3><p>Upload and process CVs first.</p></div>`;
+// ══════════════════════════════════════════════════════════════════════════
+// CANDIDATES
+// ══════════════════════════════════════════════════════════════════════════
+
+function updateCandidatesList() {
+  const wrap = document.getElementById('cand-table-wrap');
+  const count = document.getElementById('cand-count');
+  
+  if (currentCandidates.length === 0) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <div class="icon">👤</div>
+        <h3>No candidates loaded</h3>
+        <p>Upload and process CVs first.</p>
+      </div>`;
+    count.textContent = '';
     return;
   }
-  wrap.innerHTML = `<table><thead><tr>
-    <th>#</th><th>Name</th><th>Post Applied</th><th>Degree</th>
-    <th>Experience</th><th>Publications</th><th>Missing</th><th></th></tr></thead><tbody>
-    ${candidates.map((c, i) => {
-      const pi   = c.personal_info || {};
-      const edu  = c.education     || [];
-      const exp  = c.experience    || [];
-      const pubs = c.publications  || [];
-      const miss = c._missing      || [];
-      const hi   = edu.reduce((best, e) => {
-        const rank = ["PostDoc","PhD","Master","Bachelor","HSSC","SSC","Other"];
-        return rank.indexOf(e.level) < rank.indexOf(best) ? e.level : best;
-      }, "Other");
-      return `<tr>
-        <td style="color:var(--muted)">${i+1}</td>
-        <td><strong>${pi.name||"—"}</strong><br>
-            <span style="font-size:10px;color:var(--muted)">${c._source||""}</span></td>
-        <td style="font-size:11px">${pi.post_applied||"—"}</td>
-        <td><span class="badge badge-purple">${hi}</span></td>
-        <td>${exp.length} role${exp.length!==1?"s":""}</td>
-        <td style="color:var(--blue)">${pubs.length}</td>
-        <td>${miss.length
-          ? `<span class="badge badge-yellow">${miss.length}</span>`
-          : `<span class="badge badge-green">✓</span>`}</td>
-        <td><button class="btn btn-outline" style="padding:4px 10px;font-size:10px"
-            onclick="openDetail(${allCandidates.indexOf(c)})">View</button></td>
-      </tr>`;
-    }).join("")}
-  </tbody></table>`;
+  
+  count.textContent = `${currentCandidates.length} candidate${currentCandidates.length !== 1 ? 's' : ''}`;
+  
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Highest Degree</th>
+          <th>Publications</th>
+          <th>Experience</th>
+          <th>Score</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${currentCandidates.map((c, i) => {
+          const name = c.personal_info?.name || 'Unknown';
+          const email = c.personal_info?.email || 'N/A';
+          const edu = c.education || [];
+          const degree = edu.length > 0 ? edu[edu.length - 1].degree : 'N/A';
+          const pubs = (c.publications || []).length;
+          const exp = c.analyses?.experience_analysis?.total_years || 0;
+          const score = c.ranking?.total_score || 0;
+          
+          return `
+            <tr onclick="showCandidateDetail(${i})" style="cursor:pointer">
+              <td><strong>${name}</strong></td>
+              <td style="color:var(--text-muted);font-size:12px">${email}</td>
+              <td>${degree}</td>
+              <td>${pubs}</td>
+              <td>${exp} years</td>
+              <td><strong style="color:var(--accent)">${score.toFixed(1)}</strong></td>
+              <td><button class="btn btn-outline" style="padding:6px 14px;font-size:12px">View</button></td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  
+  wrap.innerHTML = html;
 }
 
-function filterCandidates(q) {
-  const lo = q.toLowerCase();
-  renderCandidateTable(allCandidates.filter(c => {
-    const pi  = c.personal_info || {};
-    const edu = c.education     || [];
-    return (pi.name||"").toLowerCase().includes(lo) ||
-           (pi.post_applied||"").toLowerCase().includes(lo) ||
-           edu.some(e => (e.degree||"").toLowerCase().includes(lo));
-  }));
+function filterCandidates(query) {
+  const rows = document.querySelectorAll('#cand-table-wrap tbody tr');
+  const q = query.toLowerCase();
+  
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
 }
 
-function openDetail(idx) {
-  const c = allCandidates[idx];
+function showCandidateDetail(index) {
+  const c = currentCandidates[index];
   if (!c) return;
-  document.getElementById("cand-list-view").style.display   = "none";
-  document.getElementById("cand-detail-view").style.display = "block";
-
-  const pi       = c.personal_info || {};
-  const edu      = c.education     || [];
-  const exp      = c.experience    || [];
-  const pubs     = c.publications  || [];
-  const miss     = c._missing      || [];
-  const analysis = c._analysis    || {};
-
-  const infoRows = Object.entries(pi)
-    .filter(([k,v]) => v)
-    .map(([k,v]) => `<div class="detail-row">
-      <span class="key">${k.replace(/_/g," ")}</span>
-      <span class="val">${v}</span></div>`).join("");
-
-  const eduRows = edu.map(e => `<tr>
-    <td><span class="badge badge-purple">${e.level||"—"}</span></td>
-    <td>${e.degree||"—"}</td>
-    <td>${e.grade_cgpa_percentage||"—"}</td>
-    <td>${e.passing_year||"—"}</td>
-    <td style="font-size:11px">${e.institution||e.board_university||"—"}</td></tr>`
-  ).join("") || `<tr><td colspan="5" style="color:var(--muted)">No education records</td></tr>`;
-
-  const expRows = exp.map(e => `<tr>
-    <td>${e.post||"—"}</td>
-    <td>${e.organization||"—"}</td>
-    <td style="color:var(--muted);font-size:11px">${e.start_date||""} → ${e.end_date||""}</td>
-    <td style="color:var(--muted);font-size:11px">${e.location||""}</td></tr>`
-  ).join("") || `<tr><td colspan="4" style="color:var(--muted)">No experience records</td></tr>`;
-
-  const pubRows = pubs.map(p => `<tr>
-    <td style="max-width:300px">${p.title||"—"}</td>
-    <td><span class="badge ${p.type==="Journal"?"badge-blue":"badge-purple"}">${p.type||""}</span></td>
-    <td>${p.impact_factor != null ? p.impact_factor : "—"}</td>
-    <td>${p.year||"—"}</td>
-    <td style="font-size:11px;color:var(--muted)">${p.published_in||""}</td></tr>`
-  ).join("") || `<tr><td colspan="5" style="color:var(--muted)">No publications</td></tr>`;
-
-  const eduA = analysis.education  || {};
-  const expA = analysis.experience || {};
-  const resA = analysis.research   || {};
-  const q    = resA.quartile_distribution || {};
-
-  const analysisEduHtml = `
-    <div class="detail-row"><span class="key">SSC %</span><span class="val">${eduA.ssc_percent||"—"}</span></div>
-    <div class="detail-row"><span class="key">HSSC %</span><span class="val">${eduA.hssc_percent||"—"}</span></div>
-    <div class="detail-row"><span class="key">UG Institution</span><span class="val">${eduA.ug_details?.institution||"—"}</span></div>
-    <div class="detail-row"><span class="key">UG Grade</span><span class="val">${eduA.ug_details?.grade||"—"}</span></div>
-    <div class="detail-row"><span class="key">PG Institution</span><span class="val">${eduA.pg_details?.institution||"—"}</span></div>
-    <div class="detail-row"><span class="key">PhD Institution</span><span class="val">${eduA.phd_details?.institution||"—"}</span></div>
-    <div class="detail-row"><span class="key">Rankings (THE/QS)</span><span class="val">${JSON.stringify(eduA.institution_rankings||{})}</span></div>
-    <div class="detail-row"><span class="key">Assessment</span><span class="val">${eduA.overall_assessment||"—"}</span></div>
-    <div class="detail-row"><span class="key">Progression Gaps</span><span class="val">${(eduA.progression_gaps||[]).join("; ")||"None"}</span></div>`;
-
-  const analysisExpHtml = `
-    <div class="detail-row"><span class="key">Overlaps</span><span class="val">${(expA.overlaps||[]).join("; ")||"None"}</span></div>
-    <div class="detail-row"><span class="key">Employment Gaps</span><span class="val">${(expA.gaps||[]).map(g=>`${g.start}→${g.end} (${g.days}d)`).join("; ")||"None"}</span></div>
-    <div class="detail-row"><span class="key">Justified Gaps</span><span class="val">${(expA.justified_gaps||[]).length} justified</span></div>`;
-
-  const analysisResHtml = `
-    <div class="detail-row"><span class="key">Total Publications</span><span class="val">${resA.total||0}</span></div>
-    <div class="detail-row"><span class="key">Journals</span><span class="val">${resA.journal_count||0}</span></div>
-    <div class="detail-row"><span class="key">Conferences</span><span class="val">${resA.conference_count||0}</span></div>
-    <div class="detail-row"><span class="key">Q1/Q2/Q3/Q4/Unknown</span><span class="val">${q.Q1||0} / ${q.Q2||0} / ${q.Q3||0} / ${q.Q4||0} / ${q.Unknown||0}</span></div>
-    <div class="detail-row"><span class="key">Top Conferences</span><span class="val">${(resA.top_conferences||[]).join("; ")||"None"}</span></div>`;
-
-  const missSection = miss.length
-    ? `<div class="detail-card" style="border-color:rgba(234,179,8,.3)">
-        <h4 style="color:var(--yellow)">⚠ Missing Fields</h4>
-        ${miss.map(m=>`<div style="font-size:12px;color:var(--yellow);margin-bottom:5px">• ${m}</div>`).join("")}
-       </div>`
-    : `<div class="detail-card" style="border-color:rgba(34,197,94,.3)">
-        <h4 style="color:var(--green)">✓ Complete Profile</h4>
-        <p style="font-size:12px;color:var(--muted)">No missing information detected.</p>
-       </div>`;
-
-  document.getElementById("detail-content").innerHTML = `
-    <div class="detail-sidebar">
-      <div class="detail-card">
-        <h4>Personal Info</h4>
-        ${infoRows || '<p style="color:var(--muted);font-size:12px">No personal info extracted</p>'}
+  
+  document.getElementById('cand-list-view').style.display = 'none';
+  document.getElementById('cand-detail-view').style.display = 'block';
+  
+  const name = c.personal_info?.name || 'Unknown';
+  const ranking = c.ranking || {};
+  const analyses = c.analyses || {};
+  
+  const html = `
+    <div class="detail-section">
+      <h3>Overall Assessment</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:16px">
+        <div>
+          <div style="color:var(--text-muted);font-size:12px;margin-bottom:4px">Total Score</div>
+          <div style="font-size:32px;font-weight:700;color:var(--accent)">${(ranking.total_score || 0).toFixed(1)}</div>
+        </div>
+        <div>
+          <div style="color:var(--text-muted);font-size:12px;margin-bottom:4px">Tier</div>
+          <div style="font-size:18px;font-weight:600">${ranking.ranking_tier || 'Unknown'}</div>
+        </div>
+        <div>
+          <div style="color:var(--text-muted);font-size:12px;margin-bottom:4px">Recommendation</div>
+          <div style="font-size:16px">${c.summary?.recommendation || 'N/A'}</div>
+        </div>
       </div>
-      ${missSection}
     </div>
-    <div>
-      <div class="section-tabs">
-        <button class="tab-btn active" onclick="switchTab(this,'tab-edu')">Education (${edu.length})</button>
-        <button class="tab-btn" onclick="switchTab(this,'tab-exp')">Experience (${exp.length})</button>
-        <button class="tab-btn" onclick="switchTab(this,'tab-pub')">Publications (${pubs.length})</button>
-        <button class="tab-btn" onclick="switchTab(this,'tab-analysis-edu')">Edu Analysis</button>
-        <button class="tab-btn" onclick="switchTab(this,'tab-analysis-exp')">Exp Analysis</button>
-        <button class="tab-btn" onclick="switchTab(this,'tab-analysis-res')">Research</button>
-        ${c._email ? '<button class="tab-btn" onclick="switchTab(this,\'tab-email\')">Draft Email</button>' : ""}
+    
+    <div class="detail-section">
+      <h3>Summary</h3>
+      <p style="line-height:1.8;color:var(--text-secondary)">${c.summary?.assessment || 'No summary available'}</p>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div class="detail-section">
+        <h3>Strengths</h3>
+        <ul style="margin-left:20px;line-height:2">
+          ${(c.summary?.strengths || []).map(s => `<li>${s}</li>`).join('')}
+        </ul>
       </div>
-      <div class="tab-pane active" id="tab-edu">
-        <div class="table-card"><table><thead><tr>
-          <th>Level</th><th>Degree</th><th>Grade/CGPA</th><th>Year</th><th>Institution</th>
-        </tr></thead><tbody>${eduRows}</tbody></table></div></div>
-      <div class="tab-pane" id="tab-exp">
-        <div class="table-card"><table><thead><tr>
-          <th>Post</th><th>Organization</th><th>Period</th><th>Location</th>
-        </tr></thead><tbody>${expRows}</tbody></table></div></div>
-      <div class="tab-pane" id="tab-pub">
-        <div class="table-card"><table><thead><tr>
-          <th>Title</th><th>Type</th><th>IF</th><th>Year</th><th>Published In</th>
-        </tr></thead><tbody>${pubRows}</tbody></table></div></div>
-      <div class="tab-pane" id="tab-analysis-edu">
-        <div class="detail-card"><h4>Educational Profile Analysis</h4>${analysisEduHtml}</div></div>
-      <div class="tab-pane" id="tab-analysis-exp">
-        <div class="detail-card"><h4>Experience Analysis</h4>${analysisExpHtml}</div></div>
-      <div class="tab-pane" id="tab-analysis-res">
-        <div class="detail-card"><h4>Research Profile Analysis</h4>${analysisResHtml}</div></div>
-      ${c._email ? `<div class="tab-pane" id="tab-email">
-        <div class="email-preview">${c._email}</div>
-        <button class="btn btn-outline" style="margin-top:10px" onclick='copyEmailText(${JSON.stringify(c._email)})'>Copy Email</button>
-      </div>` : ""}
-    </div>`;
-}
-
-function switchTab(btn, paneId) {
-  btn.closest(".detail-grid").querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  btn.closest(".detail-grid").querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
-  btn.classList.add("active");
-  document.getElementById(paneId).classList.add("active");
+      <div class="detail-section">
+        <h3>Concerns</h3>
+        <ul style="margin-left:20px;line-height:2;color:var(--text-muted)">
+          ${(c.summary?.concerns || []).map(s => `<li>${s}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+    
+    <div class="detail-section">
+      <h3>Education</h3>
+      ${(c.education || []).map(e => `
+        <div style="margin-bottom:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <strong>${e.degree || 'Unknown'}</strong> — ${e.institution || 'Unknown'}
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px">
+            ${e.grade_cgpa_percentage || 'N/A'} | ${e.passing_year || 'N/A'}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    
+    <div class="detail-section">
+      <h3>Publications (${(c.publications || []).length})</h3>
+      ${(c.publications || []).slice(0, 10).map(p => `
+        <div style="margin-bottom:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <strong style="font-size:14px">${p.title || 'Untitled'}</strong>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px">
+            ${p.published_in || 'Unknown'} | ${p.year || 'N/A'} | ${p.type || 'Unknown'}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    
+    <div class="detail-section">
+      <h3>Research Analysis</h3>
+      <div style="display:grid;gap:12px">
+        <div>
+          <strong>Topic Focus:</strong> ${analyses.topic_variability?.focus || 'Unknown'}
+        </div>
+        <div>
+          <strong>Collaboration Score:</strong> ${analyses.coauthorship_analysis?.collaboration_score || 0}
+        </div>
+        <div>
+          <strong>Total Co-authors:</strong> ${analyses.coauthorship_analysis?.total_coauthors || 0}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('detail-content').innerHTML = html;
 }
 
 function closeDetail() {
-  document.getElementById("cand-list-view").style.display   = "block";
-  document.getElementById("cand-detail-view").style.display = "none";
+  document.getElementById('cand-list-view').style.display = 'block';
+  document.getElementById('cand-detail-view').style.display = 'none';
 }
 
-function copyEmailText(text) {
-  navigator.clipboard.writeText(text).then(() => alert("Email copied to clipboard!"));
+// ══════════════════════════════════════════════════════════════════════════
+// ANALYTICS
+// ══════════════════════════════════════════════════════════════════════════
+
+function updateAnalytics() {
+  if (currentCandidates.length === 0) return;
+  
+  // Update analytics charts
+  updateAnalyticsCharts();
+  
+  // Update insights
+  updateInsights();
 }
 
-// ─── Emails screen ────────────────────────────────────────────────────────────
-function renderEmails() {
-  const wrap = document.getElementById("emails-wrap");
-  const withEmail = allCandidates.filter(c => c._email);
-  if (!withEmail.length) {
-    wrap.innerHTML = `<div class="empty"><div class="icon">✉</div>
-      <h3>No draft emails</h3><p>Process CVs to generate missing-info emails.</p></div>`;
+function updateAnalyticsCharts() {
+  // Publication quality
+  const pubQuality = { 'High': 0, 'Medium': 0, 'Low': 0 };
+  currentCandidates.forEach(c => {
+    const score = c.ranking?.research_score || 0;
+    if (score >= 70) pubQuality['High']++;
+    else if (score >= 40) pubQuality['Medium']++;
+    else pubQuality['Low']++;
+  });
+  
+  updateChart('chartPubQuality', {
+    type: 'bar',
+    data: {
+      labels: Object.keys(pubQuality),
+      datasets: [{
+        label: 'Candidates',
+        data: Object.values(pubQuality),
+        backgroundColor: [
+          'rgba(52, 211, 153, 0.8)',
+          'rgba(96, 165, 250, 0.8)',
+          'rgba(248, 113, 113, 0.8)'
+        ],
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        },
+        x: {
+          ticks: { color: 'rgba(255, 255, 255, 0.8)' },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+  
+  // Collaboration patterns
+  const collabScores = currentCandidates.map(c => 
+    c.analyses?.coauthorship_analysis?.collaboration_score || 0
+  );
+  
+  updateChart('chartCollaboration', {
+    type: 'line',
+    data: {
+      labels: currentCandidates.map((c, i) => `C${i + 1}`),
+      datasets: [{
+        label: 'Collaboration Score',
+        data: collabScores,
+        borderColor: 'rgba(167, 139, 250, 1)',
+        backgroundColor: 'rgba(167, 139, 250, 0.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        },
+        x: {
+          ticks: { color: 'rgba(255, 255, 255, 0.8)' },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+  
+  // Topic diversity
+  const diversityData = currentCandidates.map(c => 
+    c.analyses?.topic_variability?.diversity_score || 0
+  );
+  
+  updateChart('chartTopicDiversity', {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: 'Diversity Score',
+        data: diversityData.map((score, i) => ({ x: i + 1, y: score })),
+        backgroundColor: 'rgba(79, 172, 254, 0.6)',
+        borderColor: 'rgba(79, 172, 254, 1)',
+        pointRadius: 6,
+        pointHoverRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        },
+        x: {
+          ticks: { color: 'rgba(255, 255, 255, 0.8)' },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+  
+  // Experience trends
+  const expYears = currentCandidates.map(c => 
+    c.analyses?.experience_analysis?.total_years || 0
+  );
+  
+  updateChart('chartExperience', {
+    type: 'bar',
+    data: {
+      labels: currentCandidates.map((c, i) => `C${i + 1}`),
+      datasets: [{
+        label: 'Years',
+        data: expYears,
+        backgroundColor: 'rgba(251, 191, 36, 0.8)',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        },
+        x: {
+          ticks: { color: 'rgba(255, 255, 255, 0.8)' },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
+function updateInsights() {
+  // Educational insights
+  const avgEduScore = currentCandidates.reduce((sum, c) => 
+    sum + (c.ranking?.education_score || 0), 0
+  ) / currentCandidates.length;
+  
+  const phdCount = currentCandidates.filter(c => 
+    (c.education || []).some(e => (e.level || '').toLowerCase() === 'phd')
+  ).length;
+  
+  document.getElementById('edu-insights').innerHTML = `
+    <p><strong>Average Education Score:</strong> ${avgEduScore.toFixed(1)}/100</p>
+    <p><strong>PhD Holders:</strong> ${phdCount} (${((phdCount / currentCandidates.length) * 100).toFixed(0)}%)</p>
+    <p><strong>Highest Qualification:</strong> Majority hold ${phdCount > currentCandidates.length / 2 ? 'PhD' : 'Master\'s'} degrees</p>
+  `;
+  
+  // Research insights
+  const avgPubs = currentCandidates.reduce((sum, c) => 
+    sum + (c.publications || []).length, 0
+  ) / currentCandidates.length;
+  
+  document.getElementById('research-insights').innerHTML = `
+    <p><strong>Average Publications:</strong> ${avgPubs.toFixed(1)} per candidate</p>
+    <p><strong>Total Publications:</strong> ${currentCandidates.reduce((sum, c) => sum + (c.publications || []).length, 0)}</p>
+    <p><strong>Research Active:</strong> ${currentCandidates.filter(c => (c.publications || []).length > 0).length} candidates</p>
+  `;
+  
+  // Experience insights
+  const avgExp = currentCandidates.reduce((sum, c) => 
+    sum + (c.analyses?.experience_analysis?.total_years || 0), 0
+  ) / currentCandidates.length;
+  
+  document.getElementById('exp-insights').innerHTML = `
+    <p><strong>Average Experience:</strong> ${avgExp.toFixed(1)} years</p>
+    <p><strong>Experience Range:</strong> ${Math.min(...currentCandidates.map(c => c.analyses?.experience_analysis?.total_years || 0)).toFixed(0)} - ${Math.max(...currentCandidates.map(c => c.analyses?.experience_analysis?.total_years || 0)).toFixed(0)} years</p>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// EMAILS
+// ══════════════════════════════════════════════════════════════════════════
+
+function updateEmails() {
+  const wrap = document.getElementById('emails-wrap');
+  
+  const withMissing = currentCandidates.filter(c => c._missing && c._missing.length > 0);
+  
+  if (withMissing.length === 0) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <div class="icon">✉️</div>
+        <h3>No draft emails</h3>
+        <p>All candidate profiles are complete.</p>
+      </div>`;
     return;
   }
-  window._emailList = withEmail;
-  wrap.innerHTML = `
-    <div class="email-grid">
-      <div class="table-card">
-        ${withEmail.map((c,i) => {
-          const pi = c.personal_info || {};
-          return `<div class="email-list-item ${i===0?"active":""}" id="eli-${i}" onclick="showEmail(this,${i})">
-            <div class="ename">${pi.name||"(unnamed)"}</div>
-            <div class="emiss">${(c._missing||[]).join(", ")}</div>
-          </div>`;
-        }).join("")}
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <h3 style="font-size:13px;font-weight:600" id="email-name">
-            ${(withEmail[0].personal_info||{}).name||""}
-          </h3>
-          <button class="btn btn-outline" onclick="copyActiveEmail()">Copy</button>
+  
+  wrap.innerHTML = withMissing.map(c => {
+    const name = c.personal_info?.name || 'Unknown';
+    const email = c.personal_info?.email || 'no-email@example.com';
+    
+    return `
+      <div class="email-card">
+        <div class="email-header">
+          <div>
+            <div class="email-to"><strong>To:</strong> ${name}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${email}</div>
+          </div>
+          <button class="btn btn-outline" onclick="copyEmail(this)" style="padding:6px 14px;font-size:12px">
+            Copy Email
+          </button>
         </div>
-        <div class="email-preview" id="emailPreview">${withEmail[0]._email||""}</div>
+        <div class="email-body">${c._email || 'No email generated'}</div>
       </div>
-    </div>`;
+    `;
+  }).join('');
 }
 
-function showEmail(el, i) {
-  document.querySelectorAll(".email-list-item").forEach(x => x.classList.remove("active"));
-  el.classList.add("active");
-  const c = window._emailList[i];
-  document.getElementById("emailPreview").textContent = c._email || "";
-  document.getElementById("email-name").textContent   = (c.personal_info||{}).name || "";
+function copyEmail(btn) {
+  const emailBody = btn.closest('.email-card').querySelector('.email-body').textContent;
+  navigator.clipboard.writeText(emailBody);
+  
+  const orig = btn.textContent;
+  btn.textContent = 'Copied!';
+  btn.style.background = 'rgba(52, 211, 153, 0.2)';
+  btn.style.color = 'var(--green)';
+  
+  setTimeout(() => {
+    btn.textContent = orig;
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 2000);
 }
 
-function copyActiveEmail() {
-  const txt = document.getElementById("emailPreview")?.textContent;
-  if (txt) navigator.clipboard.writeText(txt).then(() => alert("Email copied!"));
+// ══════════════════════════════════════════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════════════════════════════════════════
+
+function initializeCharts() {
+  // Set default Chart.js options
+  Chart.defaults.color = 'rgba(255, 255, 255, 0.8)';
+  Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+  Chart.defaults.font.family = "'DM Sans', sans-serif";
 }
 
-// ─── Mode check ───────────────────────────────────────────────────────────────
-async function checkExtractionMode() {
-  try {
-    const res  = await fetch("/api/mode");
-    const data = await res.json();
-    const badge    = document.getElementById("extraction-mode-badge");
-    const imgBadge = document.getElementById("image-support-badge");
-
-    if (data.llm_available) {
-      badge.textContent = "LLM (Groq)";
-      badge.style.background = "rgba(34,197,94,.15)";
-      badge.style.color = "var(--green)";
-    } else {
-      badge.textContent = "Regex Fallback";
-      badge.style.background = "rgba(234,179,8,.15)";
-      badge.style.color = "var(--yellow)";
-    }
-
-    // Show capability badges
-    const caps = [];
-    if (data.scanned_pdf_support) caps.push("📄 Scanned PDFs");
-    if (data.image_support)       caps.push("🖼 Images");
-    if (caps.length) {
-      imgBadge.textContent = caps.join(" · ");
-      imgBadge.style.display = "inline-block";
-    }
-  } catch(e) {
-    const badge = document.getElementById("extraction-mode-badge");
-    badge.textContent = "Regex Fallback";
-    badge.style.background = "rgba(234,179,8,.15)";
-    badge.style.color = "var(--yellow)";
+function updateChart(canvasId, config) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  
+  // Destroy existing chart
+  if (charts[canvasId]) {
+    charts[canvasId].destroy();
   }
+  
+  // Create new chart
+  charts[canvasId] = new Chart(canvas, config);
 }
