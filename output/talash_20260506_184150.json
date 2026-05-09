@@ -1,0 +1,318 @@
+[
+  {
+    "personal_info": {
+      "name": "Shaheer",
+      "father_name": "Shaida Muhammad Durrani",
+      "dob": "18-Feb-1978",
+      "nationality": "Pakistani",
+      "marital_status": "Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "350000",
+      "expected_salary": "350000",
+      "present_employment": "City University, Peshawar",
+      "apply_date": "24-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "Fsc",
+        "level": "HSSC",
+        "specialization": "Pre Engineering",
+        "grade_cgpa_percentage": "61",
+        "passing_year": "1996",
+        "start_year": "",
+        "institution": "",
+        "board_university": "Federal Board of Intermediate and Secondary Education Islamabad",
+        "location": "Islamabad"
+      },
+      {
+        "degree": "Matric",
+        "level": "SSC",
+        "specialization": "Science",
+        "grade_cgpa_percentage": "68",
+        "passing_year": "1994",
+        "start_year": "",
+        "institution": "",
+        "board_university": "Federal Board of Intermediate and Secondary Education Islamabad",
+        "location": "Islamabad"
+      },
+      {
+        "degree": "Bachelor of Electrical Engineering",
+        "level": "Bachelor",
+        "specialization": "Electrical Engineering",
+        "grade_cgpa_percentage": "87",
+        "passing_year": "2003",
+        "start_year": "",
+        "institution": "University of Engineering and Technology, Peshawar",
+        "board_university": "",
+        "location": "Peshawar"
+      },
+      {
+        "degree": "Masters of Electrical Engineering",
+        "level": "Master",
+        "specialization": "Control Systems",
+        "grade_cgpa_percentage": "4",
+        "passing_year": "2006",
+        "start_year": "",
+        "institution": "",
+        "board_university": "Hogskolan Dalama",
+        "location": ""
+      },
+      {
+        "degree": "MBA",
+        "level": "Master",
+        "specialization": "Human Resource Management",
+        "grade_cgpa_percentage": "64",
+        "passing_year": "2012",
+        "start_year": "",
+        "institution": "",
+        "board_university": "University of Peshawar",
+        "location": "Peshawar"
+      },
+      {
+        "degree": "PhD",
+        "level": "PhD",
+        "specialization": "Power Electronics",
+        "grade_cgpa_percentage": "4",
+        "passing_year": "2021",
+        "start_year": "",
+        "institution": "",
+        "board_university": "University Malaysia Pahang",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [
+      {
+        "qualification": "PMP",
+        "passing_year": "2012",
+        "institution": "CECOS"
+      },
+      {
+        "qualification": "PMP",
+        "passing_year": "2012",
+        "institution": "CECOS"
+      }
+    ],
+    "experience": [
+      {
+        "post": "Assistant Professor",
+        "organization": "City University",
+        "location": "Peshawar",
+        "start_date": "May-2021",
+        "end_date": "Present",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Assistant Professor",
+        "organization": "City University",
+        "location": "Peshawar",
+        "start_date": "May-2023",
+        "end_date": "Present",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Research Engineer",
+        "organization": "Khyber Lamps",
+        "location": "Pekan",
+        "start_date": "Jul-2003",
+        "end_date": "Aug-2005",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Assistant Professor",
+        "organization": "UET Peshawar",
+        "location": "Peshawar",
+        "start_date": "Jan-2007",
+        "end_date": "Sep-2008",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Teaching Assistant",
+        "organization": "UMP Pekan, Malaysia",
+        "location": "Pekan",
+        "start_date": "Apr-2016",
+        "end_date": "Apr-2021",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Asst Professor",
+        "organization": "CECOS University Peshawar",
+        "location": "Peshawar",
+        "start_date": "Sep-2007",
+        "end_date": "Aug-2012",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [],
+    "references": [
+      {
+        "name": "Amjad Ali",
+        "designation": "Registrar",
+        "organization": "City University",
+        "email": "registrar@cusit.edu.pk",
+        "phone": "(091) 2609501",
+        "relationship": "Reference"
+      },
+      {
+        "name": "Dr. Abu Zaharim",
+        "designation": "Associate Professor",
+        "organization": "University Malaysia Pahang",
+        "email": "",
+        "phone": "+60 19-424 1881",
+        "relationship": "Reference"
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [],
+      "conference_analyses": [],
+      "topic_variability": {
+        "topics": [],
+        "diversity_score": 0,
+        "focus": "Unknown"
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 0,
+        "frequent_collaborators": [],
+        "avg_coauthors_per_paper": 0,
+        "collaboration_score": 0
+      },
+      "educational_analysis": {
+        "highest_degree": "PhD",
+        "performance_trend": "Declining",
+        "institutional_quality": [
+          {
+            "institution": "University of Engineering and Technology, Peshawar",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          }
+        ],
+        "gaps": [
+          {
+            "after": "SSC",
+            "before": "HSSC",
+            "duration_years": 1,
+            "justified": false
+          },
+          {
+            "after": "HSSC",
+            "before": "Bachelor",
+            "duration_years": 6,
+            "justified": false
+          },
+          {
+            "after": "Bachelor",
+            "before": "Master",
+            "duration_years": 2,
+            "justified": false
+          },
+          {
+            "after": "Master",
+            "before": "Master",
+            "duration_years": 5,
+            "justified": false
+          },
+          {
+            "after": "Master",
+            "before": "PhD",
+            "duration_years": 8,
+            "justified": false
+          }
+        ],
+        "progression_score": 60
+      },
+      "experience_analysis": {
+        "total_years": 17,
+        "overlaps": [
+          {
+            "job1": "Assistant Professor",
+            "job2": "Asst Professor",
+            "period": "2007-2008"
+          },
+          {
+            "job1": "Teaching Assistant",
+            "job2": "Assistant Professor",
+            "period": "2021-2021"
+          },
+          {
+            "job1": "Assistant Professor",
+            "job2": "Assistant Professor",
+            "period": "2023-2026"
+          }
+        ],
+        "gaps": [
+          {
+            "type": "Between jobs",
+            "duration_years": 2,
+            "period": "2005-2007"
+          },
+          {
+            "type": "Between jobs",
+            "duration_years": 4,
+            "period": "2012-2016"
+          }
+        ],
+        "progression": "Progressive",
+        "consistency_score": 20
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [],
+        "alignment_score": 0
+      }
+    },
+    "ranking": {
+      "total_score": 17.0,
+      "education_score": 60,
+      "research_score": 0,
+      "experience_score": 20,
+      "skills_score": 0,
+      "collaboration_score": 0,
+      "ranking_tier": "Needs Improvement"
+    },
+    "summary": {
+      "assessment": "```\n{\n  \"assessment\": \"Shaheer's profile presents a mixed picture, with both positive and negative aspects. On the one hand, Shaheer has an impressive 17 years of experience and holds a PhD, which is the highest degree attainable in their field. This suggests a strong foundation in their area of expertise and a significant amount of time to develop their skills and knowledge. However, despite this extensive experience, Shaheer's research focus is unknown, and they have no publications to their name, which raises concerns about their ability to contribute to and engage with their field through research. Furthermore, their ranking score of 17.0 places them in the 'Needs Improvement' tier, indicating that there are areas where Shaheer could develop further.\n\nThe full analyses available provide more insight into Shaheer's profile. Their educational progression score is 60, which is a relatively moderate score, suggesting that while Shaheer has achieved a high level of education, there may be areas where their educational background could be more robust. The lack of research publications, topic diversity, and collaboration score are all significant concerns, as they indicate a lack of engagement with the broader research community and a limited range of research interests. On the other hand, Shaheer's experience consistency score of 20 suggests that they have had a consistent and stable career path, which could be an asset in certain roles.\n\nDespite these mixed signals, it is possible to identify both strengths and weaknesses in Shaheer's profile. Their extensive experience and high level of education are significant strengths, while their lack of research engagement and limited skill alignment are notable weaknesses. Overall, Shaheer's profile suggests that they may be a good fit for roles that value experience and educational attainment, but may require additional support or development to engage fully with research and contribute to their field through publications and collaborations.\n\n\",\n  \"strengths\": [\n    \"Extensive experience (17 years)\",\n    \"High level of education (PhD)\",\n    \"Consistent career path\"\n  ],\n  \"concerns\": [\n    \"Lack of research publications\",\n    \"Unknown research focus\",\n    \"Limited skill alignment and topic diversity\"\n  ],\n  \"recommendation\": \"Maybe\"\n}\n```",
+      "strengths": [],
+      "concerns": [],
+      "recommendation": "Requires manual review"
+    },
+    "_source": "f5dbda9f_cv4.pdf",
+    "_missing": [
+      "Email address",
+      "Phone number",
+      "Publications (if applicable)"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Assistant Professor - Electrical & Computer Engineering - SEECS\n\nDear Shaheer,\n\nThank you for your application for the position of Assistant Professor - Electrical & Computer Engineering - SEECS.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Email address\n• Phone number\n• Publications (if applicable)\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System",
+    "username": "admin123",
+    "created_at": 

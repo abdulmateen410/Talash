@@ -1,0 +1,706 @@
+[
+  {
+    "personal_info": {
+      "name": "Ahmed Naeem",
+      "father_name": "Amjad Naeem",
+      "dob": "22-Feb-1994",
+      "nationality": "Pakistan",
+      "marital_status": "Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "250000",
+      "expected_salary": "250000",
+      "present_employment": "RESEARCH ASSISTANT at Communication, Signal Processing, and Networking Center (CoSiNC) Research Group at Istanbul Medipol University",
+      "apply_date": "23-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "Electrical-Electronics Engineering",
+        "level": "Master",
+        "specialization": "Wireless Communication Technologies and Cyber Systems and Cyber Security",
+        "grade_cgpa_percentage": "3.29",
+        "passing_year": "2025",
+        "start_year": "",
+        "institution": "Istanbul Medipol University",
+        "board_university": "Istanbul Medipol University",
+        "location": ""
+      },
+      {
+        "degree": "Electrical Engineering",
+        "level": "Master",
+        "specialization": "Machine Learning",
+        "grade_cgpa_percentage": "3.53",
+        "passing_year": "2019",
+        "start_year": "",
+        "institution": "National University of Computer and Emerging Sciences (FAST)",
+        "board_university": "National University of Computer and Emerging Sciences (FAST)",
+        "location": ""
+      },
+      {
+        "degree": "Electrical Engineering",
+        "level": "Bachelor",
+        "specialization": "Majors in Communications",
+        "grade_cgpa_percentage": "2.71",
+        "passing_year": "2016",
+        "start_year": "",
+        "institution": "National University of Computer and Emerging Sciences (FAST)",
+        "board_university": "National University of Computer and Emerging Sciences (FAST)",
+        "location": ""
+      },
+      {
+        "degree": "Intermediate",
+        "level": "HSSC",
+        "specialization": "Pre-Engineering",
+        "grade_cgpa_percentage": "74.8",
+        "passing_year": "2012",
+        "start_year": "",
+        "institution": "Peshawar Board",
+        "board_university": "Peshawar Board",
+        "location": ""
+      },
+      {
+        "degree": "GCE O-level",
+        "level": "SSC",
+        "specialization": "Science",
+        "grade_cgpa_percentage": "68.78",
+        "passing_year": "2009",
+        "start_year": "",
+        "institution": "University of Cambridge, UK",
+        "board_university": "University of Cambridge, UK",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [
+      {
+        "post": "RESEARCH ASSISTANT",
+        "organization": "Communication, Signal Processing, and Networking Center (CoSiNC) Research Group at Istanbul Medipol University",
+        "location": "Beykoz",
+        "start_date": "02/01/2020",
+        "end_date": "",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [
+      {
+        "title": "Physical layer security for wireless sensing and joint radar and communications",
+        "authors": "S. Rafique, Ahmed Naeem, H. Arslan",
+        "author_position": "",
+        "published_in": "Physical Layer Security for Wireles",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "0",
+        "issue": "",
+        "pages": "",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Signal domain physical modification for PLS",
+        "authors": "S.E. Zegrar, Ahmed Naeem, H.M. Furqan, and H. Arslan",
+        "author_position": "",
+        "published_in": "Physical Layer Security for Wireles",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "0",
+        "issue": "",
+        "pages": "",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Blind Signal Analysis—Wireless Communication Signals",
+        "authors": "Mehmet Ali Aygul, Ahmed Naeem, Huseyin Arslan",
+        "author_position": "",
+        "published_in": "Wireless Communication Signals",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "0",
+        "issue": "",
+        "pages": "",
+        "year": "2021",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Fall Detection using Accelerometer Calibration",
+        "authors": "Ahmed Naeem, S. Khan",
+        "author_position": "",
+        "published_in": "15th International Conference on Em",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "0",
+        "issue": "",
+        "pages": "",
+        "year": "2019",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Joint Radar and Communication based Blind Signal Separation using a New Non-Linear Function for Fast-ICA",
+        "authors": "Ahmed Naeem, H. Arslan",
+        "author_position": "",
+        "published_in": "2021 IEEE 94th Vehicular Technology",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "0",
+        "issue": "",
+        "pages": "",
+        "year": "2021",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "A Novel Frame Design for Non-Terrestrial Network Based Integrated Sensing and Communication",
+        "authors": "Ahmed Naeem, S. Rafique, H. Arslan",
+        "author_position": "",
+        "published_in": "IEEE 33rd Annual International Symp",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "0",
+        "issue": "",
+        "pages": "",
+        "year": "2022",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Radar-Aided Communication Scheduling Algorithm for 5G and Beyond Networks",
+        "authors": "A. M. Jaradat, Ahmed Naeem, M. I. Sağlam, M. Kartal, H. Arslan",
+        "author_position": "",
+        "published_in": "IEEE Access",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 3.6,
+        "volume": "10",
+        "issue": "",
+        "pages": "",
+        "year": "2022",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Joint Adaptive OFDM and Reinforcement Learning Design for Autonomous Vehicles",
+        "authors": "M. Delamou, Ahmed Naeem, H. Arslan, E. M. Amhoud",
+        "author_position": "",
+        "published_in": "IEEE Open Journal of Vehicular Tech",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 4.8,
+        "volume": "6",
+        "issue": "",
+        "pages": "",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Polarization-Based Multiplexing",
+        "authors": "Ahmed Naeem, Mamady Delamou, El Mehdi Amhoud, Hüseyin Arslan",
+        "author_position": "",
+        "published_in": "IEEE Wireless Communications Letter",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 5.5,
+        "volume": "13",
+        "issue": "",
+        "pages": "",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "A Novel User Association Scheme for Joint Radar and Communication in Cell-Free mMIMO Systems",
+        "authors": "Ahmed Naeem, E. M. Amhoud, H. Arslan",
+        "author_position": "",
+        "published_in": "IEEE Transactions on Vehicular Tech",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 7.1,
+        "volume": "0",
+        "issue": "",
+        "pages": "",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "A Temporal Broadening-Aware Pulse Width Adaptation Scheme for ISI Mitigation and Energy Efficiency in THz Communication",
+        "authors": "Ahmed Naeem, S. Rafique, Abu B. Kihero, H. Arslan",
+        "author_position": "",
+        "published_in": "IEEE Transactions on Green Communic",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 6.7,
+        "volume": "0",
+        "issue": "",
+        "pages": "",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [
+      {
+        "patent_number": "2020-GE-730032",
+        "title": "A Method for Blind Joint Radar and Communication Signal Separation with a New Nonlinear Function for Fast-ICA",
+        "date": "12/31/2020",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2022-GE-758038",
+        "title": "A Resource Scheduling System",
+        "date": "11/05/2021",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2022-GE-310428",
+        "title": "A Fixed and Opportunistic Communication and Sensing Framework Method for Non-Terrestrial Networks",
+        "date": "04/28/2022",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2023-GE-781662",
+        "title": "A Method and a System for Ensuring Coexistence of Detection and Communication Systems in a Shared Channel",
+        "date": "11/22/2023",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2024-GE-766003",
+        "title": "An Adaptive Beamwidth Selection Method for Multiple Targets in CF-mMIMO Systems",
+        "date": "11/11/2024",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2024-GE-864462",
+        "title": "Method for Physical Layer Authentication in MIMO Systems",
+        "date": "12/13/2024",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2024-GE-866686",
+        "title": "Method to Reduce Inter-User Interference in XL-MIMO Systems Using Polarization",
+        "date": "12/13/2024",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2024-GE-870432",
+        "title": "Adaptable Access Point Selection Method in CF-mMIMO Systems",
+        "date": "12/16/2024",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2024-GE-912231",
+        "title": "A Method for Dual-Polarization Multiplexing and Interference Management in XL-MIMO Using Polarization Properties",
+        "date": "12/27/2024",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      },
+      {
+        "patent_number": "2024-GE-926341",
+        "title": "Polarization-based Method to Reduce Self-Interference in FD XL-MIMO",
+        "date": "",
+        "inventors": "",
+        "country": "",
+        "link": "",
+        "status": ""
+      }
+    ],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [
+      {
+        "type": "Academic Awards",
+        "detail": "Awarded Bronze Medal at Master’s Convocation for securing 3rd position",
+        "year": ""
+      },
+      {
+        "type": "Merit Scholarships",
+        "detail": "Awarded additional research incentive funding by TÜBİTAK in 2024 and 2025 in recognition of outstanding research achievements",
+        "year": "2024, 2025"
+      },
+      {
+        "type": "Merit Scholarships",
+        "detail": "Visited UM6P–Mohammed VI Polytechnic University, Morocco, for a four-month joint PhD research program in collaboration with Istanbul Medipol University",
+        "year": ""
+      },
+      {
+        "type": "Academic Awards",
+        "detail": "Won 7th position out of 1000+ in the 4th University Patent Competition organized by TÜRK PATENT for the invention titled ‘Method to Reduce Inter-User Interference in XL-MIMO Systems Using Polarization’ (Patent Application No: 204/018882)",
+        "year": ""
+      }
+    ],
+    "references": [
+      {
+        "name": "Dr. Anastassia Gharib",
+        "designation": "Assistant Professor",
+        "organization": "Department of Computer Science and Engineering American University of Sharjah, UAE",
+        "email": "anastassiagharib@ieee.org",
+        "phone": "62789852323",
+        "relationship": ""
+      },
+      {
+        "name": "Professor Dr. Muhammad Tariq",
+        "designation": "Professor and Head of Department",
+        "organization": "Department of Engineering National University of Computer and Emerging Sciences Islamabad Campus, Pakistan",
+        "email": "tariq.khan@nu.edu.pk",
+        "phone": "923348727562",
+        "relationship": ""
+      },
+      {
+        "name": "Professor Dr. Hüseyin Arslan",
+        "designation": "Professor, Dean of School of Engineering and Natural Science",
+        "organization": "Istanbul Medipol University",
+        "email": "huseyinarslan@medipol.edu.tr",
+        "phone": "905322104114",
+        "relationship": ""
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [
+        {
+          "title": "Physical layer security for wireless sensing and joint radar and communications",
+          "journal": "Physical Layer Security for Wireles",
+          "year": "2024",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 0.0,
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "Signal domain physical modification for PLS",
+          "journal": "Physical Layer Security for Wireles",
+          "year": "2024",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 0.0,
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "Blind Signal Analysis—Wireless Communication Signals",
+          "journal": "Wireless Communication Signals",
+          "year": "2021",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 0.0,
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "Radar-Aided Communication Scheduling Algorithm for 5G and Beyond Networks",
+          "journal": "IEEE Access",
+          "year": "2022",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 3.6,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        },
+        {
+          "title": "Joint Adaptive OFDM and Reinforcement Learning Design for Autonomous Vehicles",
+          "journal": "IEEE Open Journal of Vehicular Tech",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 4.8,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "Polarization-Based Multiplexing",
+          "journal": "IEEE Wireless Communications Letter",
+          "year": "2024",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 5.5,
+          "quartile": "Q1",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 90
+        },
+        {
+          "title": "A Novel User Association Scheme for Joint Radar and Communication in Cell-Free mMIMO Systems",
+          "journal": "IEEE Transactions on Vehicular Tech",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 7.1,
+          "quartile": "Q1",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 90
+        },
+        {
+          "title": "A Temporal Broadening-Aware Pulse Width Adaptation Scheme for ISI Mitigation and Energy Efficiency in THz Communication",
+          "journal": "IEEE Transactions on Green Communic",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 6.7,
+          "quartile": "Q1",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        }
+      ],
+      "conference_analyses": [
+        {
+          "title": "Fall Detection using Accelerometer Calibration",
+          "conference": "15th International Conference on Em",
+          "year": "2019",
+          "core_rank": "B",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 60
+        },
+        {
+          "title": "Joint Radar and Communication based Blind Signal Separation using a New Non-Linear Function for Fast-ICA",
+          "conference": "2021 IEEE 94th Vehicular Technology",
+          "year": "2021",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        },
+        {
+          "title": "A Novel Frame Design for Non-Terrestrial Network Based Integrated Sensing and Communication",
+          "conference": "IEEE 33rd Annual International Symp",
+          "year": "2022",
+          "core_rank": "A*",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 90
+        }
+      ],
+      "topic_variability": {
+        "topics": [
+          "blind | signal | signals",
+          "physical | pls | modification",
+          "accelerometer | calibration | using",
+          "communication | scheme | radar",
+          "based | design | polarization"
+        ],
+        "diversity_score": 45.5,
+        "focus": "Diverse/Interdisciplinary",
+        "cluster_distribution": {
+          "1": 2,
+          "0": 2,
+          "2": 1,
+          "4": 3,
+          "3": 3
+        }
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 17,
+        "frequent_collaborators": [
+          {
+            "name": "H. Arslan",
+            "count": 7
+          },
+          {
+            "name": "S. Rafique",
+            "count": 3
+          },
+          {
+            "name": "E. M. Amhoud",
+            "count": 2
+          },
+          {
+            "name": "S.E. Zegrar",
+            "count": 1
+          },
+          {
+            "name": "H.M. Furqan",
+            "count": 1
+          }
+        ],
+        "avg_coauthors_per_paper": 3.4,
+        "collaboration_score": 77.3,
+        "collaboration_breadth": "High"
+      },
+      "educational_analysis": {
+        "highest_degree": "Electrical Engineering",
+        "performance_trend": "Declining",
+        "institutional_quality": [
+          {
+            "institution": "University of Cambridge, UK",
+            "ranking": "Not verified",
+            "level": "SSC"
+          },
+          {
+            "institution": "Peshawar Board",
+            "ranking": "Not verified",
+            "level": "HSSC"
+          },
+          {
+            "institution": "National University of Computer and Emerging Sciences (FAST)",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          },
+          {
+            "institution": "Istanbul Medipol University",
+            "ranking": "Not verified",
+            "level": "Master"
+          },
+          {
+            "institution": "National University of Computer and Emerging Sciences (FAST)",
+            "ranking": "Not verified",
+            "level": "Master"
+          }
+        ],
+        "gaps": [
+          {
+            "after": "SSC",
+            "before": "HSSC",
+            "duration_years": 2,
+            "justified": false
+          },
+          {
+            "after": "HSSC",
+            "before": "Bachelor",
+            "duration_years": 3,
+            "justified": false
+          },
+          {
+            "after": "Bachelor",
+            "before": "Master",
+            "duration_years": 8,
+            "justified": false
+          }
+        ],
+        "progression_score": 50
+      },
+      "experience_analysis": {
+        "total_years": 6,
+        "overlaps": [],
+        "gaps": [],
+        "progression": "Insufficient data",
+        "consistency_score": 80
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [],
+        "alignment_score": 0
+      }
+    },
+    "ranking": {
+      "total_score": 72.7,
+      "education_score": 50,
+      "research_score": 100,
+      "experience_score": 80,
+      "skills_score": 0,
+      "collaboration_score": 77.3,
+      "ranking_tier": "Very Good"
+    },
+    "summary": {
+      "assessment": "Ahmed Naeem is a strong candidate with a solid background in Electrical Engineering and a diverse research focus. With 11 publications and 6 years of experience, he has demonstrated his ability to produce high-quality research and apply his skills in a practical setting. His ranking score of 72.7, categorized as Very Good, further supports his candidacy. However, a closer examination of his scores reveals areas of strength and weakness. His research score is exceptional, indicating a high level of expertise in his field, while his experience and collaboration scores are also respectable. On the other hand, his education score is relatively low, and his skills score is zero, which may indicate a lack of proficiency in certain areas. Overall, Ahmed's interdisciplinary research focus and strong research background make him a compelling candidate, but his limitations in certain areas must be carefully considered. His ability to work collaboratively, as evidenced by his collaboration score, is also a significant asset. As he continues to grow and develop as a professional, it will be essential for him to address his weaknesses and expand his skill set.",
+      "strengths": [
+        "Strong research background with 11 publications",
+        "Diverse and interdisciplinary research focus",
+        "Respectable experience and collaboration scores"
+      ],
+      "concerns": [
+        "Relatively low education score",
+        "Lack of proficiency in certain skills, as indicated by a skills score of zero",
+        "Potential limitations in areas outside of research expertise"
+      ],
+      "recommendation": "Strong Hire"
+    },
+    "_source": "e43ecac9_Ahmed_Naeem.pdf",
+    "_missing": [
+      "Email address",
+      "Phone number"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Assistant Professor - Electrical & Computer Engineering - SEECS\n\nDear Ahmed Naeem,\n\nThank you for your application for the position of Assistant Professor - Electrical & Computer Engineering - SEECS.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Email address\n• Phone number\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System",
+    "_id": "69fdbc3b91743fbf2cea0ce5"
+  }
+]

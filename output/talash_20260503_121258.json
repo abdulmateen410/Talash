@@ -1,0 +1,118 @@
+[
+  {
+    "personal_info": {
+      "name": "Abdul Mateen",
+      "father_name": "",
+      "dob": "",
+      "nationality": "",
+      "marital_status": "",
+      "cnic": "13302-5775856-1",
+      "email": "",
+      "phone": "923335697144",
+      "address": "HOSTEL Br, NUST Campus, Sector H-12, Islamabad",
+      "current_salary": "",
+      "expected_salary": "",
+      "present_employment": "",
+      "apply_date": "",
+      "post_applied": ""
+    },
+    "education": [
+      {
+        "degree": "BS",
+        "level": "Bachelor",
+        "specialization": "DS",
+        "grade_cgpa_percentage": "",
+        "passing_year": "",
+        "start_year": "2023",
+        "institution": "NATIONAL UNIVERSITY OF SCIENCES & TECHNOLOGY",
+        "board_university": "",
+        "location": "ISLAMABAD"
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [],
+    "publications": [],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [],
+    "references": [],
+    "analyses": {
+      "journal_analyses": [],
+      "conference_analyses": [],
+      "topic_variability": {
+        "topics": [],
+        "diversity_score": 0,
+        "focus": "Unknown"
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 0,
+        "frequent_collaborators": [],
+        "avg_coauthors_per_paper": 0,
+        "collaboration_score": 0
+      },
+      "educational_analysis": {
+        "highest_degree": "BS",
+        "performance_trend": "Stable",
+        "institutional_quality": [
+          {
+            "institution": "NATIONAL UNIVERSITY OF SCIENCES & TECHNOLOGY",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          }
+        ],
+        "gaps": [],
+        "progression_score": 60
+      },
+      "experience_analysis": {
+        "total_years": 0,
+        "overlaps": [],
+        "gaps": [],
+        "progression": "Unknown",
+        "consistency_score": 0
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [],
+        "alignment_score": 0
+      }
+    },
+    "ranking": {
+      "total_score": 12.0,
+      "education_score": 60,
+      "research_score": 0,
+      "experience_score": 0,
+      "skills_score": 0,
+      "collaboration_score": 0,
+      "ranking_tier": "Needs Improvement"
+    },
+    "summary": {
+      "assessment": "Unable to generate assessment",
+      "strengths": [],
+      "concerns": [],
+      "recommendation": "Requires manual review"
+    },
+    "_source": "64a70565_png2pdf.pdf",
+    "_missing": [
+      "Email address",
+      "Grade/CGPA for BS",
+      "Professional experience",
+      "Publications (if applicable)",
+      "Professional references (at least 2)"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Position\n\nDear Abdul Mateen,\n\nThank you for your application for the position of the advertised role.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Email address\n• Grade/CGPA for BS\n• Professional experience\n• Publications (if applicable)\n• Professional references (at least 2)\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System"
+  }
+]

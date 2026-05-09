@@ -1,0 +1,786 @@
+[
+  {
+    "personal_info": {
+      "name": "Ammara Nasim",
+      "father_name": "Muhammad Nasim Javed",
+      "dob": "06-Dec-1990",
+      "nationality": "Pakistan",
+      "marital_status": "Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "250,000",
+      "expected_salary": "250,000",
+      "present_employment": "Assistant Professor at Bahria University, Islamabad",
+      "apply_date": "25-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "PhD",
+        "level": "PhD",
+        "specialization": "Computer Vision, AI, Deep Learning",
+        "grade_cgpa_percentage": "3.92",
+        "passing_year": "2025",
+        "start_year": "",
+        "institution": "NUST, CEME",
+        "board_university": "NUST, CEME",
+        "location": ""
+      },
+      {
+        "degree": "MSEE",
+        "level": "Master",
+        "specialization": "Telecommunication and Signal Processing",
+        "grade_cgpa_percentage": "3.5",
+        "passing_year": "2016",
+        "start_year": "",
+        "institution": "UET Taxila",
+        "board_university": "UET Taxila",
+        "location": ""
+      },
+      {
+        "degree": "BEE",
+        "level": "Bachelor",
+        "specialization": "Electronics, Signal Processing, Image Processing, FPGA",
+        "grade_cgpa_percentage": "3.03",
+        "passing_year": "2012",
+        "start_year": "",
+        "institution": "NUST, SEECS",
+        "board_university": "NUST, SEECS",
+        "location": ""
+      },
+      {
+        "degree": "FSC",
+        "level": "HSSC",
+        "specialization": "Pre-Engineering",
+        "grade_cgpa_percentage": "80.3",
+        "passing_year": "2008",
+        "start_year": "",
+        "institution": "Federal",
+        "board_university": "Federal",
+        "location": ""
+      },
+      {
+        "degree": "Matric",
+        "level": "SSC",
+        "specialization": "Science",
+        "grade_cgpa_percentage": "89.5",
+        "passing_year": "2008",
+        "start_year": "",
+        "institution": "Federal",
+        "board_university": "Federal",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [
+      {
+        "post": "Wing Head (Applied AI Lab)",
+        "organization": "Center of Excellence in AI, Bahria University",
+        "location": "E8",
+        "start_date": "Apr-2025",
+        "end_date": "Present",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Lab Engineer",
+        "organization": "Bahria University",
+        "location": "Islamabad",
+        "start_date": "Jan-2014",
+        "end_date": "Jan-2017",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Lecturer",
+        "organization": "Bahria University",
+        "location": "Islamabad",
+        "start_date": "Jan-2017",
+        "end_date": "Oct-2021",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Assistant Professor",
+        "organization": "Bahria University",
+        "location": "Islamabad",
+        "start_date": "Oct-2021",
+        "end_date": "Present",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [
+      {
+        "title": "Investigating 3D Echocardiography Image Fusion for Improving Image Quality",
+        "authors": "Ammara Nasim, Aisha Gul Hafeez, Kashif Rajpoot, Muhammad Shahzad",
+        "author_position": "",
+        "published_in": "IEEE International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "173",
+        "issue": "",
+        "pages": "173",
+        "year": "2013",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Contrast 3D Echocardiographic Segmentation by Image Inversion",
+        "authors": "Ammara Nasim, Muhammad Qamar, Kashif Rajpoot",
+        "author_position": "",
+        "published_in": "IEEE International Multi Topic Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "58",
+        "issue": "",
+        "pages": "58",
+        "year": "2014",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Review of OCT and Fundus images for detecting Macular Edema",
+        "authors": "Taimur Hassan, M. Usman Akram, Bilal Hassan, Ammara Nasim, Shafaat Ahmed Bazaz",
+        "author_position": "",
+        "published_in": "IEEE International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "856",
+        "issue": "",
+        "pages": "856",
+        "year": "2015",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Fully automated identification of heart sounds for the analysis of cardiovascular pathology",
+        "authors": "Taimur Hassan, Sidra Ghafoor, Ammara Nasim",
+        "author_position": "",
+        "published_in": "Future Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "5V",
+        "issue": "",
+        "pages": "117",
+        "year": "2018",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Automated identification of colorectal gland sparsity from benign images",
+        "authors": "Ammara Nasim, Taimur Hassan, M. Usman Akram, Bilal Hassan, Muhammad Ali Shami",
+        "author_position": "",
+        "published_in": "International Conference on Image Processing",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "0",
+        "issue": "",
+        "pages": "0",
+        "year": "2017",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Mitosis detection in breast cancer by inference of segmentation and bag of features",
+        "authors": "Mobeen-ur-Rahman, Farrukh Javed Gill, Ammara Nasim, Imran Farid Nizami",
+        "author_position": "",
+        "published_in": "International Conference on Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "586",
+        "issue": "",
+        "pages": "586",
+        "year": "2017",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Automated diagnosis of retinal Edema from optical coherence tomography images",
+        "authors": "Abdul Wahab Arif, Ammara Nasim, Adeel M Syed, Taimur Hassan",
+        "author_position": "",
+        "published_in": "International Conference on Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "68",
+        "issue": "",
+        "pages": "68",
+        "year": "2017",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Automated Gland Segmentation Leading to Cancer Detection for Colorectal Biopsy Images",
+        "authors": "Fawad Hussain Naqvi, Salahuddin Ayubi, Ammara Nasim, Zeeshan Zafar",
+        "author_position": "",
+        "published_in": "Future of Information and Communication Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "75",
+        "issue": "",
+        "pages": "75",
+        "year": "2019",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Development of EMD-based framework for modelling the effects of chiropractic care",
+        "authors": "Aitzaz Saleem, Ammara Nasim, Maheen Khalid, Hassan Kazmi",
+        "author_position": "",
+        "published_in": "20th International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "12",
+        "issue": "",
+        "pages": "12",
+        "year": "2023",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "A Robust Semantic Segmentation Framework for Baggage Threat Detection",
+        "authors": "Saad Mazhar Khan, Muhammad Usman Akram, Anum Abdul Salam, Ammara Nasim",
+        "author_position": "",
+        "published_in": "International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "38",
+        "issue": "",
+        "pages": "38",
+        "year": "2025",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Incremental Instance Segmentation for Cluttered Baggage Threat Detection",
+        "authors": "Ammara Nasim, Divya Velayudhan, Abdelfatah Hassan Ahmed, Taimur Hassan, Samet Akcay, Muhammad Usman Akram, Naoufel Werghi",
+        "author_position": "",
+        "published_in": "IEEE International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "247",
+        "issue": "",
+        "pages": "247",
+        "year": "2023",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "A Cross-domain Vision Transformer Based Framework for Baggage Threat Classification",
+        "authors": "Ammara Nasim, Zawar Khan, Taimur Hassan, Soyiba Jawed, Muhammad Usman Akram, Jahan Zeb, Muhammad Belal Afsar Khan",
+        "author_position": "",
+        "published_in": "16th International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "1",
+        "issue": "",
+        "pages": "493",
+        "year": "2024",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "A Cross-Domain Threat Screening and Localization Framework Using Vision Transformers and Self-supervised Learning",
+        "authors": "Ammara Nasim, Muhammad Usman Akram, Muhammad Belal Afsar Khan, Asad Mansoor Khan, Taimur Hassan",
+        "author_position": "",
+        "published_in": "14th International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "18",
+        "issue": "",
+        "pages": "0",
+        "year": "2024",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Fully automated robust system to detect retinal edema, central serous chorioretinopathy and age-related macular degeneration from optical coherence tomography images",
+        "authors": "Samina Khalid, M. Usman Akram, Taimur Hassan, Ammara Nasim, Amina Jameel",
+        "author_position": "",
+        "published_in": "BioMed Research International",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "7148245",
+        "issue": "",
+        "pages": "7148245",
+        "year": "2017",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "No-reference image quality assessment using bag-of-features with feature selection",
+        "authors": "Imran Fareed Nizami, Mobeen ur Rehman, Syed Muhammad Anwar, Ammara Nasim, Khawar Khurshid",
+        "author_position": "",
+        "published_in": "Multimedia Tools and Applications",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "7811",
+        "issue": "",
+        "pages": "79",
+        "year": "2020",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Class and Data-Incremental Learning Framework for Baggage Threat Segmentation via Knowledge Distillation",
+        "authors": "Ammara Nasim, Saad Mazhar Khan, Anum Abdus Salam, Arslan Shaukat, Taimur Hassan, Adeel M Syed, Muhammad Usman Akram",
+        "author_position": "",
+        "published_in": "IEEE Access",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "11017635",
+        "issue": "",
+        "pages": "13",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Regressor Driven Incremental Instance Segmentation for Contraband Items Identification",
+        "authors": "Ammara Nasim, Mahboob Anwar, Muhammad Owais, Samet Akcay, Divya Velayudhan, Muhammad Usman Akram, Mohammed Ghazal, Naoufel Werghi, Taimur Hassan",
+        "author_position": "",
+        "published_in": "Engineering Applications of Artificial Intelligence",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "111421",
+        "issue": "",
+        "pages": "157",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [],
+    "references": [
+      {
+        "name": "Dr. Saleem Aslam",
+        "designation": "Professor",
+        "organization": "Department of EE, Bahria University",
+        "email": "saleem.buic@bahria.edu.pk",
+        "phone": "03135155073",
+        "relationship": ""
+      },
+      {
+        "name": "Dr. Muhammad Usman Akram",
+        "designation": "Professor, HoD CEME, NUST",
+        "organization": "CEME, NUST",
+        "email": "usman.akram@ceme.nust.edu.pk",
+        "phone": "03336913921",
+        "relationship": ""
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [
+        {
+          "title": "Fully automated robust system to detect retinal edema, central serous chorioretinopathy and age-related macular degeneration from optical coherence tomography images",
+          "journal": "BioMed Research International",
+          "year": "2017",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "No-reference image quality assessment using bag-of-features with feature selection",
+          "journal": "Multimedia Tools and Applications",
+          "year": "2020",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "Class and Data-Incremental Learning Framework for Baggage Threat Segmentation via Knowledge Distillation",
+          "journal": "IEEE Access",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "Regressor Driven Incremental Instance Segmentation for Contraband Items Identification",
+          "journal": "Engineering Applications of Artificial Intelligence",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        }
+      ],
+      "conference_analyses": [
+        {
+          "title": "Investigating 3D Echocardiography Image Fusion for Improving Image Quality",
+          "conference": "IEEE International Conference",
+          "year": "2013",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "Contrast 3D Echocardiographic Segmentation by Image Inversion",
+          "conference": "IEEE International Multi Topic Conference",
+          "year": "2014",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "Review of OCT and Fundus images for detecting Macular Edema",
+          "conference": "IEEE International Conference",
+          "year": "2015",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        },
+        {
+          "title": "Fully automated identification of heart sounds for the analysis of cardiovascular pathology",
+          "conference": "Future Conference",
+          "year": "2018",
+          "core_rank": "Unknown",
+          "indexed": false,
+          "maturity": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "Automated identification of colorectal gland sparsity from benign images",
+          "conference": "International Conference on Image Processing",
+          "year": "2017",
+          "core_rank": "A*",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        },
+        {
+          "title": "Mitosis detection in breast cancer by inference of segmentation and bag of features",
+          "conference": "International Conference on Conference",
+          "year": "2017",
+          "core_rank": "",
+          "indexed": false,
+          "maturity": "",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "Automated diagnosis of retinal Edema from optical coherence tomography images",
+          "conference": "International Conference on Conference",
+          "year": "2017",
+          "core_rank": "Unknown",
+          "indexed": false,
+          "maturity": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 40
+        },
+        {
+          "title": "Automated Gland Segmentation Leading to Cancer Detection for Colorectal Biopsy Images",
+          "conference": "Future of Information and Communication Conference",
+          "year": "2019",
+          "core_rank": "",
+          "indexed": false,
+          "maturity": "",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "Development of EMD-based framework for modelling the effects of chiropractic care",
+          "conference": "20th International Conference",
+          "year": "2023",
+          "core_rank": "B",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "A Robust Semantic Segmentation Framework for Baggage Threat Detection",
+          "conference": "International Conference",
+          "year": "2025",
+          "core_rank": "B",
+          "indexed": true,
+          "maturity": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 60
+        },
+        {
+          "title": "Incremental Instance Segmentation for Cluttered Baggage Threat Detection",
+          "conference": "IEEE International Conference",
+          "year": "2023",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "A Cross-domain Vision Transformer Based Framework for Baggage Threat Classification",
+          "conference": "16th International Conference",
+          "year": "2024",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "A Cross-Domain Threat Screening and Localization Framework Using Vision Transformers and Self-supervised Learning",
+          "conference": "14th International Conference",
+          "year": "2024",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        }
+      ],
+      "topic_variability": {
+        "topics": [
+          "edema | automated | images",
+          "incremental | segmentation | baggage",
+          "image | 3d | quality",
+          "framework | based | vision",
+          "colorectal | gland | cancer"
+        ],
+        "diversity_score": 29.4,
+        "focus": "Diverse/Interdisciplinary",
+        "cluster_distribution": {
+          "2": 3,
+          "0": 4,
+          "4": 3,
+          "3": 3,
+          "1": 4
+        }
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 44,
+        "frequent_collaborators": [
+          {
+            "name": "Taimur Hassan",
+            "count": 10
+          },
+          {
+            "name": "Muhammad Usman Akram",
+            "count": 6
+          },
+          {
+            "name": "M. Usman Akram",
+            "count": 3
+          },
+          {
+            "name": "Kashif Rajpoot",
+            "count": 2
+          },
+          {
+            "name": "Bilal Hassan",
+            "count": 2
+          }
+        ],
+        "avg_coauthors_per_paper": 5.0,
+        "collaboration_score": 100,
+        "collaboration_breadth": "High"
+      },
+      "educational_analysis": {
+        "highest_degree": "PhD",
+        "performance_trend": "Declining",
+        "institutional_quality": [
+          {
+            "institution": "Federal",
+            "ranking": "Not verified",
+            "level": "SSC"
+          },
+          {
+            "institution": "Federal",
+            "ranking": "Not verified",
+            "level": "HSSC"
+          },
+          {
+            "institution": "NUST, SEECS",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          },
+          {
+            "institution": "UET Taxila",
+            "ranking": "Not verified",
+            "level": "Master"
+          },
+          {
+            "institution": "NUST, CEME",
+            "ranking": "Not verified",
+            "level": "PhD"
+          }
+        ],
+        "gaps": [
+          {
+            "after": "HSSC",
+            "before": "Bachelor",
+            "duration_years": 3,
+            "justified": false
+          },
+          {
+            "after": "Bachelor",
+            "before": "Master",
+            "duration_years": 3,
+            "justified": false
+          },
+          {
+            "after": "Master",
+            "before": "PhD",
+            "duration_years": 8,
+            "justified": false
+          }
+        ],
+        "progression_score": 60
+      },
+      "experience_analysis": {
+        "total_years": 12,
+        "overlaps": [
+          {
+            "job1": "Lab Engineer",
+            "job2": "Lecturer",
+            "period": "2017-2017"
+          },
+          {
+            "job1": "Lecturer",
+            "job2": "Assistant Professor",
+            "period": "2021-2021"
+          },
+          {
+            "job1": "Assistant Professor",
+            "job2": "Wing Head (Applied AI Lab)",
+            "period": "2025-2026"
+          }
+        ],
+        "gaps": [],
+        "progression": "Lateral",
+        "consistency_score": 60
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [],
+        "alignment_score": 0
+      }
+    },
+    "ranking": {
+      "total_score": 72.0,
+      "education_score": 60,
+      "research_score": 100,
+      "experience_score": 60,
+      "skills_score": 0,
+      "collaboration_score": 100,
+      "ranking_tier": "Very Good"
+    },
+    "summary": {
+      "assessment": "Ammara Nasim is a highly accomplished academic and professional with a PhD and 12 years of experience. Her research focus on diverse and interdisciplinary topics is a significant strength, and her publication record of 17 publications is impressive. With a ranking score of 72.0, she falls into the 'Very Good' category, indicating a strong candidate. Her scores in research and collaboration are perfect, at 100, showcasing her exceptional abilities in these areas. However, her scores in education and experience are average, at 60, which may indicate some areas for improvement. The lack of skills score is also a notable gap in her profile.",
+      "strengths": [
+        "Exceptional research abilities",
+        "Strong collaboration and teamwork skills",
+        "Impressive publication record"
+      ],
+      "concerns": [
+        "Average education score",
+        "Limited skills profile",
+        "Potential for improvement in experience and education areas"
+      ],
+      "recommendation": "Strong Hire"
+    },
+    "_source": "1d81e34f_Ammara_Nasim.pdf",
+    "_missing": [
+      "Email address",
+      "Phone number"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Assistant Professor - Electrical & Computer Engineering - SEECS\n\nDear Ammara Nasim,\n\nThank you for your application for the position of Assistant Professor - Electrical & Computer Engineering - SEECS.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Email address\n• Phone number\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System",
+    "_id": "69fdba8891743fbf2cea0ce4"
+  }
+]

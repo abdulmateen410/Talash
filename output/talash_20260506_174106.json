@@ -1,0 +1,250 @@
+[
+  {
+    "personal_info": {
+      "name": "MUHAMMAD SHAHWAZ",
+      "father_name": "MUHAMMAD NASEEM SOHAIL",
+      "dob": "23-Feb-1988",
+      "nationality": "PAKISTANI",
+      "marital_status": "Un-Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "00",
+      "expected_salary": "00",
+      "present_employment": "Unemployed",
+      "apply_date": "20-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "primary",
+        "level": "Other",
+        "specialization": "science",
+        "grade_cgpa_percentage": "70",
+        "passing_year": "1988",
+        "start_year": "",
+        "institution": "",
+        "board_university": "karachi board",
+        "location": ""
+      },
+      {
+        "degree": "FSC",
+        "level": "HSSC",
+        "specialization": "PRE-ENGINEERING",
+        "grade_cgpa_percentage": "54",
+        "passing_year": "2005",
+        "start_year": "",
+        "institution": "",
+        "board_university": "karachi INTER board",
+        "location": ""
+      },
+      {
+        "degree": "SSC",
+        "level": "SSC",
+        "specialization": "science",
+        "grade_cgpa_percentage": "77",
+        "passing_year": "2003",
+        "start_year": "",
+        "institution": "",
+        "board_university": "karachi matric board",
+        "location": ""
+      },
+      {
+        "degree": "BACHELOR OF ENGINEERING",
+        "level": "Bachelor",
+        "specialization": "ELECTRONICS",
+        "grade_cgpa_percentage": "75",
+        "passing_year": "2012",
+        "start_year": "",
+        "institution": "DAWOOD COLEEGE OF ENGINEERING AND TECHNOLOGY",
+        "board_university": "",
+        "location": ""
+      },
+      {
+        "degree": "M.ENGG",
+        "level": "Master",
+        "specialization": "ELECTRONICS",
+        "grade_cgpa_percentage": "2.97",
+        "passing_year": "2017",
+        "start_year": "",
+        "institution": "NED UET KARACHI",
+        "board_university": "",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [
+      {
+        "post": "trainee engineer",
+        "organization": "tuwairqi steel mill",
+        "location": "karachi",
+        "start_date": "Jul-2014",
+        "end_date": "Dec-2014",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "INTERNSHIP",
+        "organization": "PTCL",
+        "location": "SWITCHING AND TRANSMISSION NETWORK",
+        "start_date": "Jan-2011",
+        "end_date": "Feb-2011",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "INTERNSHIP",
+        "organization": "PIA",
+        "location": "AIRPORT ENGG DEPT KARACHI",
+        "start_date": "Jun-2010",
+        "end_date": "Aug-2010",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [
+      {
+        "type": "Membership",
+        "detail": "PAKISTAN ENGG COUCIL AS A REGISTERED ENGINEER",
+        "year": ""
+      }
+    ],
+    "references": [
+      {
+        "name": "FARHAN KHAN",
+        "designation": "ASSISTANT MANAGER",
+        "organization": "",
+        "email": "",
+        "phone": "03089012009",
+        "relationship": "Reference"
+      },
+      {
+        "name": "MUHAMMAD SAAD KHAN",
+        "designation": "PCB DESIGN ENGINEER",
+        "organization": "",
+        "email": "",
+        "phone": "03323324526",
+        "relationship": "Reference"
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [],
+      "conference_analyses": [],
+      "topic_variability": {
+        "topics": [],
+        "diversity_score": 0,
+        "focus": "Unknown"
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 0,
+        "frequent_collaborators": [],
+        "avg_coauthors_per_paper": 0,
+        "collaboration_score": 0
+      },
+      "educational_analysis": {
+        "highest_degree": "M.ENGG",
+        "performance_trend": "Declining",
+        "institutional_quality": [
+          {
+            "institution": "DAWOOD COLEEGE OF ENGINEERING AND TECHNOLOGY",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          },
+          {
+            "institution": "NED UET KARACHI",
+            "ranking": "Not verified",
+            "level": "Master"
+          }
+        ],
+        "gaps": [
+          {
+            "after": "Other",
+            "before": "SSC",
+            "duration_years": 14,
+            "justified": false
+          },
+          {
+            "after": "SSC",
+            "before": "HSSC",
+            "duration_years": 1,
+            "justified": false
+          },
+          {
+            "after": "HSSC",
+            "before": "Bachelor",
+            "duration_years": 6,
+            "justified": false
+          },
+          {
+            "after": "Bachelor",
+            "before": "Master",
+            "duration_years": 4,
+            "justified": false
+          }
+        ],
+        "progression_score": 50
+      },
+      "experience_analysis": {
+        "total_years": 0,
+        "overlaps": [],
+        "gaps": [
+          {
+            "type": "Between jobs",
+            "duration_years": 3,
+            "period": "2011-2014"
+          }
+        ],
+        "progression": "Lateral",
+        "consistency_score": 65
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [],
+        "alignment_score": 0
+      }
+    },
+    "ranking": {
+      "total_score": 26.2,
+      "education_score": 50,
+      "research_score": 0,
+      "experience_score": 65,
+      "skills_score": 0,
+      "collaboration_score": 0,
+      "ranking_tier": "Needs Improvement"
+    },
+    "summary": {
+      "assessment": "```\n{\n  \"assessment\": \"Muhammad Shahwaz's profile presents a mixed picture, with some areas of promise but also significant gaps in experience and research output. The candidate's highest degree is an M.Engg, which is a positive indicator of their educational attainment, but the lack of research publications and unknown research focus are notable concerns. The overall ranking score of 26.2 and ranking tier of 'Needs Improvement' suggest that the candidate has significant room for growth and development.\n\nThe educational progression score of 50 is a neutral indicator, suggesting that the candidate has made some progress in their academic pursuits but may not have fully optimized their educational opportunities. The experience consistency score of 65 is a relative strength, indicating that the candidate has some degree of stability and reliability in their professional endeavors. However, the lack of topic diversity, collaboration, and skill alignment are all areas that require attention and improvement.\n\nOverall, Muhammad Shahwaz's profile suggests that the candidate is at an early stage in their career and requires significant development and growth to reach their full potential. While there are some positive indicators, the candidate's lack of research experience, publications, and skill alignment are significant concerns that need to be addressed. With targeted support and mentorship, the candidate may be able to overcome these challenges and achieve greater success in their field.\n\n\",\n  \"strengths\": [\n    \"Highest degree is an M.Engg, indicating a strong educational foundation\",\n    \"Experience consistency score of 65, suggesting stability and reliability\",\n    \"Potential for growth and development with targeted support and mentorship\"\n  ],\n  \"concerns\": [\n    \"Lack of research publications and unknown research focus\",\n    \"Limited topic diversity and collaboration experience\",\n    \"Zero skill alignment, indicating a need for further training and development\"\n  ],\n  \"recommendation\": \"Maybe\"\n}\n```",
+      "strengths": [],
+      "concerns": [],
+      "recommendation": "Requires manual review"
+    },
+    "_source": "7aafdfb0_cv3.pdf",
+    "_missing": [
+      "Email address",
+      "Phone number",
+      "Publications (if applicable)"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Assistant Professor - Electrical & Computer Engineering - SEECS\n\nDear MUHAMMAD SHAHWAZ,\n\nThank you for your application for the position of Assistant Professor - Electrical & Computer Engineering - SEECS.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Email address\n• Phone number\n• Publications (if applicable)\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System",
+    "username": "admin123",
+    "created_at": 

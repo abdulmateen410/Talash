@@ -1,0 +1,728 @@
+[
+  {
+    "personal_info": {
+      "name": "Matiullah Ahsan",
+      "father_name": "Muhammad Ayub",
+      "dob": "20-Feb-1990",
+      "nationality": "Pakistan",
+      "marital_status": "Un-Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "150k",
+      "expected_salary": "150k",
+      "present_employment": "Unemployed",
+      "apply_date": "26-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "Electrical Power System, High Voltage, Artifical Engineering Intellegence",
+        "level": "PhD",
+        "specialization": "",
+        "grade_cgpa_percentage": "85",
+        "passing_year": "2025",
+        "start_year": "",
+        "institution": "Universiti Tun Hussein Onn Malaysia",
+        "board_university": "Universiti Tun Hussein Onn Malaysia",
+        "location": ""
+      },
+      {
+        "degree": "Electrical Power Engineering",
+        "level": "Master",
+        "specialization": "",
+        "grade_cgpa_percentage": "3.04",
+        "passing_year": "2019",
+        "start_year": "",
+        "institution": "CECOS University of IT and Emerging Sciences",
+        "board_university": "CECOS University of IT and Emerging Sciences",
+        "location": ""
+      },
+      {
+        "degree": "Electrical communication engineering",
+        "level": "Bachelor",
+        "specialization": "",
+        "grade_cgpa_percentage": "2.27",
+        "passing_year": "2014",
+        "start_year": "",
+        "institution": "University of Engineering and Technology, Peshawar",
+        "board_university": "University of Engineering and Technology, Peshawar",
+        "location": ""
+      },
+      {
+        "degree": "FSc pre-engineering",
+        "level": "HSSC",
+        "specialization": "Pre engineering",
+        "grade_cgpa_percentage": "72.9",
+        "passing_year": "2009",
+        "start_year": "",
+        "institution": "Peshawar board",
+        "board_university": "Peshawar board",
+        "location": ""
+      },
+      {
+        "degree": "Science",
+        "level": "SSC",
+        "specialization": "Science",
+        "grade_cgpa_percentage": "70.28",
+        "passing_year": "2006",
+        "start_year": "",
+        "institution": "Peshawar",
+        "board_university": "Peshawar",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [
+      {
+        "post": "Teacher Assistant",
+        "organization": "Universiti tun Hussein onn Malaysia",
+        "location": "Malaysia",
+        "start_date": "Feb-2024",
+        "end_date": "Jan-2025",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Graduate Research Assistance FKEE UTHM",
+        "organization": "UTHM",
+        "location": "Malaysia",
+        "start_date": "Jun-2022",
+        "end_date": "Sep-2023",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [
+      {
+        "title": "Comparative analysis of mathematical and simulation models for electric field generated beneath 400 kV overhead transmission lines",
+        "authors": "Matiullah Ahsan, Matiullah Ahsan, Md Nor Ramdon Baharom, Ihsan Ullah Khalil, Zainab Zainal",
+        "author_position": "",
+        "published_in": "Measurement Part E",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 5.6,
+        "volume": "256",
+        "issue": "",
+        "pages": "118566",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Deep learning based vision transformer approach for detecting overlapping PV faults using multi labeling",
+        "authors": "Umais Khan, Sarim Farqaleet Khan, Ihsan Ullah Khalil, Matiullah Ahsan",
+        "author_position": "",
+        "published_in": "Measurement Part E",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 5.6,
+        "volume": "256",
+        "issue": "",
+        "pages": "118566",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Comparative analysis of mathematical and simulation models for electric field generated beneath 400 kV overhead transmission lines",
+        "authors": "Matiullah Ahsan, Md Nor Ramdon Baharom, Ihsan Ullah Khalil, Zainab Zainal",
+        "author_position": "",
+        "published_in": "Measurement Part E",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 5.6,
+        "volume": "256",
+        "issue": "",
+        "pages": "118566",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Simulation-based analysis of electric field characteristics under high-voltage double-circuit and quadrupole overhead transmission lines",
+        "authors": "Matiullah Ahsan, Md Nor Ramdon Baharom, Ihsan Ullah Khalil, Zainab Zanial Baharom, Ihsan Ullah Khalil, Zainab Zanial",
+        "author_position": "",
+        "published_in": "Journal of Electrostatics",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 1.9,
+        "volume": "135",
+        "issue": "",
+        "pages": "104080",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Analysis of high-ampacity and low-sag conductors of 275 kV overhead transmission lines using reconductoring technique",
+        "authors": "Matiullah Ahsan, Md Nor Bahrom, Ihsan Ullah Khalil, Zainab Zainal Ullah Khalil, Zainab Zainal",
+        "author_position": "",
+        "published_in": "Electric Power Systems Research",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 3.9,
+        "volume": "246",
+        "issue": "",
+        "pages": "111719",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Influence of Oxygen on Dielectric Properties of HFO1336Mzz(E)/CO2 Gas Mixture",
+        "authors": "Rizwan Ahmed, Rahisham Abd Rahman, Muhammad Saufi bin Kamarudin, MD Nor Ramdon bin Baharom, Amir Izzani bin Mohamed, Mati Ullah Ahsan",
+        "author_position": "",
+        "published_in": "Innovations in Power and Advanced Computing",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "",
+        "issue": "",
+        "pages": "1-5",
+        "year": "2023",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Parameters design optimization of grading ring based on electric field analysis through response surface methodology",
+        "authors": "Matiullah Ahsan, Md Nor Ramdon bin Baharom, Zainab binti Zainal, Ihsan Ullah Khalil",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "",
+        "issue": "8",
+        "pages": "100569",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Solar PV adoption for homes (A case of Peshawar, Pakistan)",
+        "authors": "IU Khalil, Abraiz Khattak, Mati Ullah Ahsan, Khattak, Mati Ullah Ahsan",
+        "author_position": "",
+        "published_in": "Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "",
+        "issue": "",
+        "pages": "1-6",
+        "year": "2017",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "SOC prediction of Lithium-Ion Battery using Extended Kalman Filter",
+        "authors": "I.U Khalil, Matiullah Ahsan, Irshad Ullah, Arbab Adnan, Naveed Khan, Shah Nawaz",
+        "author_position": "",
+        "published_in": "International/Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "",
+        "issue": "",
+        "pages": "",
+        "year": "2019",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Unified Fuzzy Logic Based Approach for Detection and Classification of PV Faults Using I-V Trend Line",
+        "authors": "Imran Hussain, Ihsan Ullah Khalil, Aqsa Isla, Matiullah Ahsan",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 3.0,
+        "volume": "15",
+        "issue": "",
+        "pages": "5106",
+        "year": "2022",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Comparative Analysis of Photovoltaic Faults and Performance Evaluation of its Detection Techniques",
+        "authors": "Ihsan Ullah Khalil, Azhar Ul-Haq, Yousef Mahmoud, Marium Jalal, Muhammad Aamir, Mati Ullah Ahsan",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 3.4,
+        "volume": "",
+        "issue": "8",
+        "pages": "26676",
+        "year": "2020",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Measuring and simulation of magnetic field generated by high voltage overhead transmission lines",
+        "authors": "Matiullah Ahsan, Md Nor Ramdon Baharom, Zainab Zainal Ihsan Ullah Khalil",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 6.0,
+        "volume": "23",
+        "issue": "",
+        "pages": "102688",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Improving electric field stress using grading ring devices for insulated cross-arm",
+        "authors": "Matiullah Ahsan, Md Nor Ramdon Baharom, Zainab Zainal, Ihsan Ullah Khalil, Norain Sahari, Enas Ali, Ramy NR Ghaly",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 6.0,
+        "volume": "23",
+        "issue": "",
+        "pages": "102550",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Simulation based comparative analysis of electric field stress on insulated cross-arm",
+        "authors": "Matiullah Ahsan, Md Nor Ramdon Baharom, Zainab Zainal Ihsan Ullah Khalil",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 6.0,
+        "volume": "23",
+        "issue": "",
+        "pages": "102394",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Historical Review of Advancements in Insulated Cross-Arm Technology",
+        "authors": "Matiullah Ahsan, Md Nor Ramdon Bin Baharom, Zainab Zainal, Luqman Hakim Mahmod, Irshad Ullah, Mohd Fairouz Mohd Yousof, Nor Akmal Mohd Jamail, Muhammad Saufi Kamarudin, Rahisham Abd Rahman",
+        "author_position": "",
+        "published_in": "Energies,MDPI",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 3.0,
+        "volume": "15",
+        "issue": "21",
+        "pages": "8221",
+        "year": "2022",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [
+      {
+        "type": "Academic Awards",
+        "detail": "1st Position Holder in 4 semesters in Research during PhD at UTHM",
+        "year": ""
+      },
+      {
+        "type": "Merit Scholarships",
+        "detail": "Graduate research assistant fundamental research grant scheme Ministry of higher education Malaysia",
+        "year": ""
+      }
+    ],
+    "references": [
+      {
+        "name": "Dr. Ihsan Ullah Khalil",
+        "designation": "Assistant Professor NUST",
+        "organization": "Pakistan Navy Engineering College",
+        "email": "Ihsanullahkhalil@pnec.nust.edu.pk",
+        "phone": "03325130679",
+        "relationship": ""
+      },
+      {
+        "name": "Dr Zainab Zainal",
+        "designation": "Senior lecturer",
+        "organization": "Diploma Study Center, Universiti Tun Hussein Onn Malaysia",
+        "email": "zainab@uthm.edu.my",
+        "phone": "+607-4538623",
+        "relationship": ""
+      },
+      {
+        "name": "PROF. MADYA Dr. MD NOR RAMDON BIN BAHAROM",
+        "designation": "Associate Professor",
+        "organization": "Department of Electrical Engineering, Faculty of Engineering, Universiti Tun Hussein Onn Malaysia",
+        "email": "ramdon@uthm.edu.my",
+        "phone": "+60 10-766 8432",
+        "relationship": ""
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [
+        {
+          "title": "Comparative analysis of mathematical and simulation models for electric field generated beneath 400 kV overhead transmission lines",
+          "journal": "Measurement Part E",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 5.6,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "Deep learning based vision transformer approach for detecting overlapping PV faults using multi labeling",
+          "journal": "Measurement Part E",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 5.6,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "Comparative analysis of mathematical and simulation models for electric field generated beneath 400 kV overhead transmission lines",
+          "journal": "Measurement Part E",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 5.6,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 75
+        },
+        {
+          "title": "Simulation-based analysis of electric field characteristics under high-voltage double-circuit and quadrupole overhead transmission lines",
+          "journal": "Journal of Electrostatics",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 1.9,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "Analysis of high-ampacity and low-sag conductors of 275 kV overhead transmission lines using reconductoring technique",
+          "journal": "Electric Power Systems Research",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 3.9,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        },
+        {
+          "title": "Parameters design optimization of grading ring based on electric field analysis through response surface methodology",
+          "journal": "Journal",
+          "year": "2024",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 0.0,
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "Unified Fuzzy Logic Based Approach for Detection and Classification of PV Faults Using I-V Trend Line",
+          "journal": "Journal",
+          "year": "2022",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 3.0,
+          "quartile": "",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "Comparative Analysis of Photovoltaic Faults and Performance Evaluation of its Detection Techniques",
+          "journal": "Journal",
+          "year": "2020",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 3.4,
+          "quartile": "",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "Measuring and simulation of magnetic field generated by high voltage overhead transmission lines",
+          "journal": "Journal",
+          "year": "2024",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 6.0,
+          "quartile": "",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "Improving electric field stress using grading ring devices for insulated cross-arm",
+          "journal": "Journal",
+          "year": "2024",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 6.0,
+          "quartile": "",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "Simulation based comparative analysis of electric field stress on insulated cross-arm",
+          "journal": "Journal",
+          "year": "2024",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 6.0,
+          "quartile": "",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "Historical Review of Advancements in Insulated Cross-Arm Technology",
+          "journal": "Energies,MDPI",
+          "year": "2022",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 3.0,
+          "quartile": "",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        }
+      ],
+      "conference_analyses": [
+        {
+          "title": "Influence of Oxygen on Dielectric Properties of HFO1336Mzz(E)/CO2 Gas Mixture",
+          "conference": "Innovations in Power and Advanced Computing",
+          "year": "2023",
+          "core_rank": "B",
+          "indexed": true,
+          "maturity": "New (<5 years)",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "Solar PV adoption for homes (A case of Peshawar, Pakistan)",
+          "conference": "Conference",
+          "year": "2017",
+          "core_rank": "Unknown",
+          "indexed": false,
+          "maturity": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "SOC prediction of Lithium-Ion Battery using Extended Kalman Filter",
+          "conference": "International/Conference",
+          "year": "2019",
+          "core_rank": "B",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        }
+      ],
+      "topic_variability": {
+        "topics": [
+          "400 | beneath | mathematical",
+          "pv | using | faults",
+          "high | overhead | transmission",
+          "insulated | arm | cross",
+          "oxygen | mixture | properties"
+        ],
+        "diversity_score": 33.3,
+        "focus": "Diverse/Interdisciplinary",
+        "cluster_distribution": {
+          "0": 2,
+          "1": 5,
+          "2": 3,
+          "4": 1,
+          "3": 4
+        }
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 40,
+        "frequent_collaborators": [
+          {
+            "name": "Ihsan Ullah Khalil",
+            "count": 10
+          },
+          {
+            "name": "Md Nor Ramdon Baharom",
+            "count": 6
+          },
+          {
+            "name": "Zainab Zainal",
+            "count": 5
+          },
+          {
+            "name": "Mati Ullah Ahsan",
+            "count": 4
+          },
+          {
+            "name": "Rahisham Abd Rahman",
+            "count": 2
+          }
+        ],
+        "avg_coauthors_per_paper": 5.1,
+        "collaboration_score": 100,
+        "collaboration_breadth": "High"
+      },
+      "educational_analysis": {
+        "highest_degree": "Electrical Power System, High Voltage, Artifical Engineering Intellegence",
+        "performance_trend": "Improving",
+        "institutional_quality": [
+          {
+            "institution": "Peshawar",
+            "ranking": "Not verified",
+            "level": "SSC"
+          },
+          {
+            "institution": "Peshawar board",
+            "ranking": "Not verified",
+            "level": "HSSC"
+          },
+          {
+            "institution": "University of Engineering and Technology, Peshawar",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          },
+          {
+            "institution": "CECOS University of IT and Emerging Sciences",
+            "ranking": "Not verified",
+            "level": "Master"
+          },
+          {
+            "institution": "Universiti Tun Hussein Onn Malaysia",
+            "ranking": "Not verified",
+            "level": "PhD"
+          }
+        ],
+        "gaps": [
+          {
+            "after": "SSC",
+            "before": "HSSC",
+            "duration_years": 2,
+            "justified": false
+          },
+          {
+            "after": "HSSC",
+            "before": "Bachelor",
+            "duration_years": 4,
+            "justified": false
+          },
+          {
+            "after": "Bachelor",
+            "before": "Master",
+            "duration_years": 4,
+            "justified": false
+          },
+          {
+            "after": "Master",
+            "before": "PhD",
+            "duration_years": 5,
+            "justified": false
+          }
+        ],
+        "progression_score": 60
+      },
+      "experience_analysis": {
+        "total_years": 2,
+        "overlaps": [],
+        "gaps": [],
+        "progression": "Progressive",
+        "consistency_score": 80
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [],
+        "alignment_score": 0
+      }
+    },
+    "ranking": {
+      "total_score": 77.0,
+      "education_score": 60,
+      "research_score": 100,
+      "experience_score": 80,
+      "skills_score": 0,
+      "collaboration_score": 100,
+      "ranking_tier": "Very Good"
+    },
+    "summary": {
+      "assessment": "Error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kptex5frf0j8darkk1dwttme` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99920, Requested 2288. Please try again in 31m47.712s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}",
+      "strengths": [],
+      "concerns": [],
+      "recommendation": "Requires manual review"
+    },
+    "_source": "2d6270ff_Matiullah_Ahsan.pdf",
+    "_missing": [
+      "Email address",
+      "Phone number"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Assistant Professor - Electrical & Computer Engineering - SEECS\n\nDear Matiullah Ahsan,\n\nThank you for your application for the position of Assistant Professor - Electrical & Computer Engineering - SEECS.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Email address\n• Phone number\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System",
+    "username": "admin123",
+    "created_at": 

@@ -1,0 +1,619 @@
+[
+  {
+    "personal_info": {
+      "name": "Asim Masood",
+      "father_name": "Talib Hussain Masood",
+      "dob": "10-Feb-1984",
+      "nationality": "Pakistan",
+      "marital_status": "Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "225000",
+      "expected_salary": "225000",
+      "present_employment": "Assistant Professor at Cholistan University of Veterinary and Animal Sciences, Bahawalpur",
+      "apply_date": "25-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "PhD",
+        "level": "PhD",
+        "specialization": "Information and Communication Engineering, Machine Learning, Artificial Intelligence, Speech Processing, Natural Language Processing",
+        "grade_cgpa_percentage": "3.68",
+        "passing_year": "2021",
+        "start_year": "",
+        "institution": "University of Science and Technology of China",
+        "board_university": "University of Science and Technology of China",
+        "location": "China"
+      },
+      {
+        "degree": "MSc",
+        "level": "Master",
+        "specialization": "Microelectronic System and Telecommunication Engineering",
+        "grade_cgpa_percentage": "81",
+        "passing_year": "2008",
+        "start_year": "",
+        "institution": "University of Liverpool",
+        "board_university": "University of Liverpool",
+        "location": "UK"
+      },
+      {
+        "degree": "BE",
+        "level": "Bachelor",
+        "specialization": "Electrical Engineering, Electronics, Signal Processing",
+        "grade_cgpa_percentage": "2.5",
+        "passing_year": "2006",
+        "start_year": "",
+        "institution": "NUST",
+        "board_university": "NUST",
+        "location": ""
+      },
+      {
+        "degree": "HSSC",
+        "level": "HSSC",
+        "specialization": "Pre-Engineering",
+        "grade_cgpa_percentage": "76",
+        "passing_year": "2002",
+        "start_year": "",
+        "institution": "FBISE",
+        "board_university": "FBISE",
+        "location": ""
+      },
+      {
+        "degree": "SSC",
+        "level": "SSC",
+        "specialization": "Science",
+        "grade_cgpa_percentage": "85",
+        "passing_year": "2000",
+        "start_year": "",
+        "institution": "FBISE",
+        "board_university": "FBISE",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [
+      {
+        "post": "Research Student",
+        "organization": "University of Liverpool",
+        "location": "Liverpool, UK",
+        "start_date": "May-2008",
+        "end_date": "Sep-2008",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Research Assistant",
+        "organization": "Victoria University of Wellington",
+        "location": "New Zealand",
+        "start_date": "Aug-2009",
+        "end_date": "Jul-2013",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Lecturer",
+        "organization": "Riphah International University",
+        "location": "Islamabad",
+        "start_date": "Feb-2014",
+        "end_date": "Mar-2016",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Lecturer",
+        "organization": "University of Lahore",
+        "location": "Islamabad",
+        "start_date": "Apr-2016",
+        "end_date": "Aug-2017",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Visiting Faculty Member",
+        "organization": "CISCOM",
+        "location": "Rawalpindi",
+        "start_date": "Feb-2022",
+        "end_date": "Mar-2023",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "General Manager / Principal Machine Learning Engineer",
+        "organization": "WUWI Inc",
+        "location": "Beijing / Islamabad",
+        "start_date": "Mar-2023",
+        "end_date": "Mar-2024",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Assistant Professor",
+        "organization": "Cholistan University of Veterinary and Animal Sciences, Bahawalpur",
+        "location": "Bahawalpur",
+        "start_date": "Mar-2024",
+        "end_date": "Present",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [
+      {
+        "title": "Information theory based redundancy and independent component analysis",
+        "authors": "A. Masood, A K Nandi",
+        "author_position": "",
+        "published_in": "Proceedings of the 2008 IC",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "0",
+        "issue": "",
+        "pages": "25-28",
+        "year": "2008",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Cochlear Microphonic Data Acquisition System",
+        "authors": "A. Masood, P. Teal, C. Hollitt and R. Dykstra",
+        "author_position": "",
+        "published_in": "IEEE Instrumentation and Measurement",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "",
+        "issue": "",
+        "pages": "",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Independent Component Analysis based speech separation using geometric kth nearest neighbor entropy estimator",
+        "authors": "A. Masood, Z. Ye",
+        "author_position": "",
+        "published_in": "IEEE 5th International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "",
+        "issue": "",
+        "pages": "741-745",
+        "year": "2020",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Independent Vector Analysis based Convolutive Speech Separation by Estimating Entropy using Recursive Copula Splitting",
+        "authors": "A. Masood, R. Tong, M. Shakeel and Z.Ye",
+        "author_position": "",
+        "published_in": "15th IEEE International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "",
+        "issue": "",
+        "pages": "646-651",
+        "year": "2020",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Single Channel Speech Separation using Deep and Recurrent Neural Network via Copula Component Analysis",
+        "authors": "Asim Masood, Md Imran Hossain and Zhongfu Ye",
+        "author_position": "",
+        "published_in": "International Journal of Speech Technology",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "32",
+        "issue": "",
+        "pages": "275-283",
+        "year": "2021",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Independent Vector Analysis based convolutive speech separation using geometric kth nearest neighbor entropy estimator",
+        "authors": "Asim Masood, Md Imran Hossain and Zhongfu Ye",
+        "author_position": "",
+        "published_in": "Machine Learning",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "25",
+        "issue": "",
+        "pages": "345-354",
+        "year": "2021",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Dual-Transform Source Separation Using Sparse Non-Negative Matrix Factorization",
+        "authors": "Asim Masood, Md. Imran Hossain, Md. Shohidul Islam, Mst. Titasa Khatun, Rizwan Ullah, Zhongfu Ye",
+        "author_position": "",
+        "published_in": "Circuits, Systems & Signal Processing",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "40",
+        "issue": "",
+        "pages": "1868-1891",
+        "year": "2021",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "A non-invasive cochlear microphonic measurement system",
+        "authors": "Asim Masood, P.D.Teal and C.Hollitt",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "34",
+        "issue": "",
+        "pages": "1191-1195",
+        "year": "2012",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Improvement of Joint Optimization of Masks and Deep Recurrent Neural Networks for Monaural Speech Separation using Optimized Activation Functions",
+        "authors": "Asim Masood, Zhongfu Ye",
+        "author_position": "",
+        "published_in": "Chinese Journal of Acoustics",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "39",
+        "issue": "",
+        "pages": "420-432",
+        "year": "2020",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [
+      {
+        "type": "Merit Scholarships",
+        "detail": "Chinese Government Scholarship for doing PhD from University of Science and Technology of China, Hefei, China",
+        "year": ""
+      },
+      {
+        "type": "Academic Awards",
+        "detail": "Sir Robin Saxby Prize for best MSc project from University of Liverpool UK",
+        "year": ""
+      }
+    ],
+    "references": [
+      {
+        "name": "Brig (Retd) Anwar Hussain",
+        "designation": "Professor",
+        "organization": "School of Mechanical & Manufacturing Engineering, NUST",
+        "email": "anwar.hussain@smme.nust.edu.pk",
+        "phone": "05190856063",
+        "relationship": ""
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [
+        {
+          "title": "Cochlear Microphonic Data Acquisition System",
+          "journal": "IEEE Instrumentation and Measurement",
+          "year": "2024",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q1",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        },
+        {
+          "title": "Single Channel Speech Separation using Deep and Recurrent Neural Network via Copula Component Analysis",
+          "journal": "International Journal of Speech Technology",
+          "year": "2021",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "Independent Vector Analysis based convolutive speech separation using geometric kth nearest neighbor entropy estimator",
+          "journal": "Machine Learning",
+          "year": "2021",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q1",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 90
+        },
+        {
+          "title": "Dual-Transform Source Separation Using Sparse Non-Negative Matrix Factorization",
+          "journal": "Circuits, Systems & Signal Processing",
+          "year": "2021",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "A non-invasive cochlear microphonic measurement system",
+          "journal": "Journal",
+          "year": "2012",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Unknown",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 60
+        },
+        {
+          "title": "Improvement of Joint Optimization of Masks and Deep Recurrent Neural Networks for Monaural Speech Separation using Optimized Activation Functions",
+          "journal": "Chinese Journal of Acoustics",
+          "year": "2020",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": null,
+          "quartile": "Q3",
+          "legitimacy": "Medium",
+          "author_role": "Co-Author",
+          "quality_score": 60
+        }
+      ],
+      "conference_analyses": [
+        {
+          "title": "Information theory based redundancy and independent component analysis",
+          "conference": "Proceedings of the 2008 IC",
+          "year": "2008",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "Independent Component Analysis based speech separation using geometric kth nearest neighbor entropy estimator",
+          "conference": "IEEE 5th International Conference",
+          "year": "2020",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "Independent Vector Analysis based Convolutive Speech Separation by Estimating Entropy using Recursive Copula Splitting",
+          "conference": "15th IEEE International Conference",
+          "year": "2020",
+          "core_rank": "A*",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 90
+        }
+      ],
+      "topic_variability": {
+        "topics": [
+          "entropy | independent | based",
+          "cochlear | microphonic | acquisition",
+          "theory | information | redundancy",
+          "deep | recurrent | neural",
+          "dual | transform | sparse"
+        ],
+        "diversity_score": 55.6,
+        "focus": "Diverse/Interdisciplinary",
+        "cluster_distribution": {
+          "2": 1,
+          "1": 2,
+          "0": 3,
+          "3": 2,
+          "4": 1
+        }
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 15,
+        "frequent_collaborators": [
+          {
+            "name": "Asim Masood",
+            "count": 5
+          },
+          {
+            "name": "A. Masood",
+            "count": 4
+          },
+          {
+            "name": "Md Imran Hossain and Zhongfu Ye",
+            "count": 2
+          },
+          {
+            "name": "Zhongfu Ye",
+            "count": 2
+          },
+          {
+            "name": "A K Nandi",
+            "count": 1
+          }
+        ],
+        "avg_coauthors_per_paper": 2.7,
+        "collaboration_score": 83.3,
+        "collaboration_breadth": "High"
+      },
+      "educational_analysis": {
+        "highest_degree": "PhD",
+        "performance_trend": "Declining",
+        "institutional_quality": [
+          {
+            "institution": "FBISE",
+            "ranking": "Not verified",
+            "level": "SSC"
+          },
+          {
+            "institution": "FBISE",
+            "ranking": "Not verified",
+            "level": "HSSC"
+          },
+          {
+            "institution": "NUST",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          },
+          {
+            "institution": "University of Liverpool",
+            "ranking": "Not verified",
+            "level": "Master"
+          },
+          {
+            "institution": "University of Science and Technology of China",
+            "ranking": "Not verified",
+            "level": "PhD"
+          }
+        ],
+        "gaps": [
+          {
+            "after": "SSC",
+            "before": "HSSC",
+            "duration_years": 1,
+            "justified": false
+          },
+          {
+            "after": "HSSC",
+            "before": "Bachelor",
+            "duration_years": 3,
+            "justified": false
+          },
+          {
+            "after": "Bachelor",
+            "before": "Master",
+            "duration_years": 1,
+            "justified": false
+          },
+          {
+            "after": "Master",
+            "before": "PhD",
+            "duration_years": 12,
+            "justified": false
+          }
+        ],
+        "progression_score": 60
+      },
+      "experience_analysis": {
+        "total_years": 11,
+        "overlaps": [
+          {
+            "job1": "Lecturer",
+            "job2": "Lecturer",
+            "period": "2016-2016"
+          },
+          {
+            "job1": "Visiting Faculty Member",
+            "job2": "General Manager / Principal Machine Learning Engineer",
+            "period": "2023-2023"
+          },
+          {
+            "job1": "General Manager / Principal Machine Learning Engineer",
+            "job2": "Assistant Professor",
+            "period": "2024-2024"
+          }
+        ],
+        "gaps": [
+          {
+            "type": "Between jobs",
+            "duration_years": 5,
+            "period": "2017-2022"
+          }
+        ],
+        "progression": "Progressive",
+        "consistency_score": 25
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [],
+        "alignment_score": 0
+      }
+    },
+    "ranking": {
+      "total_score": 58.1,
+      "education_score": 60,
+      "research_score": 90,
+      "experience_score": 25,
+      "skills_score": 0,
+      "collaboration_score": 83.3,
+      "ranking_tier": "Good"
+    },
+    "summary": {
+      "assessment": "Asim Masood presents a complex profile with both notable strengths and areas for improvement. With a PhD as the highest degree and 11 years of experience, Asim has a solid educational foundation and a significant amount of time to develop his skills and expertise. His research focus is diverse and interdisciplinary, indicating an ability to work across different fields, which is a valuable asset. However, the ranking score of 58.1, categorized as 'Good' but not exceptional, suggests that while Asim is competent, there may be areas where he could improve to stand out more. The full analyses reveal a high collaboration score, which is a significant strength, but also a low skill alignment score, which raises concerns about his fit for specific roles. The educational progression score is average, and the experience consistency is relatively low, which might indicate some inconsistency in his career path or the impact of his work.",
+      "strengths": [
+        "High collaboration score, indicating strong teamwork and partnership skills",
+        "Diverse and interdisciplinary research focus, suggesting adaptability and broad expertise",
+        "Significant experience and a high-level degree, providing a solid foundation for expertise"
+      ],
+      "concerns": [
+        "Low skill alignment score, indicating a potential mismatch between Asim's skills and the requirements of specific positions",
+        "Relatively low experience consistency score, which may suggest gaps or inconsistencies in his career progression or impact",
+        "Average educational progression score and a ranking score that, while good, does not indicate exceptional standing"
+      ],
+      "recommendation": "Hire"
+    },
+    "_source": "a6a77ec6_Asim_Masood.pdf",
+    "_missing": [
+      "Email address",
+      "Phone number",
+      "Professional references (at least 2)"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Assistant Professor - Electrical & Computer Engineering - SEECS\n\nDear Asim Masood,\n\nThank you for your application for the position of Assistant Professor - Electrical & Computer Engineering - SEECS.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Email address\n• Phone number\n• Professional references (at least 2)\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System",
+    "username": "admin123",
+    "created_at": 

@@ -1,0 +1,499 @@
+[
+  {
+    "personal_info": {
+      "name": "Abdul Mateen",
+      "father_name": "",
+      "dob": "",
+      "nationality": "",
+      "marital_status": "",
+      "cnic": "",
+      "email": "amateen.bsds23seecs@seecs.edu.pk",
+      "phone": "+92 314 5077229",
+      "address": "",
+      "current_salary": "",
+      "expected_salary": "",
+      "present_employment": "",
+      "apply_date": "",
+      "post_applied": ""
+    },
+    "education": [
+      {
+        "degree": "Bachelor of Science in Data Science",
+        "level": "Bachelor",
+        "specialization": "Data Science",
+        "grade_cgpa_percentage": "2.77",
+        "passing_year": "2027",
+        "start_year": "2023",
+        "institution": "National University of Science and Technology, Islamabad",
+        "board_university": "",
+        "location": "Islamabad"
+      },
+      {
+        "degree": "HSSC",
+        "level": "HSSC",
+        "specialization": "Pre-Engineering",
+        "grade_cgpa_percentage": "",
+        "passing_year": "2023",
+        "start_year": "2021",
+        "institution": "Jinnah Jame School and College, Haripur",
+        "board_university": "",
+        "location": "Haripur"
+      },
+      {
+        "degree": "SSC",
+        "level": "SSC",
+        "specialization": "Science Group",
+        "grade_cgpa_percentage": "",
+        "passing_year": "2021",
+        "start_year": "2019",
+        "institution": "Islamic International School and College, Cadet Saz Idara",
+        "board_university": "",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [
+      {
+        "qualification": "COMPLETE PYTHON PRO BOOTCAMP",
+        "passing_year": "",
+        "institution": "Dr. Angela Yu"
+      },
+      {
+        "qualification": "Exploratory Data Analysis for Machine Learning",
+        "passing_year": "",
+        "institution": "IBM"
+      }
+    ],
+    "experience": [
+      {
+        "post": "Team Lead (HR)",
+        "organization": "NUST Skill Development Club, NUST Chapter, Islamabad",
+        "location": "Islamabad",
+        "start_date": "Sept 2024",
+        "end_date": "Sept 2025",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "I am responsible for ensuring the morale, well-being and efficiency of this council. All while leading my own team."
+      },
+      {
+        "post": "Executive (Sponsorship)",
+        "organization": "Hami 2.0, NUST Chapter, Islamabad",
+        "location": "Islamabad",
+        "start_date": "March 2025",
+        "end_date": "May 2025",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "I was responsible for all coordination with the sponsors. I also ensured all administrative arrangements and paperwork."
+      },
+      {
+        "post": "Deputy Director (HR)",
+        "organization": "Wall of Hope, NUST Chapter, Islamabad",
+        "location": "Islamabad",
+        "start_date": "Sept 2025",
+        "end_date": "",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "I was responsible for recruitment and culture management"
+      },
+      {
+        "post": "Deputy Director (HR)",
+        "organization": "NUST Trekking Club, NUST Society, Islamabad",
+        "location": "Islamabad",
+        "start_date": "Sept 2025",
+        "end_date": "",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "My role involved overseeing hiring activities and fostering a positive work culture"
+      },
+      {
+        "post": "Deputy Director (HR)",
+        "organization": "Hami 3.0, NUST Chapter, Islamabad",
+        "location": "Islamabad",
+        "start_date": "Feb 2026",
+        "end_date": "May 2026",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "I was in charge of talent acquisition while ensuring a strong and engaging workplace environment."
+      },
+      {
+        "post": "Executive (HR)",
+        "organization": "NUST Fitness Club, NUST Society, Islamabad",
+        "location": "Islamabad",
+        "start_date": "Sept 2026",
+        "end_date": "",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "I handled recruitment processes and managed organizational culture."
+      },
+      {
+        "post": "Deputy Director (HR)",
+        "organization": "Bazm-e-Khidmat, NUST Chapter, Islamabad",
+        "location": "Islamabad",
+        "start_date": "March 2026",
+        "end_date": "",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "I was responsible for recruitment and culture management"
+      },
+      {
+        "post": "Executive (Socails)",
+        "organization": "NUST Cultural Festival, Islamabad",
+        "location": "Islamabad",
+        "start_date": "January 2026",
+        "end_date": "Feb 2026",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "I was managing the whole sound and light setup for the cultural performances along with my team. On the event day our duty was to manage the stalls"
+      },
+      {
+        "post": "Deputy Director (Socails)",
+        "organization": "NUST Music Festival, Islamabad",
+        "location": "Islamabad",
+        "start_date": "April 2026",
+        "end_date": "May 2026",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": "I supervised the entire sound and lighting arrangements for the cultural performances in coordination with my team. On the day of the event, we were responsible for overseeing and organizing the stalls."
+      }
+    ],
+    "publications": [
+      {
+        "title": "Identifying Malicious URLs Using Machine Learning Algorithms",
+        "authors": "A. Mateen",
+        "author_position": "",
+        "published_in": "",
+        "venue_type": "Other",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "",
+        "issue": "",
+        "pages": "",
+        "year": "2025",
+        "type": "Other",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "How the moral values of students are affected after coming to NUST",
+        "authors": "A. Mateen, Abubakr Rashid, Adyaan Ahmed, M. Arshyan Khan, A. Rafay, M. Usman Naeem",
+        "author_position": "",
+        "published_in": "",
+        "venue_type": "Other",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": null,
+        "volume": "",
+        "issue": "",
+        "pages": "",
+        "year": "2025",
+        "type": "Other",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [
+        "Proteus",
+        "VS code",
+        "Masm615",
+        "Excel",
+        "Cisco Packet Tracer",
+        "Powerbi",
+        "Tableau",
+        "Google Colab",
+        "Kaggle Notebook",
+        "SSMS for Data Warehousing",
+        "Android Studio",
+        "Python",
+        "C/C++",
+        "Java",
+        "HTML/CSS",
+        "JS",
+        "Flutter",
+        "Dart",
+        "SQL",
+        "NumPy",
+        "Pandas",
+        "Matplotlib",
+        "Seaborn",
+        "ScikitLearn"
+      ],
+      "research": [],
+      "teaching": [],
+      "languages": [
+        "Python",
+        "C/C++",
+        "Java",
+        "HTML/CSS",
+        "JS",
+        "Flutter",
+        "Dart",
+        "SQL"
+      ],
+      "certifications": [
+        "COMPLETE PYTHON PRO BOOTCAMP",
+        "Exploratory Data Analysis for Machine Learning"
+      ]
+    },
+    "awards_scholarships": [
+      {
+        "type": "Hackathon",
+        "detail": "Finalists in a hackathon with 144 participants locally, and 3000+ around the globe.",
+        "year": ""
+      },
+      {
+        "type": "Best Speech Award",
+        "detail": "",
+        "year": ""
+      }
+    ],
+    "references": [],
+    "analyses": {
+      "journal_analyses": [],
+      "conference_analyses": [],
+      "topic_variability": {
+        "topics": [
+          "Insufficient data"
+        ],
+        "diversity_score": 0,
+        "focus": "Limited publications"
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 6,
+        "frequent_collaborators": [
+          {
+            "name": "A. Mateen",
+            "count": 1
+          },
+          {
+            "name": "Abubakr Rashid",
+            "count": 1
+          },
+          {
+            "name": "Adyaan Ahmed",
+            "count": 1
+          },
+          {
+            "name": "M. Arshyan Khan",
+            "count": 1
+          },
+          {
+            "name": "A. Rafay",
+            "count": 1
+          }
+        ],
+        "avg_coauthors_per_paper": 3.0,
+        "collaboration_score": 100,
+        "collaboration_breadth": "High"
+      },
+      "educational_analysis": {
+        "highest_degree": "Bachelor of Science in Data Science",
+        "performance_trend": "Stable",
+        "institutional_quality": [
+          {
+            "institution": "Islamic International School and College, Cadet Saz Idara",
+            "ranking": "Not verified",
+            "level": "SSC"
+          },
+          {
+            "institution": "Jinnah Jame School and College, Haripur",
+            "ranking": "Not verified",
+            "level": "HSSC"
+          },
+          {
+            "institution": "National University of Science and Technology, Islamabad",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          }
+        ],
+        "gaps": [],
+        "progression_score": 70
+      },
+      "experience_analysis": {
+        "total_years": 2,
+        "overlaps": [
+          {
+            "job1": "Team Lead (HR)",
+            "job2": "Executive (Sponsorship)",
+            "period": "2025-2025"
+          },
+          {
+            "job1": "Team Lead (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2025-2025"
+          },
+          {
+            "job1": "Team Lead (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2025-2025"
+          },
+          {
+            "job1": "Executive (Sponsorship)",
+            "job2": "Deputy Director (HR)",
+            "period": "2025-2025"
+          },
+          {
+            "job1": "Executive (Sponsorship)",
+            "job2": "Deputy Director (HR)",
+            "period": "2025-2025"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2025-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Executive (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Executive (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Executive (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Executive (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Executive (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Executive (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Executive (HR)",
+            "job2": "Deputy Director (HR)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Executive (HR)",
+            "job2": "Executive (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Executive (HR)",
+            "job2": "Deputy Director (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Executive (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Deputy Director (HR)",
+            "job2": "Deputy Director (Socails)",
+            "period": "2026-2026"
+          },
+          {
+            "job1": "Executive (Socails)",
+            "job2": "Deputy Director (Socails)",
+            "period": "2026-2026"
+          }
+        ],
+        "gaps": [],
+        "progression": "Progressive",
+        "consistency_score": 0
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [
+          "Proteus",
+          "VS code",
+          "Masm615",
+          "Excel",
+          "Cisco Packet Tracer",
+          "Powerbi",
+          "Tableau",
+          "Google Colab",
+          "Kaggle Notebook",
+          "SSMS for Data Warehousing"
+        ],
+        "alignment_score": 0.0
+      }
+    },
+    "ranking": {
+      "total_score": 31.0,
+      "education_score": 70,
+      "research_score": 20,
+      "experience_score": 0,
+      "skills_score": 0.0,
+      "collaboration_score": 100,
+      "ranking_tier": "Needs Improvement"
+    },
+    "summary": {
+      "assessment": "Unable to generate assessment",
+      "strengths": [],
+      "concerns": [],
+      "recommendation": "Requires manual review"
+    },
+    "_source": "2fe7c58b_Resume.pdf",
+    "_missing": [
+      "Grade/CGPA for HSSC",
+      "Grade/CGPA for SSC",
+      "Professional references (at least 2)"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Position\n\nDear Abdul Mateen,\n\nThank you for your application for the position of the advertised role.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Grade/CGPA for HSSC\n• Grade/CGPA for SSC\n• Professional references (at least 2)\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System"
+  }
+]

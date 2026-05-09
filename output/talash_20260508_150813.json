@@ -1,0 +1,633 @@
+[
+  {
+    "personal_info": {
+      "name": "Abdur Rehman",
+      "father_name": "Muhammad Siddique",
+      "dob": "22-May-1992",
+      "nationality": "Pakistan",
+      "marital_status": "Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "200000",
+      "expected_salary": "200000",
+      "present_employment": "Unemployed",
+      "apply_date": "26-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "PhD",
+        "level": "PhD",
+        "specialization": "Design of PM Machines, especially flux modulation machines",
+        "grade_cgpa_percentage": "4.29",
+        "passing_year": "2023",
+        "start_year": "",
+        "institution": "Kunsan National University",
+        "board_university": "Kunsan National University",
+        "location": ""
+      },
+      {
+        "degree": "MS",
+        "level": "Master",
+        "specialization": "Design of Electric Machines",
+        "grade_cgpa_percentage": "4.25",
+        "passing_year": "2019",
+        "start_year": "",
+        "institution": "Kunsan National University",
+        "board_university": "Kunsan National University",
+        "location": ""
+      },
+      {
+        "degree": "B.Sc",
+        "level": "Bachelor",
+        "specialization": "Electrical Engineering (Electronics)",
+        "grade_cgpa_percentage": "3.13",
+        "passing_year": "2015",
+        "start_year": "",
+        "institution": "Federal Urdu University of Arts Science and Technology",
+        "board_university": "Federal Urdu University of Arts Science and Technology",
+        "location": ""
+      },
+      {
+        "degree": "Higher Secondary School Certificate",
+        "level": "HSSC",
+        "specialization": "Pre-Engineering",
+        "grade_cgpa_percentage": "68.45",
+        "passing_year": "2010",
+        "start_year": "",
+        "institution": "Federal Board of Intermediate and Secondary Education",
+        "board_university": "Federal Board of Intermediate and Secondary Education",
+        "location": ""
+      },
+      {
+        "degree": "Secondary School Certificate",
+        "level": "SSC",
+        "specialization": "Science",
+        "grade_cgpa_percentage": "61.65",
+        "passing_year": "2008",
+        "start_year": "",
+        "institution": "Federal Board of Intermediate and Secondary Education",
+        "board_university": "Federal Board of Intermediate and Secondary Education",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [
+      {
+        "qualification": "Android Development",
+        "passing_year": "2015",
+        "institution": "CODE Islamabad"
+      },
+      {
+        "qualification": "LINUX, RHCSA, RHCE",
+        "passing_year": "2016",
+        "institution": "CORVIT ISLAMABAD"
+      }
+    ],
+    "experience": [
+      {
+        "post": "Post-Doctoral Fellow",
+        "organization": "Inha University",
+        "location": "Incheon, South Korea",
+        "start_date": "Sep-2023",
+        "end_date": "Oct-2025",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Postdoctoral Researcher",
+        "organization": "Kunsan National University",
+        "location": "Gunsan, South Korea",
+        "start_date": "Jan-2023",
+        "end_date": "Jun-2023",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Workshop Instructor",
+        "organization": "Federal Urdu University of Arts Science and Technology",
+        "location": "Islamabad, Pakistan",
+        "start_date": "Feb-2016",
+        "end_date": "Aug-2017",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [
+      {
+        "title": "Design and Evaluation of PM Vernier Machine for Urban Air Mobility Propulsion",
+        "authors": "Abdur Rehman, Jungmoon Kang and Gilsu Choi",
+        "author_position": "",
+        "published_in": "IEEE Canadian Journal of Electrical",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "1.90",
+        "volume": "4",
+        "issue": "",
+        "pages": "359-369",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Centralized Intelligent Home Energy Management System",
+        "authors": "Abdur Rehman, Faisal Baig, Yousaf Hameed Khattak, Bernabe Mari, Anzar Mahmood",
+        "author_position": "",
+        "published_in": "2017 International Conference on Renewable and Sustainable Energy",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "0.00",
+        "volume": "",
+        "issue": "",
+        "pages": "1–4",
+        "year": "2017",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Design and Analysis of a Vernier Motor Considering Series Compensation",
+        "authors": "Abdur Rehman, Byungtaek Kim, Young Hoon Joo",
+        "author_position": "",
+        "published_in": "IEEE Energy Conversion Congress and Exposition",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "0.00",
+        "volume": "",
+        "issue": "",
+        "pages": "1153–1160",
+        "year": "2020",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Spoke-type PM Vernier as a Promising Candidate for MW-Scale Direct Drive Wind Turbine Applications",
+        "authors": "Abdur Rehman, Byungtaek Kim",
+        "author_position": "",
+        "published_in": "International Conference on Power E",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "0.00",
+        "volume": "",
+        "issue": "",
+        "pages": "161–166",
+        "year": "2023",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Design of a Low-Cost PM Vernier Machine with Improved Electromagnetic Performance",
+        "authors": "Abdur Rehman, Gilsu Choi",
+        "author_position": "",
+        "published_in": "IEEE 21st Biennial Conference on Elect",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "0.00",
+        "volume": "",
+        "issue": "",
+        "pages": "01–02",
+        "year": "2024",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Torque Density Maximization of Vernier Machine by using Series Compensation",
+        "authors": "Abdur Rehman, Byungtaek Kim",
+        "author_position": "",
+        "published_in": "INTERNATIONAL JOURNAL OF APPLIED EL",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "1.10",
+        "volume": "64",
+        "issue": "",
+        "pages": "245–253",
+        "year": "2020",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Characteristics Analysis of Consequent-Pole Ferrite Magnet Vernier Machine Using Novel Equivalent Magnetic Circuit",
+        "authors": "Abdur Rehman, Byungtaek Kim",
+        "author_position": "",
+        "published_in": "IEEE Journal of Emerging and Selected Topics in Power Electronics",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "4.60",
+        "volume": "10",
+        "issue": "",
+        "pages": "1823–1833",
+        "year": "2021",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Design and Analysis of 15 MW SPM Vernier Generator for Direct-Drive Wind Turbine Applications",
+        "authors": "Abdur Rehman, Byungtaek Kim",
+        "author_position": "",
+        "published_in": "Energies",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "3.00",
+        "volume": "16",
+        "issue": "",
+        "pages": "1094",
+        "year": "2023",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Analytical Investigation of Magnetic Scalar Potentials Oscillation in Spoke PM Flux Modulation Machines",
+        "authors": "Lutf Ur Rahman, Abdur Rehman, Byungtaek Kim",
+        "author_position": "",
+        "published_in": "Energies",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "3.00",
+        "volume": "16",
+        "issue": "",
+        "pages": "3658",
+        "year": "2023",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Comparative Analysis and Design Optimization of Ferrite-Based Surface PM Vernier Machines",
+        "authors": "Gwan-Hui Jang, Abdur Rehman, Gilsu Choi",
+        "author_position": "",
+        "published_in": "Energies",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "3.00",
+        "volume": "17",
+        "issue": "",
+        "pages": "1687",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [
+      {
+        "type": "Academic Awards",
+        "detail": "Best Paper of the Year, awarded by Kunsan National University, Korea, for the paper titled “Characteristics Analysis of Consequent-Pole Ferrite Magnet Vernier Machine Using Novel Equivalent Magnetic Circuit”",
+        "year": ""
+      },
+      {
+        "type": "Academic Awards",
+        "detail": "Best Presentation Award from Kunsan National University, Korea during a joint seminar with Yamaguchi University, Japan",
+        "year": ""
+      },
+      {
+        "type": "Membership",
+        "detail": "Member IEEE",
+        "year": ""
+      },
+      {
+        "type": "Membership",
+        "detail": "Registered Engineer with Pakistan Engineering Council, PEC registration number: ELECT/57119",
+        "year": ""
+      }
+    ],
+    "references": [
+      {
+        "name": "Ahmed Fuwad",
+        "designation": "Associate Professor",
+        "organization": "NUST, Islamabad, Pakistan",
+        "email": "ahmed.fuwad@smme.nust.edu.pk",
+        "phone": "+82 10 2941 0434",
+        "relationship": "Reference"
+      },
+      {
+        "name": "Faisal Baig",
+        "designation": "Assistant Professor",
+        "organization": "FUUAST, Islamabad, Pakistan",
+        "email": "engr.fsl.baig@gmail.com",
+        "phone": "+92 314 5328052",
+        "relationship": "Reference"
+      },
+      {
+        "name": "Byungtaek Kim",
+        "designation": "Professor",
+        "organization": "Kunsan National University, Gunsan, South Korea",
+        "email": "btkim@kunsan.ac.kr",
+        "phone": "+82 10 9868 5853",
+        "relationship": "Reference"
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [
+        {
+          "title": "Design and Evaluation of PM Vernier Machine for Urban Air Mobility Propulsion",
+          "journal": "IEEE Canadian Journal of Electrical",
+          "year": "2025",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": "1.90",
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "Torque Density Maximization of Vernier Machine by using Series Compensation",
+          "journal": "INTERNATIONAL JOURNAL OF APPLIED EL",
+          "year": "2020",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": "1.10",
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "Characteristics Analysis of Consequent-Pole Ferrite Magnet Vernier Machine Using Novel Equivalent Magnetic Circuit",
+          "journal": "IEEE Journal of Emerging and Selected Topics in Power Electronics",
+          "year": "2021",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": "4.60",
+          "quartile": "Q1",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 90
+        },
+        {
+          "title": "Design and Analysis of 15 MW SPM Vernier Generator for Direct-Drive Wind Turbine Applications",
+          "journal": "Energies",
+          "year": "2023",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": "3.00",
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        },
+        {
+          "title": "Analytical Investigation of Magnetic Scalar Potentials Oscillation in Spoke PM Flux Modulation Machines",
+          "journal": "Energies",
+          "year": "2023",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": "3.00",
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 75
+        },
+        {
+          "title": "Comparative Analysis and Design Optimization of Ferrite-Based Surface PM Vernier Machines",
+          "journal": "Energies",
+          "year": "2024",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": "3.00",
+          "quartile": "Q2",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        }
+      ],
+      "conference_analyses": [
+        {
+          "title": "Centralized Intelligent Home Energy Management System",
+          "conference": "2017 International Conference on Renewable and Sustainable Energy",
+          "year": "2017",
+          "core_rank": "B",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 60
+        },
+        {
+          "title": "Design and Analysis of a Vernier Motor Considering Series Compensation",
+          "conference": "IEEE Energy Conversion Congress and Exposition",
+          "year": "2020",
+          "core_rank": "A*",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 90
+        },
+        {
+          "title": "Spoke-type PM Vernier as a Promising Candidate for MW-Scale Direct Drive Wind Turbine Applications",
+          "conference": "International Conference on Power E",
+          "year": "2023",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 85
+        },
+        {
+          "title": "Design of a Low-Cost PM Vernier Machine with Improved Electromagnetic Performance",
+          "conference": "IEEE 21st Biennial Conference on Elect",
+          "year": "2024",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        }
+      ],
+      "topic_variability": {
+        "topics": [
+          "home | centralized | energy",
+          "ferrite | machines | magnetic",
+          "wind | mw | drive",
+          "series | compensation | torque",
+          "machine | pm | design"
+        ],
+        "diversity_score": 50.0,
+        "focus": "Diverse/Interdisciplinary",
+        "cluster_distribution": {
+          "4": 2,
+          "0": 1,
+          "3": 2,
+          "2": 2,
+          "1": 3
+        }
+      },
+      "coauthorship_analysis": {
+        "total_coauthors": 10,
+        "frequent_collaborators": [
+          {
+            "name": "Byungtaek Kim",
+            "count": 6
+          },
+          {
+            "name": "Gilsu Choi",
+            "count": 2
+          },
+          {
+            "name": "Jungmoon Kang and Gilsu Choi",
+            "count": 1
+          },
+          {
+            "name": "Faisal Baig",
+            "count": 1
+          },
+          {
+            "name": "Yousaf Hameed Khattak",
+            "count": 1
+          }
+        ],
+        "avg_coauthors_per_paper": 2.6,
+        "collaboration_score": 50.0,
+        "collaboration_breadth": "Moderate"
+      },
+      "educational_analysis": {
+        "highest_degree": "PhD",
+        "performance_trend": "Declining",
+        "institutional_quality": [
+          {
+            "institution": "Federal Board of Intermediate and Secondary Education",
+            "ranking": "Not verified",
+            "level": "SSC"
+          },
+          {
+            "institution": "Federal Board of Intermediate and Secondary Education",
+            "ranking": "Not verified",
+            "level": "HSSC"
+          },
+          {
+            "institution": "Federal Urdu University of Arts Science and Technology",
+            "ranking": "Not verified",
+            "level": "Bachelor"
+          },
+          {
+            "institution": "Kunsan National University",
+            "ranking": "Not verified",
+            "level": "Master"
+          },
+          {
+            "institution": "Kunsan National University",
+            "ranking": "Not verified",
+            "level": "PhD"
+          }
+        ],
+        "gaps": [
+          {
+            "after": "SSC",
+            "before": "HSSC",
+            "duration_years": 1,
+            "justified": false
+          },
+          {
+            "after": "HSSC",
+            "before": "Bachelor",
+            "duration_years": 4,
+            "justified": false
+          },
+          {
+            "after": "Bachelor",
+            "before": "Master",
+            "duration_years": 3,
+            "justified": false
+          },
+          {
+            "after": "Master",
+            "before": "PhD",
+            "duration_years": 3,
+            "justified": false
+          }
+        ],
+        "progression_score": 60
+      },
+      "experience_analysis": {
+        "total_years": 3,
+        "overlaps": [
+          {
+            "job1": "Post-Doctoral Fellow",
+            "job2": "Postdoctoral Researcher",
+            "period": "2023-2023"
+          }
+        ],
+        "gaps": [
+          {
+            "type": "Between jobs",
+            "duration_years": 6,
+            "period": "2017-2023"
+          }
+        ],
+        "progression": "Lateral",
+        "consistency_score": 40
+      },
+      "skill_alignment": {
+        "evidenced_skills": [],
+        "weak_evidence": [],
+        "alignment_score": 0
+      }
+    },
+    "ranking": {
+      "total_score": 62.0,
+      "education_score": 60,
+      "research_score": 100,
+      "experience_score": 40,
+      "skills_score": 0,
+      "collaboration_score": 50.0,
+      "ranking_tier": "Good"
+    },
+    "summary": {
+      "assessment": "Abdur Rehman is a PhD holder with a diverse and interdisciplinary research focus, indicating a strong ability to work across multiple fields. With 10 publications in just 3 years of experience, Abdur Rehman demonstrates a high level of research productivity. However, the candidate's overall ranking score of 62.0, while good, suggests that there may be areas for improvement. The scores breakdown reveals exceptional research skills, but lower scores in education, experience, and skills, which may be a cause for concern.",
+      "strengths": [
+        "High research productivity with 10 publications in 3 years",
+        "Diverse and interdisciplinary research focus",
+        "Exceptional research skills with a score of 100"
+      ],
+      "concerns": [
+        "Lower education score of 60, which may indicate a need for further development",
+        "Limited experience of only 3 years, which may impact ability to lead or mentor",
+        "Lack of skills with a score of 0, which may hinder collaboration and communication"
+      ],
+      "recommendation": "Hire"
+    },
+    "_source": "6329b54d_Abdur_Rehman.pdf",
+    "_missing": [
+      "Email address",
+      "Phone number"
+    ],
+    "_email": "Subject: Additional Information Required - Application for Assistant Professor - Electrical & Computer Engineering - SEECS\n\nDear Abdur Rehman,\n\nThank you for your application for the position of Assistant Professor - Electrical & Computer Engineering - SEECS.\n\nWhile reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:\n\n• Email address\n• Phone number\n\nPlease send us an updated CV with the above information at your earliest convenience.\n\nWe look forward to completing your application review.\n\nBest regards,\nHR Department\nTALASH Recruitment System",
+    "_id": "69fdb60d91743fbf2cea0ce2"
+  }
+]

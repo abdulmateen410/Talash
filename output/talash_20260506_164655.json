@@ -1,0 +1,292 @@
+[
+  {
+    "personal_info": {
+      "name": "Aamina Akbar",
+      "father_name": "Brig Dr. M. Akbar",
+      "dob": "18-Nov-1987",
+      "nationality": "",
+      "marital_status": "Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "200000",
+      "expected_salary": "200000",
+      "present_employment": "Unemployed",
+      "apply_date": "25-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "PhD Electrical (Communication)",
+        "level": "PhD",
+        "specialization": "Wireless Communication, Convex Optimization",
+        "grade_cgpa_percentage": "3.83",
+        "passing_year": "2025",
+        "start_year": "",
+        "institution": "Institute of Space Technology",
+        "board_university": "Institute of Space Technology",
+        "location": ""
+      },
+      {
+        "degree": "MS Electrical (Telecom)",
+        "level": "MS",
+        "specialization": "Telecommunication",
+        "grade_cgpa_percentage": "3.90",
+        "passing_year": "2013",
+        "start_year": "",
+        "institution": "Center for Advanced Studies in Engineering(CASE)",
+        "board_university": "Center for Advanced Studies in Engineering(CASE)",
+        "location": ""
+      },
+      {
+        "degree": "BE Electrical(Telecom)",
+        "level": "Bachelor",
+        "specialization": "Telecommunication",
+        "grade_cgpa_percentage": "2.63",
+        "passing_year": "2010",
+        "start_year": "",
+        "institution": "MUST",
+        "board_university": "MUST",
+        "location": ""
+      },
+      {
+        "degree": "HSSC",
+        "level": "HSSC",
+        "specialization": "Pre-Engineering",
+        "grade_cgpa_percentage": "78%",
+        "passing_year": "2006",
+        "start_year": "",
+        "institution": "",
+        "board_university": "Federal Board",
+        "location": ""
+      },
+      {
+        "degree": "SSC",
+        "level": "SSC",
+        "specialization": "Science",
+        "grade_cgpa_percentage": "88%",
+        "passing_year": "2004",
+        "start_year": "",
+        "institution": "",
+        "board_university": "Federal Board",
+        "location": ""
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [
+      {
+        "post": "Lecturer",
+        "organization": "Foundation University Rawalpindi Campus",
+        "location": "RAWALPINDI",
+        "start_date": "Feb-2014",
+        "end_date": "Sep-2024",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Research Associate",
+        "organization": "Institute of Space Technology, Islamabad, Pakistan",
+        "location": "RAWALPINDI",
+        "start_date": "Oct-2019",
+        "end_date": "Mar-2021",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [
+      {
+        "title": "Joint Backhaul Pairing and Resource Allocation of Moving Small Cells Using NOMA",
+        "authors": "Myra Khalid, Aamina Akbar, Hassaan Khalid Qureshi, Sobia Jangsher",
+        "author_position": "",
+        "published_in": "International Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 0.0,
+        "volume": "",
+        "issue": "",
+        "pages": "1-6",
+        "year": "2023",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Ga-Optimized JT-Comp F-Noma in Hetnets: Adaptive Resource Allocation with Imperfect Sic",
+        "authors": "Aamina Akbar, Ashfaq Ahmed, Adnan Zafar, Sobia Jangsher",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 2.2,
+        "volume": "72",
+        "issue": "",
+        "pages": "102715",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "An energy-efficient JT-CoMP enabled framework with adaptive OMA/NOMA in HetNets",
+        "authors": "Aamina Akbar, Ashfaq Ahmed, Adnan Zafar, Sobia Jangsher",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 4.4,
+        "volume": "254",
+        "issue": "",
+        "pages": "110733",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "NOMA and 5G emerging technologies: A survey on issues and solution techniques",
+        "authors": "Aamina Akbar, Sobia Jangsher, Farrukh Aziz Bhatti",
+        "author_position": "",
+        "published_in": "Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 4.4,
+        "volume": "190",
+        "issue": "",
+        "pages": "107950",
+        "year": "2021",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [
+      {
+        "type": "Merit Scholarships",
+        "detail": "Awarded HEC Faculty development scholarship program for PhD studies.",
+        "year": ""
+      },
+      {
+        "type": "Merit Scholarships",
+        "detail": "Merit scholarship by Army Public School and College for outstanding performance in Secondary School Certificate Examination.",
+        "year": ""
+      },
+      {
+        "type": "Membership",
+        "detail": "Pakistan Engineering Council Number-ELECT/32735",
+        "year": ""
+      },
+      {
+        "type": "Merit Scholarships",
+        "detail": "Merit scholarship in MS Electrical(Telecom) Engineering by Center for Advanced Studies in Engineering(CASE),Islamabad in all semesters(1st,2nd & 3rd).",
+        "year": ""
+      }
+    ],
+    "references": [
+      {
+        "name": "Dr. M. Shaheen Khan Tanoli",
+        "designation": "Dean & Professor at Foundation University School of Science and Technology (FUSST), Rawalpindi Campus",
+        "organization": "Foundation University School of Science and Technology (FUSST), Rawalpindi Campus",
+        "email": "dr.shaheen@fui.edu.pk",
+        "phone": "03175634789",
+        "relationship": "Reference"
+      },
+      {
+        "name": "Dr. Adnan Zafar",
+        "designation": "HoD Electrical Engineering Department",
+        "organization": "Institute of Space Technology (IST), Islamabad",
+        "email": "adnan.zafar@ist.edu.pk",
+        "phone": "03414965030",
+        "relationship": "Reference"
+      },
+      {
+        "name": "Dr. Sobia Jangsher",
+        "designation": "Assistant Professor at Dublin City University (DCU), Ireland",
+        "organization": "Dublin City University (DCU), Ireland",
+        "email": "sobia.jangsher@dcu.ie",
+        "phone": "032355524892",
+        "relationship": "Reference"
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [
+        {
+          "title": "Ga-Optimized JT-Comp F-Noma in Hetnets: Adaptive Resource Allocation with Imperfect Sic",
+          "journal": "Journal",
+          "year": "2025",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 2.2,
+          "quartile": "Unknown",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "An energy-efficient JT-CoMP enabled framework with adaptive OMA/NOMA in HetNets",
+          "journal": "Journal",
+          "year": "2024",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 4.4,
+          "quartile": "Unknown",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 40
+        },
+        {
+          "title": "NOMA and 5G emerging technologies: A survey on issues and solution techniques",
+          "journal": "Journal",
+          "year": "2021",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 4.4,
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        }
+      ],
+      "conference_analyses": [
+        {
+          "title": "Joint Backhaul Pairing and Resource Allocation of Moving Small Cells Using NOMA",
+          "conference": "International Conference",
+          "year": "2023",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        }
+      ],
+      "topic_variability": {
+        "topics": [
+          "adaptive | hetnets | jt",
+          "issues | solution | emerging",
+          "using | backhaul | small"
+        ],
+        "diversity_score": 75.0,
+        "focus": "Diverse/Interdisciplinary",
+        "cluster_distribution": {

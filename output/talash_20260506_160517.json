@@ -1,0 +1,322 @@
+[
+  {
+    "personal_info": {
+      "name": "MUHAMMAD SALMAN QAMAR",
+      "father_name": "QAMAR UZ ZAMAN",
+      "dob": "10-Nov-1988",
+      "nationality": "PAKISTANI",
+      "marital_status": "Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "200000",
+      "expected_salary": "200000",
+      "present_employment": "Associate Professor at Xi'an International University, China",
+      "apply_date": "22-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "PhD in Electrical Engineering",
+        "level": "PhD",
+        "specialization": "Communication Systems",
+        "grade_cgpa_percentage": "3.33",
+        "passing_year": "2024",
+        "start_year": "",
+        "institution": "International Islamic university, Islamabad",
+        "board_university": "International Islamic university, Islamabad",
+        "location": "Islamabad"
+      },
+      {
+        "degree": "MS in Electrical Engineering",
+        "level": "MS",
+        "specialization": "Communication Systems",
+        "grade_cgpa_percentage": "3.03",
+        "passing_year": "2014",
+        "start_year": "",
+        "institution": "COMSATS University, Islamabad, Attock Campus",
+        "board_university": "COMSATS University, Islamabad, Attock Campus",
+        "location": "Attock"
+      },
+      {
+        "degree": "BSc Electronics Engineering",
+        "level": "Bachelor",
+        "specialization": "Electronics",
+        "grade_cgpa_percentage": "69.84",
+        "passing_year": "2011",
+        "start_year": "",
+        "institution": "COMSATS University, Islamabad, Abbottabad Campus",
+        "board_university": "COMSATS University, Islamabad, Abbottabad Campus",
+        "location": "Abbottabad"
+      },
+      {
+        "degree": "HSSC",
+        "level": "HSSC",
+        "specialization": "Pre-Engineering",
+        "grade_cgpa_percentage": "65.45",
+        "passing_year": "2006",
+        "start_year": "",
+        "institution": "B.I.S.E Bannu",
+        "board_university": "B.I.S.E Bannu",
+        "location": "Bannu"
+      },
+      {
+        "degree": "SSC",
+        "level": "SSC",
+        "specialization": "Science Subjects",
+        "grade_cgpa_percentage": "71",
+        "passing_year": "2004",
+        "start_year": "",
+        "institution": "B.I.S.E Bannu",
+        "board_university": "B.I.S.E Bannu",
+        "location": "Bannu"
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [
+      {
+        "post": "Program Coordinator",
+        "organization": "Qurtuba University, D.I.Khan",
+        "location": "DERA ISMAIL KHAN",
+        "start_date": "Sep-2017",
+        "end_date": "Aug-2023",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Support Engineer",
+        "organization": "Al-Rehman enterprises, Islamabad",
+        "location": "Islamabad, Pakistan",
+        "start_date": "Jan-2012",
+        "end_date": "Aug-2015",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Lecturer",
+        "organization": "Qurtuba University, D.I.Khan",
+        "location": "D.I.Khan (KPK), Pakistan",
+        "start_date": "Aug-2015",
+        "end_date": "Mar-2018",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Assistant Professor",
+        "organization": "Qurtuba University, D.I.Khan",
+        "location": "D.I.Khan (KPK), Pakistan",
+        "start_date": "Mar-2018",
+        "end_date": "Aug-2023",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Associate Professor",
+        "organization": "Xi'an International University, China",
+        "location": "Shaanxi, China",
+        "start_date": "Jan-2025",
+        "end_date": "Present",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [
+      {
+        "title": "A Hybrid Framework Integrating Deterministic Clustering, Neural Networks, and Energy-Aware Routing for Enhanced Efficiency and Longevity in Wireless Sensor Network",
+        "authors": "Muhammad Salman Qamar, Muhammad Fahad Munir",
+        "author_position": "",
+        "published_in": "International Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "2.10",
+        "volume": "84",
+        "issue": "",
+        "pages": "5463-5485",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "AI for Cleaner Air: PredictiveModeling of PM2.5 Using Deep Learning and Traditional Time-Series Approaches",
+        "authors": "Muhammad Salman Qamar, Muhammad Fahad Munir, Athar Waseem",
+        "author_position": "",
+        "published_in": "International Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "2.50",
+        "volume": "144",
+        "issue": "",
+        "pages": "3557-3584",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Improvement of Traveling Salesman Problem Solution using Hybrid Algorithm based on Best-Worst Ant System and Particle Swarm Optimization",
+        "authors": "Muhammad Salman Qamar, Shanshan Tu, Farman Ali, Ammar Armghan, Muhammad Fahad Munir, Fayadh Alenezi, Fazal Muhammad, Asar Ali, Norah Alnaim",
+        "author_position": "",
+        "published_in": "International Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "2.80",
+        "volume": "11",
+        "issue": "",
+        "pages": "4780",
+        "year": "2021",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Enhancing Energy Efficiency in WSNs with Hybrid LEACH-D and ANN",
+        "authors": "Muhammad Salman Qamar, Ihsan ul Haq, Muhammad Fahad Munir, Mardeni Bin Roslee, Adnan Anwar Awan, Athar Waseem",
+        "author_position": "",
+        "published_in": "international Conference",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "0.00",
+        "volume": "",
+        "issue": "",
+        "pages": "1-6",
+        "year": "2024",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "A Novel Approach to Energy Optimization: Efficient Path Selection in Wireless Sensor Networks with Hybrid ANN",
+        "authors": "Muhammad Salman Qamar, Ihsan ul Haq, Amil Daraz, Atif M. Alamri, Salman A. AlQahtani",
+        "author_position": "",
+        "published_in": "International Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": "2.10",
+        "volume": "79",
+        "issue": "",
+        "pages": "2945-2970",
+        "year": "2024",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [],
+    "references": [
+      {
+        "name": "Dr. Anwar Khitab",
+        "designation": "Professor",
+        "organization": "MUST, Azad Kashmir",
+        "email": "anwar.ce@must.edu.pk",
+        "phone": "+92 312 5355098",
+        "relationship": ""
+      },
+      {
+        "name": "Dr. Ihsan ul Haq",
+        "designation": "Associate Professor/HOD",
+        "organization": "IIU, Islamabad",
+        "email": "ihsanulhaq@iiu.edu.pk",
+        "phone": "+92 331 5468189",
+        "relationship": ""
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [
+        {
+          "title": "A Hybrid Framework Integrating Deterministic Clustering, Neural Networks, and Energy-Aware Routing for Enhanced Efficiency and Longevity in Wireless Sensor Network",
+          "journal": "International Journal",
+          "year": "2025",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": "2.10",
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 40
+        },
+        {
+          "title": "AI for Cleaner Air: PredictiveModeling of PM2.5 Using Deep Learning and Traditional Time-Series Approaches",
+          "journal": "International Journal",
+          "year": "2025",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": "2.50",
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "Improvement of Traveling Salesman Problem Solution using Hybrid Algorithm based on Best-Worst Ant System and Particle Swarm Optimization",
+          "journal": "International Journal",
+          "year": "2021",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": "2.80",
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        },
+        {
+          "title": "A Novel Approach to Energy Optimization: Efficient Path Selection in Wireless Sensor Networks with Hybrid ANN",
+          "journal": "International Journal",
+          "year": "2024",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": "2.10",
+          "quartile": "Unknown",
+          "legitimacy": "Low",
+          "author_role": "Co-Author",
+          "quality_score": 20
+        }
+      ],
+      "conference_analyses": [
+        {
+          "title": "Enhancing Energy Efficiency in WSNs with Hybrid LEACH-D and ANN",
+          "conference": "international Conference",
+          "year": "2024",
+          "core_rank": "Unknown",
+          "indexed": false,
+          "maturity": "Established (5-10 years)",
+          "author_role": "Co-Author",
+          "quality_score": 40
+        }
+      ],
+      "topic_variability": {
+        "topics": [
+          "energy | ann | hybrid",
+          "learning | series | air",
+          "based | problem | improvement"
+        ],
+        "diversity_score": 60.0,
+        "focus": "Moderately Focused",
+        "cluster_distribution": {

@@ -1,0 +1,308 @@
+[
+  {
+    "personal_info": {
+      "name": "MUHAMMAD ADEEL ALTAF",
+      "father_name": "ALTAf HUSSAIN",
+      "dob": "22-Nov-1989",
+      "nationality": "Pakistan",
+      "marital_status": "Married",
+      "cnic": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "current_salary": "250000",
+      "expected_salary": "250000",
+      "present_employment": "Unemployed",
+      "apply_date": "24-Oct-2025",
+      "post_applied": "Assistant Professor - Electrical & Computer Engineering - SEECS"
+    },
+    "education": [
+      {
+        "degree": "PhD",
+        "level": "PhD",
+        "specialization": "Electronic and Electrical Intelligent Systems and Control",
+        "grade_cgpa_percentage": "3.8",
+        "passing_year": "2026",
+        "start_year": "",
+        "institution": "Kyungpook National University, Daegu",
+        "board_university": "Kyungpook National University, Daegu",
+        "location": "Daegu"
+      },
+      {
+        "degree": "MS",
+        "level": "Master",
+        "specialization": "Electronic Engineering Communications and Networks",
+        "grade_cgpa_percentage": "3.35",
+        "passing_year": "2016",
+        "start_year": "",
+        "institution": "International Islamic University, Islamabad",
+        "board_university": "International Islamic University, Islamabad",
+        "location": "Islamabad"
+      },
+      {
+        "degree": "Computer Systems Engineering",
+        "level": "Bachelor",
+        "specialization": "Security system",
+        "grade_cgpa_percentage": "2.53",
+        "passing_year": "2011",
+        "start_year": "",
+        "institution": "Bahauddin Zakariya University, Multan",
+        "board_university": "Bahauddin Zakariya University, Multan",
+        "location": "Multan"
+      },
+      {
+        "degree": "Fsc",
+        "level": "HSSC",
+        "specialization": "Pre-Engineering",
+        "grade_cgpa_percentage": "61",
+        "passing_year": "2006",
+        "start_year": "",
+        "institution": "BISE Multan",
+        "board_university": "BISE Multan",
+        "location": "Multan"
+      },
+      {
+        "degree": "Matriculation",
+        "level": "SSC",
+        "specialization": "Science group",
+        "grade_cgpa_percentage": "60",
+        "passing_year": "2004",
+        "start_year": "",
+        "institution": "BISE Multan",
+        "board_university": "BISE Multan",
+        "location": "Multan"
+      }
+    ],
+    "professional_qualifications": [],
+    "experience": [
+      {
+        "post": "Assistant Lecturer",
+        "organization": "Times University, Multan",
+        "location": "MULTAN",
+        "start_date": "Sep-2014",
+        "end_date": "Mar-2015",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "System Support Engineer",
+        "organization": "University of Central Punjab, Lahore",
+        "location": "Lahore",
+        "start_date": "Nov-2015",
+        "end_date": "Apr-2016",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      },
+      {
+        "post": "Assistant Network Administrator",
+        "organization": "NFC (Institute of Engineering and Technology)",
+        "location": "MULTAN",
+        "start_date": "May-2016",
+        "end_date": "Feb-2020",
+        "duration_months": null,
+        "employment_type": "",
+        "responsibilities": ""
+      }
+    ],
+    "publications": [
+      {
+        "title": "A Multimodal Framework for MODT Using Enhanced Correlation-Based Affinity Metrics in Autonomous Driving",
+        "authors": "MUHAMMAD ADEEL ALTAF, Min Young Kim",
+        "author_position": "",
+        "published_in": "The 7th International Conference on",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 1.0,
+        "volume": "1",
+        "issue": "1",
+        "pages": "1",
+        "year": "2025",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Multi-Modal Integration of 2D and 3D Attributes for Multi-Vehicles Tracking",
+        "authors": "MUHAMMAD ADEEL ALTAF, Min Young Kim",
+        "author_position": "",
+        "published_in": "15th International Conference on In",
+        "venue_type": "Conference",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 1.0,
+        "volume": "1",
+        "issue": "1",
+        "pages": "1",
+        "year": "2024",
+        "type": "Conference",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Gaussian Mixture Model-based Data Association Incorporating Deep Learning Network for Multivehicle Tracking and Detection in Autonomous Driving Systems",
+        "authors": "MUHAMMAD ADEEL ALTAF, Min Young Kim",
+        "author_position": "",
+        "published_in": "Advanced Intelligent Systems",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 6.1,
+        "volume": "1",
+        "issue": "1",
+        "pages": "1",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Usage of IR Sensors in HVAC Systems, Vehicles, and Manufacturing Industries: A Review",
+        "authors": "MUHAMMAD ADEEL ALTAF, Min Young Kim",
+        "author_position": "",
+        "published_in": "IEEE Sensors Journal",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 5.13,
+        "volume": "22",
+        "issue": "10",
+        "pages": "9164–9176",
+        "year": "2022",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      },
+      {
+        "title": "Multiple Object Detection and Tracking in Autonomous Vehicles: A Survey on Enhanced Affinity Computation and Its Multimodal Applications",
+        "authors": "MUHAMMAD ADEEL ALTAF, Min Young Kim",
+        "author_position": "",
+        "published_in": "ICT Express",
+        "venue_type": "Journal",
+        "issn": "",
+        "isbn": "",
+        "impact_factor": 4.2,
+        "volume": "11",
+        "issue": "11",
+        "pages": "809 – 818",
+        "year": "2025",
+        "type": "Journal",
+        "doi": "",
+        "url": ""
+      }
+    ],
+    "supervision": {
+      "ms_main": [],
+      "ms_co": [],
+      "phd_main": [],
+      "phd_co": [],
+      "publications_with_students": []
+    },
+    "patents": [],
+    "books": [],
+    "skills": {
+      "technical": [],
+      "research": [],
+      "teaching": [],
+      "languages": [],
+      "certifications": []
+    },
+    "awards_scholarships": [
+      {
+        "type": "Membership",
+        "detail": "PEC Engineer membership",
+        "year": ""
+      },
+      {
+        "type": "Merit Scholarships",
+        "detail": "Ph.D. Scholarship at Kyungpook National University, Daegu, South Korea.",
+        "year": ""
+      },
+      {
+        "type": "Academic Awards",
+        "detail": "Won an Excellent Paper Award in the 7th International Conference on Artificial Intelligence in Information and Communication (ICAIIC 2025), Japan.",
+        "year": ""
+      }
+    ],
+    "references": [
+      {
+        "name": "Hassan Khalid",
+        "designation": "Assistant Professor",
+        "organization": "",
+        "email": "",
+        "phone": "03014422904",
+        "relationship": ""
+      }
+    ],
+    "analyses": {
+      "journal_analyses": [
+        {
+          "title": "Gaussian Mixture Model-based Data Association Incorporating Deep Learning Network for Multivehicle Tracking and Detection in Autonomous Driving Systems",
+          "journal": "Advanced Intelligent Systems",
+          "year": "2025",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 6.1,
+          "quartile": "Unknown",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 70
+        },
+        {
+          "title": "Usage of IR Sensors in HVAC Systems, Vehicles, and Manufacturing Industries: A Review",
+          "journal": "IEEE Sensors Journal",
+          "year": "2022",
+          "wos_indexed": true,
+          "scopus_indexed": true,
+          "impact_factor": 5.13,
+          "quartile": "Q1",
+          "legitimacy": "High",
+          "author_role": "Co-Author",
+          "quality_score": 90
+        },
+        {
+          "title": "Multiple Object Detection and Tracking in Autonomous Vehicles: A Survey on Enhanced Affinity Computation and Its Multimodal Applications",
+          "journal": "ICT Express",
+          "year": "2025",
+          "wos_indexed": false,
+          "scopus_indexed": false,
+          "impact_factor": 4.2,
+          "quartile": "Unknown",
+          "legitimacy": "Unknown",
+          "author_role": "Co-Author",
+          "quality_score": 40
+        }
+      ],
+      "conference_analyses": [
+        {
+          "title": "A Multimodal Framework for MODT Using Enhanced Correlation-Based Affinity Metrics in Autonomous Driving",
+          "conference": "The 7th International Conference on",
+          "year": "2025",
+          "core_rank": "",
+          "indexed": false,
+          "maturity": "",
+          "author_role": "Co-Author",
+          "quality_score": 0
+        },
+        {
+          "title": "Multi-Modal Integration of 2D and 3D Attributes for Multi-Vehicles Tracking",
+          "conference": "15th International Conference on In",
+          "year": "2024",
+          "core_rank": "A",
+          "indexed": true,
+          "maturity": "Mature (10+ years)",
+          "author_role": "Co-Author",
+          "quality_score": 80
+        }
+      ],
+      "topic_variability": {
+        "topics": [
+          "autonomous | multimodal | affinity",
+          "multi | 2d | 3d",
+          "ir | manufacturing | usage"
+        ],
+        "diversity_score": 60.0,
+        "focus": "Moderately Focused",
+        "cluster_distribution": {
