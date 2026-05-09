@@ -61,7 +61,30 @@ try:
 except ImportError:
     SKLEARN_OK = False
 
+try:
+    from pymongo import MongoClient
+    from bson import ObjectId
+    MONGO_OK = True
+except ImportError:
+    MONGO_OK = False
+
+import numpy as np
+
+class NumpyJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder that handles numpy types globally."""
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, np.bool_):
+            return bool(obj)
+        return super().default(obj)
+
 app = Flask(__name__)
+app.json_encoder = NumpyJSONEncoder
 app.secret_key = os.environ.get("SECRET_KEY", "talash-secret-key-2026")
 app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024
 
@@ -71,6 +94,23 @@ OUTPUT_DIR = BASE_DIR / "output"
 USERS_FILE = BASE_DIR / "users.json"
 UPLOAD_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
+
+# MongoDB Connection
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
+MONGO_DB_NAME = "Talash_db"
+
+mongo_client = None
+db = None
+
+if MONGO_OK:
+    try:
+        mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        mongo_client.server_info()  # Test connection
+        db = mongo_client[MONGO_DB_NAME]
+        print(f"✓ MongoDB connected: {MONGO_DB_NAME}")
+    except Exception as e:
+        print(f"✗ MongoDB connection failed: {e}")
+        MONGO_OK = False
 
 jobs      = {}
 jobs_lock = threading.Lock()
@@ -102,6 +142,172 @@ def login_required(f):
             return redirect(url_for("login_page"))
         return f(*args, **kwargs)
     return decorated
+
+# ─── MongoDB helpers ──────────────────────────────────────────────────────────
+
+def convert_numpy_types(obj):
+    """Convert numpy types to Python native types for MongoDB compatibility."""
+    if isinstance(obj, dict):
+        return {str(k): convert_numpy_types(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return convert_numpy_types(obj.tolist())
+    elif isinstance(obj, np.bool_):
+        return bool(obj)
+    else:
+        return obj
+
+
+def normalize_grade_to_percentage(value):
+    if value is None:
+        return ""
+    text = str(value).strip()
+    if not text:
+        return ""
+    text = text.replace(",", ".")
+    # Handle fractional formats like 3.2/4.0 or 8.5/10
+    if "/" in text:
+        parts = [p.strip() for p in text.split("/") if p.strip()]
+        if len(parts) >= 2:
+            try:
+                num = float(re.findall(r"\d+\.?\d*", parts[0])[0])
+                den = float(re.findall(r"\d+\.?\d*", parts[1])[0])
+                if den > 0:
+                    return f"{round(num / den * 100, 1)}%"
+            except Exception:
+                pass
+    # Handle explicit percentages
+    if "%" in text:
+        try:
+            num = float(re.findall(r"\d+\.?\d*", text)[0])
+            return f"{round(num, 1)}%"
+        except Exception:
+            return text
+    # Parse plain numeric values
+    try:
+        num = float(re.findall(r"\d+\.?\d*", text)[0])
+    except Exception:
+        return text
+    if num <= 4.0:
+        return f"{round(num * 25, 1)}%"
+    if num <= 10.0:
+        return f"{round(num * 10, 1)}%"
+    return f"{round(num, 1)}%"
+
+
+def normalize_degree_label(level, degree):
+    raw = f"{level or ''} {degree or ''}".strip().lower()
+    if not raw:
+        return "Unknown"
+    if "phd" in raw or "doctor" in raw or "doctorate" in raw:
+        return "PhD"
+    if "master" in raw or "ms" in raw or "m.s" in raw or "m.sc" in raw or "mphil" in raw or "ma" in raw:
+        return "MS"
+    if "bachelor" in raw or "bs" in raw or "b.sc" in raw or "bsc" in raw:
+        return "BS"
+    if "fsc" in raw or "hssc" in raw or "a-level" in raw or "alevel" in raw:
+        return "FSC/A-Level"
+    if "ssc" in raw or "o-level" in raw or "olevel" in raw:
+        return "SSC/O-Level"
+    if "high school" in raw or "secondary" in raw:
+        return "SSC/O-Level"
+    if "intermediate" in raw or "higher secondary" in raw:
+        return "FSC/A-Level"
+    return degree or level or "Unknown"
+
+
+def normalize_education_entry(entry):
+    if not isinstance(entry, dict):
+        return entry
+
+    degree = str(entry.get("degree", "")).strip()
+    level = str(entry.get("level", "")).strip()
+    normalized_degree = normalize_degree_label(level, degree)
+    normalized_level = normalized_degree if normalized_degree in {"PhD", "MS", "BS", "FSC/A-Level", "SSC/O-Level"} else level or normalized_degree
+    normalized_grade = normalize_grade_to_percentage(entry.get("grade_cgpa_percentage", ""))
+
+    return {
+        **entry,
+        "degree": normalized_degree,
+        "level": normalized_level,
+        "grade_cgpa_percentage": normalized_grade
+    }
+
+
+def get_education_weight(level, degree):
+    label = normalize_degree_label(level, degree).lower()
+    order = {
+        "phd": 5,
+        "ms": 4,
+        "bs": 3,
+        "fsc/a-level": 2,
+        "ssc/o-level": 1,
+        "unknown": 0
+    }
+    return order.get(label, 0)
+
+
+def save_candidate_to_db(username, candidate_data):
+    """Save candidate to MongoDB"""
+    if not MONGO_OK or db is None:
+        return None
+    
+    try:
+        # Convert any numpy types to Python native types
+        candidate_data = convert_numpy_types(candidate_data)
+
+        if isinstance(candidate_data.get("education"), list):
+            candidate_data["education"] = [
+                normalize_education_entry(entry)
+                for entry in candidate_data["education"]
+            ]
+        
+        candidate_data["username"] = username
+        candidate_data["created_at"] = datetime.now()
+        candidate_data["updated_at"] = datetime.now()
+        
+        result = db.candidates.insert_one(candidate_data)
+        return str(result.inserted_id)
+    except Exception as e:
+        print(f"Error saving to MongoDB: {e}")
+        return None
+
+def get_all_candidates(username):
+    """Get all candidates for a user from MongoDB"""
+    if not MONGO_OK or db is None:
+        return []
+    
+    try:
+        candidates = list(db.candidates.find({"username": username}).sort("created_at", -1))
+        
+        # Convert ObjectId to string
+        for c in candidates:
+            c["_id"] = str(c["_id"])
+        
+        return candidates
+    except Exception as e:
+        print(f"Error fetching from MongoDB: {e}")
+        return []
+
+def delete_candidate(username, candidate_id):
+    """Delete a candidate from MongoDB"""
+    if not MONGO_OK or db is None:
+        return False
+    
+    try:
+        result = db.candidates.delete_one({
+            "_id": ObjectId(candidate_id),
+            "username": username
+        })
+        return result.deleted_count > 0
+    except Exception as e:
+        print(f"Error deleting from MongoDB: {e}")
+        return False
 
 # ─── Extraction prompts ───────────────────────────────────────────────────────
 
@@ -372,10 +578,9 @@ def parse_json_response(text):
     except json.JSONDecodeError:
         return None
 
-# ─── Research Profile Analysis ────────────────────────────────────────────────
+# ─── Research Profile Analysis (Same as before) ───────────────────────────────
 
 def analyze_journal_publication(pub, client=None):
-    """Analyze a journal publication using external APIs and LLM."""
     analysis = {
         "title": pub.get("title", ""),
         "journal": pub.get("published_in", ""),
@@ -389,8 +594,6 @@ def analyze_journal_publication(pub, client=None):
         "quality_score": 0
     }
     
-    # Simulate API calls (in production, use real APIs)
-    # For demo, use LLM to estimate quality
     if client:
         prompt = f"""
 Analyze this journal publication and estimate its quality:
@@ -416,7 +619,6 @@ Provide quality estimation as JSON:
     return analysis
 
 def analyze_conference_publication(pub, client=None):
-    """Analyze a conference publication."""
     analysis = {
         "title": pub.get("title", ""),
         "conference": pub.get("published_in", ""),
@@ -451,7 +653,6 @@ Provide quality estimation as JSON:
     return analysis
 
 def determine_author_role(pub):
-    """Determine candidate's authorship role."""
     authors = pub.get("authors", "")
     position = pub.get("author_position", "")
     
@@ -475,7 +676,6 @@ def determine_author_role(pub):
     return "Co-Author"
 
 def analyze_topic_variability(publications, client=None):
-    """Analyze research topic diversity using clustering."""
     if not publications or not SKLEARN_OK:
         return {
             "topics": [],
@@ -483,7 +683,6 @@ def analyze_topic_variability(publications, client=None):
             "focus": "Unknown"
         }
     
-    # Extract titles and abstracts
     texts = []
     for pub in publications:
         title = pub.get("title", "")
@@ -497,23 +696,18 @@ def analyze_topic_variability(publications, client=None):
         }
     
     try:
-        # TF-IDF vectorization
         vectorizer = TfidfVectorizer(max_features=50, stop_words='english')
         X = vectorizer.fit_transform(texts)
         
-        # K-means clustering (3-5 clusters)
         n_clusters = min(5, len(texts) // 2 + 1)
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
         labels = kmeans.fit_predict(X)
         
-        # Count publications per cluster
-        cluster_counts = Counter(labels)
+        cluster_counts = Counter(int(k) for k in labels)
         
-        # Calculate diversity score
         total = len(publications)
         diversity = (len(cluster_counts) / total) * 100 if total > 0 else 0
         
-        # Determine focus
         max_cluster_size = max(cluster_counts.values())
         focus_ratio = max_cluster_size / total if total > 0 else 0
         
@@ -524,7 +718,6 @@ def analyze_topic_variability(publications, client=None):
         else:
             focus = "Diverse/Interdisciplinary"
         
-        # Extract top terms per cluster
         topics = []
         feature_names = vectorizer.get_feature_names_out()
         for i in range(n_clusters):
@@ -547,7 +740,6 @@ def analyze_topic_variability(publications, client=None):
         }
 
 def analyze_coauthorship(publications):
-    """Analyze co-authorship patterns."""
     if not publications:
         return {
             "total_coauthors": 0,
@@ -569,19 +761,15 @@ def analyze_coauthorship(publications):
             papers_with_coauthors += 1
             all_coauthors.extend(author_list)
     
-    # Count occurrences
     coauthor_counts = Counter(all_coauthors)
     
-    # Remove the candidate's name (most common) if identifiable
     if coauthor_counts:
         most_common_name = coauthor_counts.most_common(1)[0][0]
         if coauthor_counts[most_common_name] > len(publications) * 0.8:
             del coauthor_counts[most_common_name]
     
-    # Get top collaborators
     top_collaborators = coauthor_counts.most_common(10)
     
-    # Calculate metrics
     unique_coauthors = len(coauthor_counts)
     avg_coauthors = len(all_coauthors) / len(publications) if publications else 0
     collaboration_score = min(100, (unique_coauthors / len(publications)) * 50) if publications else 0
@@ -594,10 +782,9 @@ def analyze_coauthorship(publications):
         "collaboration_breadth": "High" if unique_coauthors > len(publications) else "Moderate" if unique_coauthors > len(publications) * 0.5 else "Low"
     }
 
-# ─── Educational Profile Analysis ─────────────────────────────────────────────
+# ─── Educational & Experience Analysis (Same as before) ───────────────────────
 
 def analyze_educational_profile(education, client=None):
-    """Comprehensive educational profile analysis."""
     if not education:
         return {
             "highest_degree": "None",
@@ -607,26 +794,42 @@ def analyze_educational_profile(education, client=None):
             "progression_score": 0
         }
     
-    # Sort by level
-    level_order = {"SSC": 1, "HSSC": 2, "Bachelor": 3, "Master": 4, "MPhil": 5, "MS": 5, "PhD": 6, "PostDoc": 7}
-    sorted_edu = sorted(education, key=lambda x: level_order.get(x.get("level", "Other"), 0))
+    normalized_education = []
+    for edu in education:
+        degree = str(edu.get("degree", "")).strip()
+        level = str(edu.get("level", "")).strip()
+        normalized_degree = normalize_degree_label(level, degree)
+        normalized_level = normalized_degree if normalized_degree in {"PhD", "MS", "BS", "FSC/A-Level", "SSC/O-Level"} else level or normalized_degree
+        normalized_grade = normalize_grade_to_percentage(edu.get("grade_cgpa_percentage", ""))
+
+        normalized_education.append({
+            **edu,
+            "degree": normalized_degree,
+            "level": normalized_level,
+            "grade_cgpa_percentage": normalized_grade
+        })
     
-    # Determine highest degree
+    sorted_edu = sorted(
+        normalized_education,
+        key=lambda x: get_education_weight(x.get("level", ""), x.get("degree", ""))
+    )
+    
     highest = sorted_edu[-1] if sorted_edu else {}
     highest_degree = highest.get("degree", "Unknown")
     
-    # Analyze performance trend
     grades = []
     for edu in sorted_edu:
         grade_str = edu.get("grade_cgpa_percentage", "")
-        # Parse grade (simplified)
         if grade_str:
             try:
-                # Try to extract numeric value
-                nums = re.findall(r'\d+\.?\d*', grade_str)
+                nums = re.findall(r"\d+\.?\d*", grade_str)
                 if nums:
-                    grades.append(float(nums[0]))
-            except:
+                    val = float(nums[0])
+                    if grade_str.strip().endswith("%"):
+                        grades.append(val)
+                    else:
+                        grades.append(val)
+            except Exception:
                 pass
     
     performance_trend = "Stable"
@@ -636,21 +839,17 @@ def analyze_educational_profile(education, client=None):
         elif grades[-1] < grades[0] * 0.9:
             performance_trend = "Declining"
     
-    # Institutional quality (mock - would use real APIs)
     institutional_quality = []
     for edu in sorted_edu:
         inst = edu.get("institution", "")
         if inst:
             institutional_quality.append({
                 "institution": inst,
-                "ranking": "Not verified",  # Would fetch from THE/QS
+                "ranking": "Not verified",
                 "level": edu.get("level", "")
             })
     
-    # Detect gaps
     gaps = detect_educational_gaps(sorted_edu)
-    
-    # Calculate progression score
     progression_score = calculate_progression_score(sorted_edu, gaps)
     
     return {
@@ -661,8 +860,8 @@ def analyze_educational_profile(education, client=None):
         "progression_score": progression_score
     }
 
+
 def detect_educational_gaps(education):
-    """Detect gaps in educational timeline."""
     gaps = []
     
     for i in range(len(education) - 1):
@@ -683,7 +882,7 @@ def detect_educational_gaps(education):
                         "after": current.get("level", ""),
                         "before": next_edu.get("level", ""),
                         "duration_years": gap_years,
-                        "justified": False  # Would check against experience
+                        "justified": False
                     })
             except:
                 pass
@@ -691,29 +890,22 @@ def detect_educational_gaps(education):
     return gaps
 
 def calculate_progression_score(education, gaps):
-    """Calculate educational progression score (0-100)."""
-    score = 50  # Base score
+    score = 50
     
-    # Bonus for higher degrees
     level_bonus = {"Bachelor": 10, "Master": 20, "MPhil": 25, "MS": 25, "PhD": 30, "PostDoc": 35}
     if education:
         highest_level = education[-1].get("level", "")
         score += level_bonus.get(highest_level, 0)
     
-    # Penalty for gaps
     total_gap_years = sum(g.get("duration_years", 0) for g in gaps if not g.get("justified", False))
     score -= min(20, total_gap_years * 5)
     
-    # Bonus for continuous progression
     if len(education) >= 3 and not gaps:
         score += 10
     
     return max(0, min(100, score))
 
-# ─── Professional Experience Analysis ────────────────────────────────────────
-
 def analyze_professional_experience(experience, education):
-    """Analyze professional experience timeline and consistency."""
     if not experience:
         return {
             "total_years": 0,
@@ -723,7 +915,6 @@ def analyze_professional_experience(experience, education):
             "consistency_score": 0
         }
     
-    # Parse dates and sort
     parsed_exp = []
     for exp in experience:
         start = parse_year(exp.get("start_date", ""))
@@ -740,19 +931,10 @@ def analyze_professional_experience(experience, education):
     
     parsed_exp.sort(key=lambda x: x["start"])
     
-    # Detect overlaps
     overlaps = detect_employment_overlaps(parsed_exp)
-    
-    # Detect gaps
     gaps = detect_employment_gaps(parsed_exp, education)
-    
-    # Calculate total years
     total_years = calculate_total_experience_years(parsed_exp)
-    
-    # Analyze progression
     progression = analyze_career_progression(parsed_exp)
-    
-    # Calculate consistency score
     consistency_score = calculate_experience_consistency(parsed_exp, overlaps, gaps)
     
     return {
@@ -764,14 +946,12 @@ def analyze_professional_experience(experience, education):
     }
 
 def parse_year(date_str):
-    """Extract year from date string."""
     if not date_str:
         return None
     
-    # Try various formats
     patterns = [
-        r'(\d{4})',  # Just year
-        r'(\d{1,2})[/-](\d{1,2})[/-](\d{4})',  # MM/DD/YYYY or DD/MM/YYYY
+        r'(\d{4})',
+        r'(\d{1,2})[/-](\d{1,2})[/-](\d{4})',
     ]
     
     for pattern in patterns:
@@ -782,7 +962,6 @@ def parse_year(date_str):
     return None
 
 def detect_employment_overlaps(parsed_exp):
-    """Detect overlapping employment periods."""
     overlaps = []
     
     for i in range(len(parsed_exp)):
@@ -790,7 +969,6 @@ def detect_employment_overlaps(parsed_exp):
             exp1 = parsed_exp[i]
             exp2 = parsed_exp[j]
             
-            # Check if periods overlap
             if exp1["start"] <= exp2["end"] and exp2["start"] <= exp1["end"]:
                 overlaps.append({
                     "job1": exp1["post"],
@@ -801,10 +979,8 @@ def detect_employment_overlaps(parsed_exp):
     return overlaps
 
 def detect_employment_gaps(parsed_exp, education):
-    """Detect gaps in employment history."""
     gaps = []
     
-    # Get education end year
     edu_end_year = 0
     if education:
         for edu in education:
@@ -812,7 +988,6 @@ def detect_employment_gaps(parsed_exp, education):
             if year:
                 edu_end_year = max(edu_end_year, year)
     
-    # Check for gap after education
     if parsed_exp and edu_end_year:
         first_job_year = parsed_exp[0]["start"]
         gap_years = first_job_year - edu_end_year
@@ -824,7 +999,6 @@ def detect_employment_gaps(parsed_exp, education):
                 "period": f"{edu_end_year}-{first_job_year}"
             })
     
-    # Check gaps between jobs
     for i in range(len(parsed_exp) - 1):
         current_end = parsed_exp[i]["end"]
         next_start = parsed_exp[i + 1]["start"]
@@ -840,32 +1014,26 @@ def detect_employment_gaps(parsed_exp, education):
     return gaps
 
 def calculate_total_experience_years(parsed_exp):
-    """Calculate total years of experience (removing overlaps)."""
     if not parsed_exp:
         return 0
     
-    # Merge overlapping periods
     periods = [(exp["start"], exp["end"]) for exp in parsed_exp]
     periods.sort()
     
     merged = []
     for start, end in periods:
         if merged and start <= merged[-1][1]:
-            # Overlap - extend the previous period
             merged[-1] = (merged[-1][0], max(merged[-1][1], end))
         else:
             merged.append((start, end))
     
-    # Sum total years
     total = sum(end - start for start, end in merged)
     return round(total, 1)
 
 def analyze_career_progression(parsed_exp):
-    """Analyze career progression pattern."""
     if len(parsed_exp) < 2:
         return "Insufficient data"
     
-    # Simple heuristic: check if moving to more senior positions
     seniority_keywords = {
         "junior": 1, "assistant": 2, "associate": 3, "senior": 4,
         "lead": 5, "principal": 6, "manager": 7, "director": 8, "vp": 9, "chief": 10
@@ -888,26 +1056,19 @@ def analyze_career_progression(parsed_exp):
         return "Lateral"
 
 def calculate_experience_consistency(parsed_exp, overlaps, gaps):
-    """Calculate experience consistency score (0-100)."""
-    score = 80  # Base score
+    score = 80
     
-    # Penalty for overlaps
     score -= len(overlaps) * 10
     
-    # Penalty for gaps
     total_gap_years = sum(g.get("duration_years", 0) for g in gaps)
     score -= min(30, total_gap_years * 5)
     
-    # Bonus for continuous experience
     if len(parsed_exp) >= 3 and not gaps:
         score += 10
     
     return max(0, min(100, score))
 
-# ─── Skill Alignment Analysis ─────────────────────────────────────────────────
-
 def analyze_skill_alignment(candidate_data, client=None):
-    """Analyze whether claimed skills are supported by experience and publications."""
     skills = candidate_data.get("skills", {})
     experience = candidate_data.get("experience", [])
     publications = candidate_data.get("publications", [])
@@ -924,21 +1085,18 @@ def analyze_skill_alignment(candidate_data, client=None):
             "alignment_score": 0
         }
     
-    # Check each skill against experience and publications
     evidenced = []
     weak = []
     
     for skill in all_skills:
         evidence_count = 0
         
-        # Check experience
         for exp in experience:
             post = exp.get("post", "").lower()
             resp = exp.get("responsibilities", "").lower()
             if skill.lower() in post or skill.lower() in resp:
                 evidence_count += 1
         
-        # Check publications
         for pub in publications:
             title = pub.get("title", "").lower()
             if skill.lower() in title:
@@ -960,9 +1118,6 @@ def analyze_skill_alignment(candidate_data, client=None):
 # ─── Candidate Ranking System ─────────────────────────────────────────────────
 
 def calculate_candidate_ranking(candidate_data, analyses):
-    """Calculate overall candidate ranking score (0-100) with breakdown."""
-    
-    # Weight distribution
     weights = {
         "education": 0.20,
         "research": 0.35,
@@ -971,23 +1126,15 @@ def calculate_candidate_ranking(candidate_data, analyses):
         "collaboration": 0.10
     }
     
-    # Get individual scores
     edu_score = analyses.get("educational_analysis", {}).get("progression_score", 0)
     
-    # Research score (based on publication quality and quantity)
     pubs = candidate_data.get("publications", [])
-    research_score = min(100, len(pubs) * 10)  # Base: 10 points per publication, max 100
+    research_score = min(100, len(pubs) * 10)
     
-    # Experience score
     exp_score = analyses.get("experience_analysis", {}).get("consistency_score", 0)
-    
-    # Skills score
     skill_score = analyses.get("skill_alignment", {}).get("alignment_score", 0)
-    
-    # Collaboration score
     collab_score = analyses.get("coauthorship_analysis", {}).get("collaboration_score", 0)
     
-    # Calculate weighted total
     total_score = (
         edu_score * weights["education"] +
         research_score * weights["research"] +
@@ -1007,7 +1154,6 @@ def calculate_candidate_ranking(candidate_data, analyses):
     }
 
 def get_ranking_tier(score):
-    """Get ranking tier based on total score."""
     if score >= 80:
         return "Excellent"
     elif score >= 65:
@@ -1022,11 +1168,9 @@ def get_ranking_tier(score):
 # ─── Comprehensive Candidate Processing ──────────────────────────────────────
 
 def process_candidate_full(client, cv_text):
-    """Extract and analyze a complete candidate profile."""
     if not client:
         return None
     
-    # Extract structured data
     prompt = EXTRACTION_PROMPT.format(cv_text=cv_text[:15000])
     response = call_groq(client, prompt, max_tokens=8000)
     candidate_data = parse_json_response(response)
@@ -1034,12 +1178,10 @@ def process_candidate_full(client, cv_text):
     if not candidate_data:
         return None
     
-    # Perform all analyses
     publications = candidate_data.get("publications", [])
     education = candidate_data.get("education", [])
     experience = candidate_data.get("experience", [])
     
-    # Research profile analysis
     journal_analyses = []
     conference_analyses = []
     
@@ -1050,22 +1192,12 @@ def process_candidate_full(client, cv_text):
         elif "conference" in pub_type:
             conference_analyses.append(analyze_conference_publication(pub, client))
     
-    # Topic variability
     topic_analysis = analyze_topic_variability(publications, client)
-    
-    # Co-authorship
     coauthor_analysis = analyze_coauthorship(publications)
-    
-    # Educational analysis
     edu_analysis = analyze_educational_profile(education, client)
-    
-    # Experience analysis
     exp_analysis = analyze_professional_experience(experience, education)
-    
-    # Skill alignment
     skill_analysis = analyze_skill_alignment(candidate_data, client)
     
-    # Compile all analyses
     analyses = {
         "journal_analyses": journal_analyses,
         "conference_analyses": conference_analyses,
@@ -1076,13 +1208,9 @@ def process_candidate_full(client, cv_text):
         "skill_alignment": skill_analysis
     }
     
-    # Calculate ranking
     ranking = calculate_candidate_ranking(candidate_data, analyses)
-    
-    # Generate comprehensive summary
     summary = generate_candidate_summary(candidate_data, analyses, ranking, client)
     
-    # Combine everything
     result = {
         **candidate_data,
         "analyses": analyses,
@@ -1093,76 +1221,154 @@ def process_candidate_full(client, cv_text):
     return result
 
 def generate_candidate_summary(candidate_data, analyses, ranking, client):
-    """Generate a comprehensive candidate summary."""
-    if not client:
-        return "Summary generation requires LLM"
-    
-    # Create summary prompt
-    profile_summary = {
-        "name": (candidate_data.get("personal_info") or {}).get("name", "Unknown"),
-        "highest_degree": analyses.get("educational_analysis", {}).get("highest_degree", "Unknown"),
-        "total_publications": len(candidate_data.get("publications", [])),
-        "research_focus": analyses.get("topic_variability", {}).get("focus", "Unknown"),
-        "experience_years": analyses.get("experience_analysis", {}).get("total_years", 0),
-        "ranking_score": ranking.get("total_score", 0),
-        "ranking_tier": ranking.get("ranking_tier", "Unknown")
-    }
-    
-    prompt = f"""
-Generate a comprehensive candidate assessment summary based on this profile:
+    """Generate candidate summary — uses Groq if available, otherwise builds from data."""
 
-{json.dumps(profile_summary, indent=2)}
+    name            = (candidate_data.get("personal_info") or {}).get("name", "the candidate")
+    highest_degree  = analyses.get("educational_analysis", {}).get("highest_degree", "Unknown")
+    total_pubs      = len(candidate_data.get("publications", []))
+    exp_years       = analyses.get("experience_analysis", {}).get("total_years", 0)
+    focus           = analyses.get("topic_variability", {}).get("focus", "Unknown")
+    collab_score    = analyses.get("coauthorship_analysis", {}).get("collaboration_score", 0)
+    edu_score       = ranking.get("education_score", 0)
+    res_score       = ranking.get("research_score", 0)
+    exp_score       = ranking.get("experience_score", 0)
+    skill_score     = ranking.get("skills_score", 0)
+    total_score     = ranking.get("total_score", 0)
+    tier            = ranking.get("ranking_tier", "Unknown")
+    progression     = analyses.get("experience_analysis", {}).get("progression", "Unknown")
+    evidenced_skills = analyses.get("skill_alignment", {}).get("evidenced_skills", [])
+    weak_skills      = analyses.get("skill_alignment", {}).get("weak_evidence", [])
+    gaps             = analyses.get("experience_analysis", {}).get("gaps", [])
+    edu_gaps         = analyses.get("educational_analysis", {}).get("gaps", [])
 
-Full analyses available:
-- Educational progression score: {analyses.get('educational_analysis', {}).get('progression_score', 0)}
-- Research publications: {len(candidate_data.get('publications', []))}
-- Topic diversity: {analyses.get('topic_variability', {}).get('diversity_score', 0)}%
-- Collaboration score: {analyses.get('coauthorship_analysis', {}).get('collaboration_score', 0)}
-- Experience consistency: {analyses.get('experience_analysis', {}).get('consistency_score', 0)}
-- Skill alignment: {analyses.get('skill_alignment', {}).get('alignment_score', 0)}%
+    # ── Try Groq first ──────────────────────────────────────────────────────
+    if client:
+        prompt = f"""
+Analyze this academic/professional candidate and generate a structured assessment.
 
-Provide:
-1. 2-3 paragraph overall assessment
-2. Top 3-5 strengths
-3. Top 3-5 concerns or areas for improvement
-4. Hiring recommendation (Strong Hire / Hire / Maybe / No Hire)
+Name: {name}
+Highest Degree: {highest_degree}
+Total Publications: {total_pubs}
+Experience (years): {exp_years}
+Research Focus: {focus}
+Ranking Score: {total_score} ({tier})
 
-Return as JSON:
+Scores — Education: {edu_score}, Research: {res_score}, Experience: {exp_score}, Skills: {skill_score}, Collaboration: {collab_score}
+
+Return ONLY valid JSON (no markdown):
 {{
-  "assessment": "detailed assessment text",
-  "strengths": ["strength1", "strength2", ...],
-  "concerns": ["concern1", "concern2", ...],
-  "recommendation": "hiring decision"
+  "assessment": "2-3 paragraph overall assessment",
+  "strengths": ["strength 1", "strength 2", "strength 3"],
+  "concerns": ["concern 1", "concern 2", "concern 3"],
+  "recommendation": "Strong Hire | Hire | Maybe | No Hire"
 }}
 """
-    
-    response = call_groq(client, prompt, max_tokens=2000)
-    summary = parse_json_response(response)
-    
-    if not summary:
-        summary = {
-            "assessment": "Unable to generate assessment",
-            "strengths": [],
-            "concerns": [],
-            "recommendation": "Requires manual review"
-        }
-    
-    return summary
+        response = call_groq(client, prompt, max_tokens=1500)
+        result   = parse_json_response(response)
 
-# ─── Missing Information Detection ───────────────────────────────────────────
+        if result and result.get("assessment") and result.get("strengths"):
+            return result
+
+    # ── Fallback: build summary from data ───────────────────────────────────
+    strengths = []
+    concerns  = []
+
+    # Education
+    if edu_score >= 70:
+        strengths.append(f"Strong educational background — holds a {highest_degree}")
+    elif edu_score >= 40:
+        strengths.append(f"Solid educational foundation with a {highest_degree}")
+    else:
+        concerns.append(f"Educational profile needs strengthening (score: {edu_score:.0f}/100)")
+
+    # Research
+    if total_pubs > 0:
+        if res_score >= 70:
+            strengths.append(f"Strong research output with {total_pubs} publication(s)")
+        else:
+            strengths.append(f"Has research experience with {total_pubs} publication(s)")
+    else:
+        concerns.append("No publications found in the CV")
+
+    # Research focus
+    if focus and focus not in ("Unknown", "Insufficient data", "Limited publications"):
+        strengths.append(f"Research focus is {focus.lower()}")
+
+    # Experience
+    if exp_years > 0:
+        if exp_score >= 70:
+            strengths.append(f"Extensive professional experience of {exp_years:.0f} year(s) with {progression.lower()} progression")
+        else:
+            strengths.append(f"Has {exp_years:.0f} year(s) of professional experience")
+    else:
+        concerns.append("Limited or no professional experience detected")
+
+    # Collaboration
+    if collab_score >= 60:
+        strengths.append(f"Good collaboration record (score: {collab_score:.0f}/100)")
+    elif collab_score < 30 and total_pubs > 0:
+        concerns.append("Limited collaboration with other researchers")
+
+    # Skills
+    if evidenced_skills:
+        strengths.append(f"Verified skills: {', '.join(evidenced_skills[:4])}")
+    if weak_skills:
+        concerns.append(f"Skills lacking evidence: {', '.join(weak_skills[:3])}")
+
+    # Gaps
+    if gaps:
+        total_gap = sum(g.get("duration_years", 0) for g in gaps)
+        if total_gap > 1:
+            concerns.append(f"Employment gaps detected totalling ~{total_gap:.0f} year(s)")
+
+    if edu_gaps:
+        concerns.append(f"{len(edu_gaps)} educational gap(s) detected")
+
+    # Ensure at least one entry in each list
+    if not strengths:
+        strengths = ["Candidate profile submitted for review"]
+    if not concerns:
+        concerns  = ["No major concerns identified at this stage"]
+
+    # Recommendation
+    if total_score >= 80:
+        recommendation = "Strong Hire"
+    elif total_score >= 65:
+        recommendation = "Hire"
+    elif total_score >= 50:
+        recommendation = "Maybe"
+    else:
+        recommendation = "No Hire"
+
+    # Assessment paragraph
+    assessment = (
+        f"{name} holds a {highest_degree} and has accumulated {exp_years:.0f} year(s) of "
+        f"professional experience with a {progression.lower()} career trajectory. "
+        f"The candidate has {total_pubs} publication(s) and a research focus that is "
+        f"{focus.lower()}. "
+        f"Overall, the candidate scored {total_score:.1f}/100 placing them in the "
+        f"'{tier}' tier. "
+        f"Key component scores — Education: {edu_score:.0f}, Research: {res_score:.0f}, "
+        f"Experience: {exp_score:.0f}, Skills: {skill_score:.0f}, "
+        f"Collaboration: {collab_score:.0f}."
+    )
+
+    return {
+        "assessment":      assessment,
+        "strengths":       strengths,
+        "concerns":        concerns,
+        "recommendation":  recommendation
+    }
 
 def detect_missing(candidate_data):
-    """Detect missing or incomplete information in candidate profile."""
     missing = []
     
-    # Personal info
     personal = candidate_data.get("personal_info", {})
     if not personal.get("email"):
         missing.append("Email address")
     if not personal.get("phone"):
         missing.append("Phone number")
     
-    # Education
     education = candidate_data.get("education", [])
     if not education:
         missing.append("Education history")
@@ -1171,17 +1377,14 @@ def detect_missing(candidate_data):
             if not edu.get("grade_cgpa_percentage"):
                 missing.append(f"Grade/CGPA for {edu.get('degree', 'degree')}")
     
-    # Experience
     experience = candidate_data.get("experience", [])
     if not experience:
         missing.append("Professional experience")
     
-    # Publications (for research positions)
     publications = candidate_data.get("publications", [])
     if not publications:
         missing.append("Publications (if applicable)")
     
-    # References
     references = candidate_data.get("references", [])
     if not references or len(references) < 2:
         missing.append("Professional references (at least 2)")
@@ -1189,7 +1392,6 @@ def detect_missing(candidate_data):
     return missing
 
 def draft_email(name, post_applied, missing_items):
-    """Draft personalized email requesting missing information."""
     if not missing_items:
         return ""
     
@@ -1215,33 +1417,22 @@ TALASH Recruitment System"""
     
     return email
 
-# ─── Document splitting ──────────────────────────────────────────────────────
-
 def split_candidates(text):
-    """Split multi-candidate document into individual sections."""
-    # For simplicity, treat whole document as one candidate
-    # In production, implement smarter splitting logic
     return [text]
 
-# ─── Excel output ─────────────────────────────────────────────────────────────
-
 def write_excel(all_data, xlsx_path):
-    """Write candidate data to Excel with comprehensive analysis."""
     if not EXCEL_OK:
         return
     
     wb = openpyxl.Workbook()
     wb.remove(wb.active)
     
-    # Summary sheet
     ws_summary = wb.create_sheet("Summary")
     write_summary_sheet(ws_summary, all_data)
     
-    # Rankings sheet
     ws_rankings = wb.create_sheet("Rankings")
     write_rankings_sheet(ws_rankings, all_data)
     
-    # Detailed profiles
     for file_path, candidates in all_data.items():
         for idx, candidate in enumerate(candidates, 1):
             name = (candidate.get("personal_info") or {}).get("name", f"Candidate {idx}")
@@ -1254,13 +1445,11 @@ def write_excel(all_data, xlsx_path):
     wb.save(xlsx_path)
 
 def write_summary_sheet(ws, all_data):
-    """Write summary overview sheet."""
     ws.append(["TALASH - Candidate Summary Report"])
     ws.append([])
     ws.append(["Generated", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
     ws.append([])
     
-    # Collect all candidates
     all_candidates = []
     for candidates in all_data.values():
         all_candidates.extend(candidates)
@@ -1270,7 +1459,6 @@ def write_summary_sheet(ws, all_data):
     ws.append(["With Publications", sum(1 for c in all_candidates if c.get("publications"))])
     ws.append([])
     
-    # Candidate list
     ws.append(["Name", "Highest Degree", "Publications", "Experience (years)", "Ranking Score", "Tier"])
     
     for candidate in all_candidates:
@@ -1285,7 +1473,6 @@ def write_summary_sheet(ws, all_data):
         ws.append([name, highest, pubs, exp_years, score, tier])
 
 def write_rankings_sheet(ws, all_data):
-    """Write detailed rankings sheet."""
     ws.append(["Candidate Rankings"])
     ws.append([])
     ws.append([
@@ -1293,12 +1480,10 @@ def write_rankings_sheet(ws, all_data):
         "Education", "Research", "Experience", "Skills", "Collaboration"
     ])
     
-    # Collect and rank all candidates
     all_candidates = []
     for candidates in all_data.values():
         all_candidates.extend(candidates)
     
-    # Sort by ranking score
     all_candidates.sort(key=lambda c: c.get("ranking", {}).get("total_score", 0), reverse=True)
     
     for rank, candidate in enumerate(all_candidates, 1):
@@ -1318,8 +1503,6 @@ def write_rankings_sheet(ws, all_data):
         ])
 
 def write_candidate_sheet(ws, candidate):
-    """Write detailed candidate profile sheet."""
-    # Personal Info
     ws.append(["CANDIDATE PROFILE"])
     ws.append([])
     
@@ -1330,14 +1513,12 @@ def write_candidate_sheet(ws, candidate):
     ws.append(["Post Applied", personal.get("post_applied", "")])
     ws.append([])
     
-    # Ranking Summary
     ranking = candidate.get("ranking", {})
     ws.append(["RANKING SUMMARY"])
     ws.append(["Overall Score", ranking.get("total_score", 0)])
     ws.append(["Tier", ranking.get("ranking_tier", "Unknown")])
     ws.append([])
     
-    # Education
     ws.append(["EDUCATION"])
     education = candidate.get("education", [])
     for edu in education:
@@ -1350,7 +1531,6 @@ def write_candidate_sheet(ws, candidate):
         ])
     ws.append([])
     
-    # Publications
     ws.append(["PUBLICATIONS"])
     publications = candidate.get("publications", [])
     for pub in publications:
@@ -1362,7 +1542,6 @@ def write_candidate_sheet(ws, candidate):
         ])
     ws.append([])
     
-    # Summary
     summary = candidate.get("summary", {})
     ws.append(["ASSESSMENT"])
     ws.append(["Recommendation", summary.get("recommendation", "N/A")])
@@ -1377,8 +1556,7 @@ def write_candidate_sheet(ws, candidate):
 
 # ─── Main extraction job ──────────────────────────────────────────────────────
 
-def run_extraction_job(job_id, file_paths, api_key):
-    """Main extraction job runner with comprehensive analysis."""
+def run_extraction_job(job_id, file_paths, api_key, username):
     client = init_groq_client(api_key)
     
     def log(msg):
@@ -1402,7 +1580,6 @@ def run_extraction_job(job_id, file_paths, api_key):
             
             log(f"Processing {fname}...")
             
-            # Extract text
             text = extract_text_from_file(fpath, client)
             if not text.strip():
                 log(f"⚠ {fname} — no text extracted")
@@ -1410,7 +1587,6 @@ def run_extraction_job(job_id, file_paths, api_key):
             
             log(f"✓ Text extracted from {fname} ({len(text)} chars)")
             
-            # Process candidates
             is_image = ext != ".pdf"
             if is_image:
                 sections = [text]
@@ -1437,6 +1613,12 @@ def run_extraction_job(job_id, file_paths, api_key):
                         miss
                     ) if miss else ""
                     
+                    # Save to MongoDB
+                    mongo_id = save_candidate_to_db(username, result)
+                    if mongo_id:
+                        result["_id"] = mongo_id
+                        log(f"✓ Saved to database: {name}")
+                    
                     candidates.append(result)
                     all_flat.append(result)
                     total += 1
@@ -1445,7 +1627,7 @@ def run_extraction_job(job_id, file_paths, api_key):
                     log(f"✗ Failed section {idx}")
                 
                 if client:
-                    time.sleep(0.5)  # Rate limiting
+                    time.sleep(0.5)
             
             if candidates:
                 all_data[fpath] = candidates
@@ -1453,7 +1635,6 @@ def run_extraction_job(job_id, file_paths, api_key):
             with jobs_lock:
                 jobs[job_id]["progress"] = total
         
-        # Save results
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         xlsx_name = f"talash_{ts}.xlsx"
         json_name = f"talash_{ts}.json"
@@ -1469,7 +1650,6 @@ def run_extraction_job(job_id, file_paths, api_key):
             xlsx_path = json_path = ""
             log("No data extracted")
         
-        # Calculate stats
         stats = {
             "total": len(all_flat),
             "phd": sum(1 for c in all_flat if any(
@@ -1617,9 +1797,11 @@ def upload():
             "error": ""
         }
     
+    username = session.get("username", "unknown")
+    
     t = threading.Thread(
         target=run_extraction_job,
-        args=(job_id, file_paths, api_key),
+        args=(job_id, file_paths, api_key, username),
         daemon=True
     )
     t.start()
@@ -1646,9 +1828,18 @@ def status(job_id):
         "error": job["error"],
     })
 
+@app.route("/api/candidates")
+@login_required
+def all_candidates():
+    """Get all candidates for current user from MongoDB"""
+    username = session.get("username", "")
+    candidates = get_all_candidates(username)
+    return jsonify(candidates)
+
 @app.route("/api/candidates/<job_id>")
 @login_required
 def candidates(job_id):
+    """Get candidates from a specific job (legacy support)"""
     with jobs_lock:
         job = jobs.get(job_id)
     
@@ -1656,6 +1847,18 @@ def candidates(job_id):
         return jsonify({"error": "Job not found"}), 404
     
     return jsonify(job.get("candidates", []))
+
+@app.route("/api/candidate/<candidate_id>", methods=["DELETE"])
+@login_required
+def delete_candidate_route(candidate_id):
+    """Delete a candidate from MongoDB"""
+    username = session.get("username", "")
+    success = delete_candidate(username, candidate_id)
+    
+    if success:
+        return jsonify({"ok": True})
+    else:
+        return jsonify({"error": "Failed to delete candidate"}), 400
 
 @app.route("/api/download/<filename>")
 @login_required
@@ -1678,13 +1881,966 @@ def extraction_mode():
         "tesseract_available": TESSERACT_OK,
         "fitz_available": FITZ_OK,
         "sklearn_available": SKLEARN_OK,
+        "mongodb_available": MONGO_OK,
+        "image_support": PIL_OK or (client is not None),
+        "scanned_pdf_support": FITZ_OK and (TESSERACT_OK or client is not None),
+    })
+
+def calculate_progression_score(education, gaps):
+    score = 50
+    
+    level_bonus = {"Bachelor": 10, "Master": 20, "MPhil": 25, "MS": 25, "PhD": 30, "PostDoc": 35}
+    if education:
+        highest_level = education[-1].get("level", "")
+        score += level_bonus.get(highest_level, 0)
+    
+    total_gap_years = sum(g.get("duration_years", 0) for g in gaps if not g.get("justified", False))
+    score -= min(20, total_gap_years * 5)
+    
+    if len(education) >= 3 and not gaps:
+        score += 10
+    
+    return max(0, min(100, score))
+
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("  TALASH Smart HR Recruitment System")
+    print("  http://localhost:5000")
+    print("=" * 60)
+    if MONGO_OK:
+        print(f"  ✓ MongoDB: {MONGO_DB_NAME}")
+    else:
+        print("  ✗ MongoDB: Not connected")
+    print("=" * 60)
+    app.run(debug=True, port=5000, use_reloader=False)
+
+def analyze_professional_experience(experience, education):
+    if not experience:
+        return {
+            "total_years": 0,
+            "overlaps": [],
+            "gaps": [],
+            "progression": "Unknown",
+            "consistency_score": 0
+        }
+    
+    parsed_exp = []
+    for exp in experience:
+        start = parse_year(exp.get("start_date", ""))
+        end = parse_year(exp.get("end_date", "")) or datetime.now().year
+        
+        if start:
+            parsed_exp.append({
+                "post": exp.get("post", ""),
+                "org": exp.get("organization", ""),
+                "start": start,
+                "end": end,
+                "original": exp
+            })
+    
+    parsed_exp.sort(key=lambda x: x["start"])
+    
+    overlaps = detect_employment_overlaps(parsed_exp)
+    gaps = detect_employment_gaps(parsed_exp, education)
+    total_years = calculate_total_experience_years(parsed_exp)
+    progression = analyze_career_progression(parsed_exp)
+    consistency_score = calculate_experience_consistency(parsed_exp, overlaps, gaps)
+    
+    return {
+        "total_years": total_years,
+        "overlaps": overlaps,
+        "gaps": gaps,
+        "progression": progression,
+        "consistency_score": consistency_score
+    }
+
+def parse_year(date_str):
+    if not date_str:
+        return None
+    
+    patterns = [
+        r'(\d{4})',
+        r'(\d{1,2})[/-](\d{1,2})[/-](\d{4})',
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, date_str)
+        if match:
+            return int(match.group(1) if len(match.groups()) == 1 else match.group(3))
+    
+    return None
+
+def detect_employment_overlaps(parsed_exp):
+    overlaps = []
+    
+    for i in range(len(parsed_exp)):
+        for j in range(i + 1, len(parsed_exp)):
+            exp1 = parsed_exp[i]
+            exp2 = parsed_exp[j]
+            
+            if exp1["start"] <= exp2["end"] and exp2["start"] <= exp1["end"]:
+                overlaps.append({
+                    "job1": exp1["post"],
+                    "job2": exp2["post"],
+                    "period": f"{max(exp1['start'], exp2['start'])}-{min(exp1['end'], exp2['end'])}"
+                })
+    
+    return overlaps
+
+def detect_employment_gaps(parsed_exp, education):
+    gaps = []
+    
+    edu_end_year = 0
+    if education:
+        for edu in education:
+            year = parse_year(edu.get("passing_year", ""))
+            if year:
+                edu_end_year = max(edu_end_year, year)
+    
+    if parsed_exp and edu_end_year:
+        first_job_year = parsed_exp[0]["start"]
+        gap_years = first_job_year - edu_end_year
+        
+        if gap_years > 1:
+            gaps.append({
+                "type": "Post-education gap",
+                "duration_years": gap_years,
+                "period": f"{edu_end_year}-{first_job_year}"
+            })
+    
+    for i in range(len(parsed_exp) - 1):
+        current_end = parsed_exp[i]["end"]
+        next_start = parsed_exp[i + 1]["start"]
+        gap_years = next_start - current_end
+        
+        if gap_years > 1:
+            gaps.append({
+                "type": "Between jobs",
+                "duration_years": gap_years,
+                "period": f"{current_end}-{next_start}"
+            })
+    
+    return gaps
+
+def calculate_total_experience_years(parsed_exp):
+    if not parsed_exp:
+        return 0
+    
+    periods = [(exp["start"], exp["end"]) for exp in parsed_exp]
+    periods.sort()
+    
+    merged = []
+    for start, end in periods:
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    
+    total = sum(end - start for start, end in merged)
+    return round(total, 1)
+
+def analyze_career_progression(parsed_exp):
+    if len(parsed_exp) < 2:
+        return "Insufficient data"
+    
+    seniority_keywords = {
+        "junior": 1, "assistant": 2, "associate": 3, "senior": 4,
+        "lead": 5, "principal": 6, "manager": 7, "director": 8, "vp": 9, "chief": 10
+    }
+    
+    scores = []
+    for exp in parsed_exp:
+        post = exp["post"].lower()
+        score = 0
+        for keyword, value in seniority_keywords.items():
+            if keyword in post:
+                score = max(score, value)
+        scores.append(score)
+    
+    if scores[-1] > scores[0]:
+        return "Progressive"
+    elif scores[-1] < scores[0]:
+        return "Regressive"
+    else:
+        return "Lateral"
+
+def calculate_experience_consistency(parsed_exp, overlaps, gaps):
+    score = 80
+    
+    score -= len(overlaps) * 10
+    
+    total_gap_years = sum(g.get("duration_years", 0) for g in gaps)
+    score -= min(30, total_gap_years * 5)
+    
+    if len(parsed_exp) >= 3 and not gaps:
+        score += 10
+    
+    return max(0, min(100, score))
+
+def analyze_skill_alignment(candidate_data, client=None):
+    skills = candidate_data.get("skills", {})
+    experience = candidate_data.get("experience", [])
+    publications = candidate_data.get("publications", [])
+    
+    all_skills = []
+    for category in skills.values():
+        if isinstance(category, list):
+            all_skills.extend(category)
+    
+    if not all_skills:
+        return {
+            "evidenced_skills": [],
+            "weak_evidence": [],
+            "alignment_score": 0
+        }
+    
+    evidenced = []
+    weak = []
+    
+    for skill in all_skills:
+        evidence_count = 0
+        
+        for exp in experience:
+            post = exp.get("post", "").lower()
+            resp = exp.get("responsibilities", "").lower()
+            if skill.lower() in post or skill.lower() in resp:
+                evidence_count += 1
+        
+        for pub in publications:
+            title = pub.get("title", "").lower()
+            if skill.lower() in title:
+                evidence_count += 1
+        
+        if evidence_count >= 2:
+            evidenced.append(skill)
+        elif evidence_count == 0:
+            weak.append(skill)
+    
+    alignment_score = (len(evidenced) / len(all_skills) * 100) if all_skills else 0
+    
+    return {
+        "evidenced_skills": evidenced[:10],
+        "weak_evidence": weak[:10],
+        "alignment_score": round(alignment_score, 1)
+    }
+
+# ─── Candidate Ranking System ─────────────────────────────────────────────────
+
+def calculate_candidate_ranking(candidate_data, analyses):
+    weights = {
+        "education": 0.20,
+        "research": 0.35,
+        "experience": 0.25,
+        "skills": 0.10,
+        "collaboration": 0.10
+    }
+    
+    edu_score = analyses.get("educational_analysis", {}).get("progression_score", 0)
+    
+    pubs = candidate_data.get("publications", [])
+    research_score = min(100, len(pubs) * 10)
+    
+    exp_score = analyses.get("experience_analysis", {}).get("consistency_score", 0)
+    skill_score = analyses.get("skill_alignment", {}).get("alignment_score", 0)
+    collab_score = analyses.get("coauthorship_analysis", {}).get("collaboration_score", 0)
+    
+    total_score = (
+        edu_score * weights["education"] +
+        research_score * weights["research"] +
+        exp_score * weights["experience"] +
+        skill_score * weights["skills"] +
+        collab_score * weights["collaboration"]
+    )
+    
+    return {
+        "total_score": round(total_score, 1),
+        "education_score": round(edu_score, 1),
+        "research_score": round(research_score, 1),
+        "experience_score": round(exp_score, 1),
+        "skills_score": round(skill_score, 1),
+        "collaboration_score": round(collab_score, 1),
+        "ranking_tier": get_ranking_tier(total_score)
+    }
+
+def get_ranking_tier(score):
+    if score >= 80:
+        return "Excellent"
+    elif score >= 65:
+        return "Very Good"
+    elif score >= 50:
+        return "Good"
+    elif score >= 35:
+        return "Fair"
+    else:
+        return "Needs Improvement"
+
+# ─── Comprehensive Candidate Processing ──────────────────────────────────────
+
+def process_candidate_full(client, cv_text):
+    if not client:
+        return None
+    
+    prompt = EXTRACTION_PROMPT.format(cv_text=cv_text[:15000])
+    response = call_groq(client, prompt, max_tokens=8000)
+    candidate_data = parse_json_response(response)
+    
+    if not candidate_data:
+        return None
+    
+    publications = candidate_data.get("publications", [])
+    education = candidate_data.get("education", [])
+    experience = candidate_data.get("experience", [])
+    
+    journal_analyses = []
+    conference_analyses = []
+    
+    for pub in publications:
+        pub_type = pub.get("type", "").lower()
+        if "journal" in pub_type:
+            journal_analyses.append(analyze_journal_publication(pub, client))
+        elif "conference" in pub_type:
+            conference_analyses.append(analyze_conference_publication(pub, client))
+    
+    topic_analysis = analyze_topic_variability(publications, client)
+    coauthor_analysis = analyze_coauthorship(publications)
+    edu_analysis = analyze_educational_profile(education, client)
+    exp_analysis = analyze_professional_experience(experience, education)
+    skill_analysis = analyze_skill_alignment(candidate_data, client)
+    
+    analyses = {
+        "journal_analyses": journal_analyses,
+        "conference_analyses": conference_analyses,
+        "topic_variability": topic_analysis,
+        "coauthorship_analysis": coauthor_analysis,
+        "educational_analysis": edu_analysis,
+        "experience_analysis": exp_analysis,
+        "skill_alignment": skill_analysis
+    }
+    
+    ranking = calculate_candidate_ranking(candidate_data, analyses)
+    summary = generate_candidate_summary(candidate_data, analyses, ranking, client)
+    
+    result = {
+        **candidate_data,
+        "analyses": analyses,
+        "ranking": ranking,
+        "summary": summary
+    }
+    
+    return result
+
+def generate_candidate_summary(candidate_data, analyses, ranking, client):
+    """Generate candidate summary — uses Groq if available, otherwise builds from data."""
+
+    name            = (candidate_data.get("personal_info") or {}).get("name", "the candidate")
+    highest_degree  = analyses.get("educational_analysis", {}).get("highest_degree", "Unknown")
+    total_pubs      = len(candidate_data.get("publications", []))
+    exp_years       = analyses.get("experience_analysis", {}).get("total_years", 0)
+    focus           = analyses.get("topic_variability", {}).get("focus", "Unknown")
+    collab_score    = analyses.get("coauthorship_analysis", {}).get("collaboration_score", 0)
+    edu_score       = ranking.get("education_score", 0)
+    res_score       = ranking.get("research_score", 0)
+    exp_score       = ranking.get("experience_score", 0)
+    skill_score     = ranking.get("skills_score", 0)
+    total_score     = ranking.get("total_score", 0)
+    tier            = ranking.get("ranking_tier", "Unknown")
+    progression     = analyses.get("experience_analysis", {}).get("progression", "Unknown")
+    evidenced_skills = analyses.get("skill_alignment", {}).get("evidenced_skills", [])
+    weak_skills      = analyses.get("skill_alignment", {}).get("weak_evidence", [])
+    gaps             = analyses.get("experience_analysis", {}).get("gaps", [])
+    edu_gaps         = analyses.get("educational_analysis", {}).get("gaps", [])
+
+    # ── Try Groq first ──────────────────────────────────────────────────────
+    if client:
+        prompt = f"""
+Analyze this academic/professional candidate and generate a structured assessment.
+
+Name: {name}
+Highest Degree: {highest_degree}
+Total Publications: {total_pubs}
+Experience (years): {exp_years}
+Research Focus: {focus}
+Ranking Score: {total_score} ({tier})
+
+Scores — Education: {edu_score}, Research: {res_score}, Experience: {exp_score}, Skills: {skill_score}, Collaboration: {collab_score}
+
+Return ONLY valid JSON (no markdown):
+{{
+  "assessment": "2-3 paragraph overall assessment",
+  "strengths": ["strength 1", "strength 2", "strength 3"],
+  "concerns": ["concern 1", "concern 2", "concern 3"],
+  "recommendation": "Strong Hire | Hire | Maybe | No Hire"
+}}
+"""
+        response = call_groq(client, prompt, max_tokens=1500)
+        result   = parse_json_response(response)
+
+        if result and result.get("assessment") and result.get("strengths"):
+            return result
+
+    # ── Fallback: build summary from data ───────────────────────────────────
+    strengths = []
+    concerns  = []
+
+    # Education
+    if edu_score >= 70:
+        strengths.append(f"Strong educational background — holds a {highest_degree}")
+    elif edu_score >= 40:
+        strengths.append(f"Solid educational foundation with a {highest_degree}")
+    else:
+        concerns.append(f"Educational profile needs strengthening (score: {edu_score:.0f}/100)")
+
+    # Research
+    if total_pubs > 0:
+        if res_score >= 70:
+            strengths.append(f"Strong research output with {total_pubs} publication(s)")
+        else:
+            strengths.append(f"Has research experience with {total_pubs} publication(s)")
+    else:
+        concerns.append("No publications found in the CV")
+
+    # Research focus
+    if focus and focus not in ("Unknown", "Insufficient data", "Limited publications"):
+        strengths.append(f"Research focus is {focus.lower()}")
+
+    # Experience
+    if exp_years > 0:
+        if exp_score >= 70:
+            strengths.append(f"Extensive professional experience of {exp_years:.0f} year(s) with {progression.lower()} progression")
+        else:
+            strengths.append(f"Has {exp_years:.0f} year(s) of professional experience")
+    else:
+        concerns.append("Limited or no professional experience detected")
+
+    # Collaboration
+    if collab_score >= 60:
+        strengths.append(f"Good collaboration record (score: {collab_score:.0f}/100)")
+    elif collab_score < 30 and total_pubs > 0:
+        concerns.append("Limited collaboration with other researchers")
+
+    # Skills
+    if evidenced_skills:
+        strengths.append(f"Verified skills: {', '.join(evidenced_skills[:4])}")
+    if weak_skills:
+        concerns.append(f"Skills lacking evidence: {', '.join(weak_skills[:3])}")
+
+    # Gaps
+    if gaps:
+        total_gap = sum(g.get("duration_years", 0) for g in gaps)
+        if total_gap > 1:
+            concerns.append(f"Employment gaps detected totalling ~{total_gap:.0f} year(s)")
+
+    if edu_gaps:
+        concerns.append(f"{len(edu_gaps)} educational gap(s) detected")
+
+    # Ensure at least one entry in each list
+    if not strengths:
+        strengths = ["Candidate profile submitted for review"]
+    if not concerns:
+        concerns  = ["No major concerns identified at this stage"]
+
+    # Recommendation
+    if total_score >= 80:
+        recommendation = "Strong Hire"
+    elif total_score >= 65:
+        recommendation = "Hire"
+    elif total_score >= 50:
+        recommendation = "Maybe"
+    else:
+        recommendation = "No Hire"
+
+    # Assessment paragraph
+    assessment = (
+        f"{name} holds a {highest_degree} and has accumulated {exp_years:.0f} year(s) of "
+        f"professional experience with a {progression.lower()} career trajectory. "
+        f"The candidate has {total_pubs} publication(s) and a research focus that is "
+        f"{focus.lower()}. "
+        f"Overall, the candidate scored {total_score:.1f}/100 placing them in the "
+        f"'{tier}' tier. "
+        f"Key component scores — Education: {edu_score:.0f}, Research: {res_score:.0f}, "
+        f"Experience: {exp_score:.0f}, Skills: {skill_score:.0f}, "
+        f"Collaboration: {collab_score:.0f}."
+    )
+
+    return {
+        "assessment":      assessment,
+        "strengths":       strengths,
+        "concerns":        concerns,
+        "recommendation":  recommendation
+    }
+
+def detect_missing(candidate_data):
+    missing = []
+    
+    personal = candidate_data.get("personal_info", {})
+    if not personal.get("email"):
+        missing.append("Email address")
+    if not personal.get("phone"):
+        missing.append("Phone number")
+    
+    education = candidate_data.get("education", [])
+    if not education:
+        missing.append("Education history")
+    else:
+        for edu in education:
+            if not edu.get("grade_cgpa_percentage"):
+                missing.append(f"Grade/CGPA for {edu.get('degree', 'degree')}")
+    
+    experience = candidate_data.get("experience", [])
+    if not experience:
+        missing.append("Professional experience")
+    
+    publications = candidate_data.get("publications", [])
+    if not publications:
+        missing.append("Publications (if applicable)")
+    
+    references = candidate_data.get("references", [])
+    if not references or len(references) < 2:
+        missing.append("Professional references (at least 2)")
+    
+    return missing
+
+def draft_email(name, post_applied, missing_items):
+    if not missing_items:
+        return ""
+    
+    items_list = "\n".join(f"• {item}" for item in missing_items)
+    
+    email = f"""Subject: Additional Information Required - Application for {post_applied or 'Position'}
+
+Dear {name or 'Applicant'},
+
+Thank you for your application for the position of {post_applied or 'the advertised role'}.
+
+While reviewing your CV, we noticed that some information appears to be missing or incomplete. To proceed with your application, we kindly request you to provide the following details:
+
+{items_list}
+
+Please send us an updated CV with the above information at your earliest convenience.
+
+We look forward to completing your application review.
+
+Best regards,
+HR Department
+TALASH Recruitment System"""
+    
+    return email
+
+def split_candidates(text):
+    return [text]
+
+def write_excel(all_data, xlsx_path):
+    if not EXCEL_OK:
+        return
+    
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)
+    
+    ws_summary = wb.create_sheet("Summary")
+    write_summary_sheet(ws_summary, all_data)
+    
+    ws_rankings = wb.create_sheet("Rankings")
+    write_rankings_sheet(ws_rankings, all_data)
+    
+    for file_path, candidates in all_data.items():
+        for idx, candidate in enumerate(candidates, 1):
+            name = (candidate.get("personal_info") or {}).get("name", f"Candidate {idx}")
+            safe_name = re.sub(r'[^\w\s-]', '', name)[:25]
+            sheet_name = f"{safe_name}"
+            
+            ws = wb.create_sheet(sheet_name)
+            write_candidate_sheet(ws, candidate)
+    
+    wb.save(xlsx_path)
+
+def write_summary_sheet(ws, all_data):
+    ws.append(["TALASH - Candidate Summary Report"])
+    ws.append([])
+    ws.append(["Generated", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+    ws.append([])
+    
+    all_candidates = []
+    for candidates in all_data.values():
+        all_candidates.extend(candidates)
+    
+    ws.append(["Total Candidates", len(all_candidates)])
+    ws.append(["With PhD", sum(1 for c in all_candidates if any(e.get("level") == "PhD" for e in c.get("education", [])))])
+    ws.append(["With Publications", sum(1 for c in all_candidates if c.get("publications"))])
+    ws.append([])
+    
+    ws.append(["Name", "Highest Degree", "Publications", "Experience (years)", "Ranking Score", "Tier"])
+    
+    for candidate in all_candidates:
+        name = (candidate.get("personal_info") or {}).get("name", "Unknown")
+        edu = candidate.get("education", [])
+        highest = edu[-1].get("degree", "N/A") if edu else "N/A"
+        pubs = len(candidate.get("publications", []))
+        exp_years = candidate.get("analyses", {}).get("experience_analysis", {}).get("total_years", 0)
+        score = candidate.get("ranking", {}).get("total_score", 0)
+        tier = candidate.get("ranking", {}).get("ranking_tier", "Unknown")
+        
+        ws.append([name, highest, pubs, exp_years, score, tier])
+
+def write_rankings_sheet(ws, all_data):
+    ws.append(["Candidate Rankings"])
+    ws.append([])
+    ws.append([
+        "Rank", "Name", "Total Score", "Tier",
+        "Education", "Research", "Experience", "Skills", "Collaboration"
+    ])
+    
+    all_candidates = []
+    for candidates in all_data.values():
+        all_candidates.extend(candidates)
+    
+    all_candidates.sort(key=lambda c: c.get("ranking", {}).get("total_score", 0), reverse=True)
+    
+    for rank, candidate in enumerate(all_candidates, 1):
+        name = (candidate.get("personal_info") or {}).get("name", "Unknown")
+        ranking = candidate.get("ranking", {})
+        
+        ws.append([
+            rank,
+            name,
+            ranking.get("total_score", 0),
+            ranking.get("ranking_tier", "Unknown"),
+            ranking.get("education_score", 0),
+            ranking.get("research_score", 0),
+            ranking.get("experience_score", 0),
+            ranking.get("skills_score", 0),
+            ranking.get("collaboration_score", 0)
+        ])
+
+def write_candidate_sheet(ws, candidate):
+    ws.append(["CANDIDATE PROFILE"])
+    ws.append([])
+    
+    personal = candidate.get("personal_info", {})
+    ws.append(["Name", personal.get("name", "")])
+    ws.append(["Email", personal.get("email", "")])
+    ws.append(["Phone", personal.get("phone", "")])
+    ws.append(["Post Applied", personal.get("post_applied", "")])
+    ws.append([])
+    
+    ranking = candidate.get("ranking", {})
+    ws.append(["RANKING SUMMARY"])
+    ws.append(["Overall Score", ranking.get("total_score", 0)])
+    ws.append(["Tier", ranking.get("ranking_tier", "Unknown")])
+    ws.append([])
+    
+    ws.append(["EDUCATION"])
+    education = candidate.get("education", [])
+    for edu in education:
+        ws.append([
+            edu.get("level", ""),
+            edu.get("degree", ""),
+            edu.get("institution", ""),
+            edu.get("grade_cgpa_percentage", ""),
+            edu.get("passing_year", "")
+        ])
+    ws.append([])
+    
+    ws.append(["PUBLICATIONS"])
+    publications = candidate.get("publications", [])
+    for pub in publications:
+        ws.append([
+            pub.get("title", ""),
+            pub.get("published_in", ""),
+            pub.get("year", ""),
+            pub.get("type", "")
+        ])
+    ws.append([])
+    
+    summary = candidate.get("summary", {})
+    ws.append(["ASSESSMENT"])
+    ws.append(["Recommendation", summary.get("recommendation", "N/A")])
+    ws.append([])
+    ws.append(["Strengths"])
+    for strength in summary.get("strengths", []):
+        ws.append(["•", strength])
+    ws.append([])
+    ws.append(["Concerns"])
+    for concern in summary.get("concerns", []):
+        ws.append(["•", concern])
+
+# ─── Main extraction job ──────────────────────────────────────────────────────
+
+def run_extraction_job(job_id, file_paths, api_key, username):
+    client = init_groq_client(api_key)
+    
+    def log(msg):
+        with jobs_lock:
+            jobs[job_id]["log"].append(f"{datetime.now().strftime('%H:%M:%S')} {msg}")
+    
+    try:
+        with jobs_lock:
+            jobs[job_id]["status"] = "running"
+        
+        log(f"Starting extraction for {len(file_paths)} file(s)")
+        log(f"LLM mode: {'✓ Groq' if client else '✗ Disabled'}")
+        
+        all_data = {}
+        all_flat = []
+        total = 0
+        
+        for fpath in file_paths:
+            fname = Path(fpath).name
+            ext = Path(fpath).suffix.lower()
+            
+            log(f"Processing {fname}...")
+            
+            text = extract_text_from_file(fpath, client)
+            if not text.strip():
+                log(f"⚠ {fname} — no text extracted")
+                continue
+            
+            log(f"✓ Text extracted from {fname} ({len(text)} chars)")
+            
+            is_image = ext != ".pdf"
+            if is_image:
+                sections = [text]
+                log(f"Image file — treating as single candidate")
+            else:
+                sections = split_candidates(text)
+                log(f"Found {len(sections)} candidate(s) in {fname}")
+            
+            candidates = []
+            for idx, section in enumerate(sections, 1):
+                log(f"Analyzing candidate {idx}/{len(sections)}...")
+                
+                result = process_candidate_full(client, section)
+                
+                if result:
+                    miss = detect_missing(result)
+                    name = (result.get("personal_info") or {}).get("name", "(unnamed)")
+                    
+                    result["_source"] = fname
+                    result["_missing"] = miss
+                    result["_email"] = draft_email(
+                        name,
+                        (result.get("personal_info") or {}).get("post_applied", ""),
+                        miss
+                    ) if miss else ""
+                    
+                    # Save to MongoDB
+                    mongo_id = save_candidate_to_db(username, result)
+                    if mongo_id:
+                        result["_id"] = mongo_id
+                        log(f"✓ Saved to database: {name}")
+                    
+                    candidates.append(result)
+                    all_flat.append(result)
+                    total += 1
+                    log(f"✓ Analyzed: {name} (Score: {result.get('ranking', {}).get('total_score', 0)})")
+                else:
+                    log(f"✗ Failed section {idx}")
+                
+                if client:
+                    time.sleep(0.5)
+            
+            if candidates:
+                all_data[fpath] = candidates
+            
+            with jobs_lock:
+                jobs[job_id]["progress"] = total
+        
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        xlsx_name = f"talash_{ts}.xlsx"
+        json_name = f"talash_{ts}.json"
+        xlsx_path = str(OUTPUT_DIR / xlsx_name)
+        json_path = str(OUTPUT_DIR / json_name)
+        
+        if all_data:
+            write_excel(all_data, xlsx_path)
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(all_flat, f, indent=2, ensure_ascii=False)
+            log(f"✓ Saved {xlsx_name} and {json_name}")
+        else:
+            xlsx_path = json_path = ""
+            log("No data extracted")
+        
+        stats = {
+            "total": len(all_flat),
+            "phd": sum(1 for c in all_flat if any(
+                e.get("level", "").lower() == "phd"
+                for e in (c.get("education") or [])
+            )),
+            "with_pub": sum(1 for c in all_flat if c.get("publications")),
+            "missing": sum(1 for c in all_flat if c.get("_missing")),
+            "excellent": sum(1 for c in all_flat if c.get("ranking", {}).get("ranking_tier") == "Excellent"),
+            "avg_score": sum(c.get("ranking", {}).get("total_score", 0) for c in all_flat) / len(all_flat) if all_flat else 0
+        }
+        
+        with jobs_lock:
+            jobs[job_id].update({
+                "status": "done",
+                "candidates": all_flat,
+                "total": total,
+                "xlsx": xlsx_name if xlsx_path else "",
+                "json": json_name if json_path else "",
+                "stats": stats,
+            })
+        
+        log(f"✓ Complete — {total} candidate(s) analyzed")
+    
+    except Exception as e:
+        with jobs_lock:
+            jobs[job_id]["status"] = "error"
+            jobs[job_id]["error"] = str(e)
+        log(f"Fatal error: {e}")
+
+# ─── Routes — Auth ────────────────────────────────────────────────────────────
+
+@app.route("/login", methods=["GET"])
+def login_page():
+    if "username" in session:
+        return redirect(url_for("index"))
+    return render_template("login.html")
+
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    data = request.get_json() or {}
+    username = (data.get("username") or "").strip().lower()
+    password = data.get("password") or ""
+    
+    if not username or not password:
+        return jsonify({"error": "Username and password required"}), 400
+    
+    users = load_users()
+    user = users.get(username)
+    
+    if not user or user["password"] != hash_password(password):
+        return jsonify({"error": "Invalid credentials"}), 401
+    
+    session["username"] = username
+    session["display"] = user.get("display", username)
+    return jsonify({"ok": True, "display": session["display"]})
+
+@app.route("/api/signup", methods=["POST"])
+def api_signup():
+    data = request.get_json() or {}
+    username = (data.get("username") or "").strip().lower()
+    password = data.get("password") or ""
+    display = (data.get("display") or username).strip()
+    
+    if not username or not password:
+        return jsonify({"error": "Username and password required"}), 400
+    
+    if len(password) < 6:
+        return jsonify({"error": "Password must be at least 6 characters"}), 400
+    
+    if not re.match(r"^[a-z0-9_]{3,32}$", username):
+        return jsonify({"error": "Username: 3-32 chars, letters/digits/underscore"}), 400
+    
+    users = load_users()
+    if username in users:
+        return jsonify({"error": "Username already taken"}), 409
+    
+    users[username] = {
+        "password": hash_password(password),
+        "display": display,
+        "created": datetime.now().isoformat()
+    }
+    save_users(users)
+    
+    session["username"] = username
+    session["display"] = display
+    return jsonify({"ok": True, "display": display})
+
+@app.route("/api/logout", methods=["POST"])
+def api_logout():
+    session.clear()
+    return jsonify({"ok": True})
+
+@app.route("/api/me")
+def api_me():
+    if "username" in session:
+        return jsonify({
+            "username": session["username"],
+            "display": session.get("display", "")
+        })
+    return jsonify({"username": None})
+
+# ─── Routes — App ─────────────────────────────────────────────────────────────
+
+@app.route("/")
+@login_required
+def index():
+    return render_template("index.html")
+
+@app.route("/api/upload", methods=["POST"])
+@login_required
+def upload():
+    files = request.files.getlist("files")
+    api_key = os.environ.get("GROQ_API_KEY", "")
+    
+    if not files or all(f.filename == "" for f in files):
+        return jsonify({"error": "No files provided"}), 400
+    
+    job_id = str(uuid.uuid4())[:8]
+    file_paths = []
+    
+    for f in files:
+        ext = Path(f.filename).suffix.lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            continue
+        
+        safe = re.sub(r"[^\w\-.]", "_", f.filename)
+        dest = UPLOAD_DIR / f"{job_id}_{safe}"
+        f.save(str(dest))
+        file_paths.append(str(dest))
+    
+    if not file_paths:
+        return jsonify({"error": "No valid files"}), 400
+    
+    with jobs_lock:
+        jobs[job_id] = {
+            "status": "queued",
+            "progress": 0,
+            "total": 0,
+            "candidates": [],
+            "stats": {},
+            "log": [],
+            "xlsx": "",
+            "json": "",
+            "error": ""
+        }
+    
+    username = session.get("username", "unknown")
+    
+    t = threading.Thread(
+        target=run_extraction_job,
+        args=(job_id, file_paths, api_key, username),
+        daemon=True
+    )
+    t.start()
+    
+    return jsonify({"job_id": job_id})
+
+@app.route("/api/mode")
+def extraction_mode():
+    api_key = os.environ.get("GROQ_API_KEY", "")
+    client = init_groq_client(api_key)
+    
+    return jsonify({
+        "llm_available": client is not None,
+        "tesseract_available": TESSERACT_OK,
+        "fitz_available": FITZ_OK,
+        "sklearn_available": SKLEARN_OK,
+        "mongodb_available": MONGO_OK,
         "image_support": PIL_OK or (client is not None),
         "scanned_pdf_support": FITZ_OK and (TESSERACT_OK or client is not None),
     })
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  TALASH  HR Recruitment System (Milestone 3 - COMPLETE)")
+    print("  TALASH Smart HR Recruitment System")
     print("  http://localhost:5000")
+    print("=" * 60)
+    if MONGO_OK:
+        print(f"  ✓ MongoDB: {MONGO_DB_NAME}")
+    else:
+        print("  ✗ MongoDB: Not connected")
     print("=" * 60)
     app.run(debug=True, port=5000, use_reloader=False)
