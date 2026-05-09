@@ -7,282 +7,154 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg-primary: #0a0e27;
-  --bg-secondary: #151932;
-  --accent-1: #667eea;
-  --accent-2: #764ba2;
-  --accent-3: #f093fb;
-  --accent-4: #4facfe;
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255,255,255,0.7);
-  --text-muted: rgba(255,255,255,0.5);
-  --error: #ef4444;
-  --success: #10b981;
+:root{
+  --bg-primary:#03060f;
+  --bg-secondary:#0a1024;
+  --accent-1:#1e3a8a;
+  --accent-2:#2563eb;
+  --accent-3:#0ea5e9;
+  --accent-4:#38bdf8;
+  --text-primary:#f1f5fb;
+  --text-secondary:rgba(220,230,255,0.78);
+  --text-muted:rgba(180,200,235,0.5);
+  --error:#f87171;
+  --success:#22d3ee;
 }
-<!--Formation -->
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:radial-gradient(ellipse at top,#0a1733 0%,#03060f 60%) fixed,#03060f;
+  color:var(--text-primary);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
 }
 
-/* Animated gradient background */
-body::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(79, 172, 254, 0.1) 0%, transparent 70%);
-  z-index: 0;
+/* live aurora layer */
+body::before{
+  content:'';position:fixed;inset:-20%;
+  background:
+    radial-gradient(circle at 20% 30%,rgba(37,99,235,.35) 0%,transparent 45%),
+    radial-gradient(circle at 80% 20%,rgba(14,165,233,.28) 0%,transparent 45%),
+    radial-gradient(circle at 70% 80%,rgba(99,102,241,.30) 0%,transparent 45%),
+    radial-gradient(circle at 25% 85%,rgba(56,189,248,.22) 0%,transparent 45%);
+  filter:blur(40px);
+  animation:aurora 20s ease-in-out infinite alternate;
+  z-index:0;
+}
+@keyframes aurora{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(2%,-2%,0) scale(1.1)}
+  100%{transform:translate3d(-2%,3%,0) scale(1.05)}
 }
 
-/* Floating orbs */
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.3;
-  z-index: 0;
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
+
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.45;z-index:0;animation:floatOrb 14s ease-in-out infinite alternate}
+.orb1{width:420px;height:420px;background:linear-gradient(135deg,#1e3a8a,#2563eb);top:-12%;left:-10%}
+.orb2{width:380px;height:380px;background:linear-gradient(135deg,#0ea5e9,#6366f1);bottom:-12%;right:-10%;animation-delay:-5s}
+.orb3{width:320px;height:320px;background:linear-gradient(135deg,#38bdf8,#1e3a8a);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-9s}
+@keyframes floatOrb{
+  from{transform:translate(0,0) scale(1)}
+  to{transform:translate(40px,-30px) scale(1.08)}
 }
 
-.orb1 {
-  width: 400px;
-  height: 400px;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  top: -10%;
-  left: -10%;
+.login-container{position:relative;z-index:2;width:100%;max-width:460px;padding:20px;
+  animation:rise .8s cubic-bezier(.22,1,.36,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+.glass-card{
+  background:linear-gradient(135deg,rgba(20,32,70,.55),rgba(3,6,15,.65));
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+  backdrop-filter:blur(24px) saturate(140%);
+  border:1px solid rgba(96,165,250,.18);
+  border-radius:24px;padding:48px 40px;
+  box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 40px rgba(59,130,246,.18),inset 0 1px 0 rgba(255,255,255,.06);
+  position:relative;overflow:hidden;
+}
+.glass-card::before{
+  content:'';position:absolute;inset:-1px;border-radius:24px;padding:1px;
+  background:linear-gradient(135deg,rgba(96,165,250,.45),transparent 40%,transparent 60%,rgba(56,189,248,.45));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  pointer-events:none;opacity:.6;
 }
 
-.orb2 {
-  width: 350px;
-  height: 350px;
-  background: linear-gradient(135deg, var(--accent-3), var(--accent-4));
-  bottom: -10%;
-  right: -10%;
+.logo-section{text-align:center;margin-bottom:36px}
+.logo{
+  font-size:42px;font-weight:700;letter-spacing:-1px;
+  background:linear-gradient(135deg,#60a5fa,#38bdf8 50%,#818cf8);
+  background-size:200% 200%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shimmer 5s ease-in-out infinite;
+}
+@keyframes shimmer{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+.logo-subtitle{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:3px;margin-top:6px;font-weight:600}
+
+.tabs{display:flex;gap:8px;margin-bottom:28px;background:rgba(10,16,36,.55);padding:6px;border-radius:14px;border:1px solid rgba(96,165,250,.12)}
+.tab{
+  flex:1;padding:11px;background:transparent;border:none;color:var(--text-secondary);
+  font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;
+  transition:all .35s cubic-bezier(.22,1,.36,1);
+}
+.tab:hover{color:var(--text-primary)}
+.tab.active{
+  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+  color:#fff;box-shadow:0 6px 18px rgba(37,99,235,.45);
 }
 
-.orb3 {
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(135deg, var(--accent-4), var(--accent-1));
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.form-section{display:none;animation:fadeIn .4s ease}
+.form-section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.input-group{margin-bottom:20px}
+.input-label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.input-field{
+  width:100%;padding:14px 16px;background:rgba(10,16,36,.6);
+  border:1px solid rgba(96,165,250,.15);border-radius:12px;
+  color:var(--text-primary);font-size:14px;font-family:inherit;
+  transition:all .3s ease;
+}
+.input-field::placeholder{color:var(--text-muted)}
+.input-field:focus{
+  outline:none;border-color:#3b82f6;
+  background:rgba(10,16,36,.85);
+  box-shadow:0 0 0 4px rgba(59,130,246,.18),0 0 24px rgba(59,130,246,.25);
 }
 
-.login-container {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 440px;
-  padding: 20px;
+.btn-submit{
+  width:100%;padding:14px;margin-top:8px;
+  background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 50%,#38bdf8 100%);
+  background-size:200% 200%;
+  border:none;border-radius:12px;color:#fff;
+  font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;
+  transition:all .35s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 8px 24px rgba(37,99,235,.4);
+  position:relative;overflow:hidden;
 }
+.btn-submit::before{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+  transition:left .6s ease;
+}
+.btn-submit:hover{transform:translateY(-2px);background-position:100% 0;box-shadow:0 12px 32px rgba(37,99,235,.55),0 0 28px rgba(56,189,248,.4)}
+.btn-submit:hover::before{left:100%}
+.btn-submit:active{transform:translateY(0)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 48px 40px;
-  box-shadow: 
-    0 8px 32px 0 rgba(0, 0, 0, 0.37),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-}
+.loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.logo-section {
-  text-align: center;
-  margin-bottom: 40px;
-}
+.alert{display:none;padding:12px 14px;margin-bottom:16px;border-radius:10px;font-size:13px;font-weight:500;animation:fadeIn .3s ease}
+.alert.error{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:#fca5a5}
+.alert.success{background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.35);color:#67e8f9}
 
-.logo {
-  font-size: 36px;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
-}
-
-.logo-subtitle {
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 32px;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 4px;
-  border-radius: 12px;
-}
-
-.tab {
-  flex: 1;
-  padding: 12px;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.tab:hover {
-  color: var(--text-secondary);
-}
-
-.tab.active {
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.form-section {
-  display: none;
-}
-
-.form-section.active {
-  display: block;
-}
-
-.input-group {
-  margin-bottom: 20px;
-}
-
-.input-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.input-field {
-  width: 100%;
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: var(--text-primary);
-  font-size: 15px;
-  font-family: inherit;
-  transition: all 0.3s ease;
-  outline: none;
-}
-
-.input-field:focus {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--accent-1);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.input-field::placeholder {
-  color: var(--text-muted);
-}
-
-.btn-submit {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 8px;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-}
-
-.btn-submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
-}
-
-.btn-submit:active {
-  transform: translateY(0);
-}
-
-.btn-submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.alert {
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 13px;
-  margin-bottom: 20px;
-  border: 1px solid;
-  display: none;
-}
-
-.alert.error {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
-}
-
-.alert.success {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: #6ee7b7;
-}
-
-.footer-text {
-  text-align: center;
-  margin-top: 32px;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-/* Loading state */
-.loading {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+.footer-text{text-align:center;margin-top:28px;font-size:12px;color:var(--text-muted);letter-spacing:.5px}
 </style>
 </head>
 <body>
 
+<canvas id="bgCanvas"></canvas>
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
@@ -301,162 +173,93 @@ body::before {
 
     <div id="alertBox" class="alert"></div>
 
-    <!-- LOGIN FORM -->
     <div id="loginForm" class="form-section active">
       <div class="input-group">
         <label class="input-label">Username</label>
-        <input type="text" class="input-field" id="loginUsername" 
-               placeholder="Enter your username" autocomplete="username">
+        <input type="text" class="input-field" id="loginUsername" placeholder="Enter your username" autocomplete="username">
       </div>
       <div class="input-group">
         <label class="input-label">Password</label>
-        <input type="password" class="input-field" id="loginPassword" 
-               placeholder="Enter your password" autocomplete="current-password">
+        <input type="password" class="input-field" id="loginPassword" placeholder="Enter your password" autocomplete="current-password">
       </div>
-      <button class="btn-submit" onclick="handleLogin()" id="loginBtn">
-        Sign In
-      </button>
+      <button class="btn-submit" onclick="handleLogin()" id="loginBtn">Sign In</button>
     </div>
 
-    <!-- SIGNUP FORM -->
     <div id="signupForm" class="form-section">
       <div class="input-group">
         <label class="input-label">Username</label>
-        <input type="text" class="input-field" id="signupUsername" 
-               placeholder="Choose a username" autocomplete="username">
+        <input type="text" class="input-field" id="signupUsername" placeholder="Choose a username" autocomplete="username">
       </div>
       <div class="input-group">
         <label class="input-label">Display Name</label>
-        <input type="text" class="input-field" id="signupDisplay" 
-               placeholder="Your full name">
+        <input type="text" class="input-field" id="signupDisplay" placeholder="Your full name">
       </div>
       <div class="input-group">
         <label class="input-label">Password</label>
-        <input type="password" class="input-field" id="signupPassword" 
-               placeholder="Create a password (min 6 chars)" autocomplete="new-password">
+        <input type="password" class="input-field" id="signupPassword" placeholder="Create a password (min 6 chars)" autocomplete="new-password">
       </div>
-      <button class="btn-submit" onclick="handleSignup()" id="signupBtn">
-        Create Account
-      </button>
+      <button class="btn-submit" onclick="handleSignup()" id="signupBtn">Create Account</button>
     </div>
 
-    <div class="footer-text">
-      CS 417: Large Language Models &mdash; Spring 2026
-    </div>
+    <div class="footer-text">Smart HR Recruitment System</div>
   </div>
 </div>
 
 <script>
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
-  
-  if (tab === 'login') {
-    document.querySelectorAll('.tab')[0].classList.add('active');
-    document.getElementById('loginForm').classList.add('active');
-  } else {
-    document.querySelectorAll('.tab')[1].classList.add('active');
-    document.getElementById('signupForm').classList.add('active');
-  }
-  
+/* live particle background */
+(function(){
+  const c=document.getElementById('bgCanvas'),x=c.getContext('2d');
+  let w,h,P=[];const N=70,COL=['#3b82f6','#60a5fa','#38bdf8','#818cf8'];
+  function rs(){w=c.width=innerWidth*devicePixelRatio;h=c.height=innerHeight*devicePixelRatio;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';}
+  rs();addEventListener('resize',rs);
+  for(let i=0;i<N;i++)P.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.4*devicePixelRatio,vy:(Math.random()-.5)*.4*devicePixelRatio,r:(Math.random()*1.6+.4)*devicePixelRatio,c:COL[i%COL.length]});
+  (function loop(){
+    x.clearRect(0,0,w,h);
+    for(let i=0;i<P.length;i++){
+      for(let j=i+1;j<P.length;j++){
+        const a=P[i],b=P[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.hypot(dx,dy);
+        if(d<140*devicePixelRatio){x.strokeStyle=`rgba(96,165,250,${(1-d/(140*devicePixelRatio))*.18})`;x.lineWidth=1;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();}
+      }
+    }
+    P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=w;if(p.x>w)p.x=0;if(p.y<0)p.y=h;if(p.y>h)p.y=0;x.beginPath();x.fillStyle=p.c;x.shadowColor=p.c;x.shadowBlur=12;x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fill();});
+    x.shadowBlur=0;requestAnimationFrame(loop);
+  })();
+})();
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.form-section').forEach(f=>f.classList.remove('active'));
+  if(tab==='login'){document.querySelectorAll('.tab')[0].classList.add('active');document.getElementById('loginForm').classList.add('active');}
+  else{document.querySelectorAll('.tab')[1].classList.add('active');document.getElementById('signupForm').classList.add('active');}
   hideAlert();
 }
+function showAlert(msg,type='error'){const b=document.getElementById('alertBox');b.textContent=msg;b.className=`alert ${type}`;b.style.display='block';}
+function hideAlert(){document.getElementById('alertBox').style.display='none';}
 
-function showAlert(msg, type = 'error') {
-  const box = document.getElementById('alertBox');
-  box.textContent = msg;
-  box.className = `alert ${type}`;
-  box.style.display = 'block';
+async function handleLogin(){
+  const u=document.getElementById('loginUsername').value.trim(),p=document.getElementById('loginPassword').value;
+  if(!u||!p){showAlert('Please enter username and password');return;}
+  const b=document.getElementById('loginBtn');b.disabled=true;b.innerHTML='<span class="loading"></span>';
+  try{
+    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+    const d=await r.json();
+    if(r.ok){showAlert('Login successful! Redirecting...','success');setTimeout(()=>location.href='/',900);}
+    else{showAlert(d.error||'Login failed');b.disabled=false;b.textContent='Sign In';}
+  }catch(e){showAlert('Connection error. Please try again.');b.disabled=false;b.textContent='Sign In';}
 }
-
-function hideAlert() {
-  document.getElementById('alertBox').style.display = 'none';
+async function handleSignup(){
+  const u=document.getElementById('signupUsername').value.trim(),dn=document.getElementById('signupDisplay').value.trim(),p=document.getElementById('signupPassword').value;
+  if(!u||!p){showAlert('Please fill in all fields');return;}
+  const b=document.getElementById('signupBtn');b.disabled=true;b.innerHTML='<span class="loading"></span>';
+  try{
+    const r=await fetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,display:dn})});
+    const d=await r.json();
+    if(r.ok){showAlert('Account created! Redirecting...','success');setTimeout(()=>location.href='/',900);}
+    else{showAlert(d.error||'Signup failed');b.disabled=false;b.textContent='Create Account';}
+  }catch(e){showAlert('Connection error. Please try again.');b.disabled=false;b.textContent='Create Account';}
 }
-
-async function handleLogin() {
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  
-  if (!username || !password) {
-    showAlert('Please enter username and password');
-    return;
-  }
-  
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading"></span>';
-  
-  try {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    
-    const data = await res.json();
-    
-    if (res.ok) {
-      showAlert('Login successful! Redirecting...', 'success');
-      setTimeout(() => window.location.href = '/', 1000);
-    } else {
-      showAlert(data.error || 'Login failed');
-      btn.disabled = false;
-      btn.textContent = 'Sign In';
-    }
-  } catch (err) {
-    showAlert('Connection error. Please try again.');
-    btn.disabled = false;
-    btn.textContent = 'Sign In';
-  }
-}
-
-async function handleSignup() {
-  const username = document.getElementById('signupUsername').value.trim();
-  const display = document.getElementById('signupDisplay').value.trim();
-  const password = document.getElementById('signupPassword').value;
-  
-  if (!username || !password) {
-    showAlert('Please fill in all fields');
-    return;
-  }
-  
-  const btn = document.getElementById('signupBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading"></span>';
-  
-  try {
-    const res = await fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password, display })
-    });
-    
-    const data = await res.json();
-    
-    if (res.ok) {
-      showAlert('Account created! Redirecting...', 'success');
-      setTimeout(() => window.location.href = '/', 1000);
-    } else {
-      showAlert(data.error || 'Signup failed');
-      btn.disabled = false;
-      btn.textContent = 'Create Account';
-    }
-  } catch (err) {
-    showAlert('Connection error. Please try again.');
-    btn.disabled = false;
-    btn.textContent = 'Create Account';
-  }
-}
-
-// Enter key handlers
-document.getElementById('loginPassword').addEventListener('keyup', (e) => {
-  if (e.key === 'Enter') handleLogin();
-});
-
-document.getElementById('signupPassword').addEventListener('keyup', (e) => {
-  if (e.key === 'Enter') handleSignup();
-});
+document.getElementById('loginPassword').addEventListener('keyup',e=>{if(e.key==='Enter')handleLogin();});
+document.getElementById('signupPassword').addEventListener('keyup',e=>{if(e.key==='Enter')handleSignup();});
 </script>
-
 </body>
 </html>
